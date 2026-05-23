@@ -517,8 +517,68 @@ const BGS_SCRIPT_CLOSE_RE=new RegExp('<'+'/scr'+'ipt>','gi');
 function countScriptTags(html){
   return{opens:(html.match(BGS_SCRIPT_OPEN_RE)||[]).length,closes:(html.match(BGS_SCRIPT_CLOSE_RE)||[]).length};
 }
-
-/* ═══ CHIPS ═══ */
+function jsBraceDepth(js){
+  let depth=0,inStr=null,esc=false,inLine=false,inBlock=false;
+  for(let i=0;i<js.length;i++){
+    const c=js[i],n=js[i+1];
+    if(inLine){if(c==='\n')inLine=false;continue;}
+    if(inBlock){if(c==='*'&&n=== '/'){inBlock=false;i++;}continue;}
+    if(inStr){if(esc){esc=false;continue;}if(c==='\\'){esc=true;continue;}if(c===inStr){inStr=null;}continue;}
+    if(c==='/'&&n==='/'){inLine=true;i++;continue;}
+    if(c==='/'&&n==='*'){inBlock=true;i++;continue;}
+    if(c==='"'||c==="'"||c==='`'){inStr=c;continue;}
+    if(c==='{')depth++;
+    else if(c==='}')depth=Math.max(0,depth-1);
+  }
+  return{depth,inStr};
+}
+function repairScriptContent(js){
+  const {depth,inStr}=jsBraceDepth(js);
+  let out=js;
+  if(inStr)out+=inStr;
+  for(let i=0;i<depth;i++)out+='\n}';
+  return out;
+}
+function validateGameHtml(code){
+  if(!/<\/html>\s*$/i.test(code.trim()))throw new Error('Game incomplete — try a shorter description or generate again.');
+  const {opens,closes}=countScriptTags(code);
+  if(opens>closes)throw new Error('Game code was cut off — try a shorter prompt or generate again.');
+  const tagOpen='<'+'script';
+  const lastStart=code.toLowerCase().lastIndexOf(tagOpen);
+  if(lastStart!==-1){
+    const contentStart=code.indexOf('>',lastStart)+1;
+    const closeIdx=code.indexOf(BGS_SCRIPT_END,contentStart);
+    if(closeIdx!==-1){
+      const js=code.slice(contentStart,closeIdx);
+      const {depth,inStr}=jsBraceDepth(js);
+      if(depth>0||inStr)throw new Error('Game script incomplete — try a simpler/shorter prompt.');
+    }
+  }
+}
+function sanitizeGameHtml(code){
+  let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
+  const {opens,closes}=countScriptTags(html);
+  if(opens>closes){
+    const missing=BGS_SCRIPT_END.repeat(opens-closes);
+    if(/<\/body>/i.test(html))html=html.replace(/<\/body>/i,()=>missing+'</body>');
+    else if(/<\/html>/i.test(html))html=html.replace(/<\/html>/i,()=>missing+'</html>');
+    else html+=missing;
+  }
+  const tagOpen='<'+'script';
+  const lastStart=html.toLowerCase().lastIndexOf(tagOpen);
+  if(lastStart!==-1){
+    const contentStart=html.indexOf('>',lastStart)+1;
+    const closeIdx=html.indexOf(BGS_SCRIPT_END,contentStart);
+    if(closeIdx!==-1){
+      const js=html.slice(contentStart,closeIdx);
+      const fixed=repairScriptContent(js);
+      if(fixed!==js)html=html.slice(0,contentStart)+fixed+html.slice(closeIdx);
+    }
+  }
+  if(!/<\/body>/i.test(html)&&/<\/html>/i.test(html))html=html.replace(/<\/html>/i,'</body></html>');
+  else if(!/<\/html>/i.test(html))html+=(/<\/body>/i.test(html)?'':'</body>')+'</html>';
+  return html;
+}
 const CHIPS={
   '3D platformer':['knight in haunted castle with torches','robot jumping neon factory','alien planet glowing platforms','ninja city rooftops at night'],
   '3D first-person shooter':['marines vs alien horde in bunker','zombie apocalypse FPS survival','cyberpunk corridor shooter','dungeon FPS with magic spells'],
@@ -598,19 +658,6 @@ function setSplash(icon,title,body,prog){
 }
 
 /* ═══ GAME DISPLAY ═══ */
-function sanitizeGameHtml(code){
-  let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
-  const {opens,closes}=countScriptTags(html);
-  if(opens>closes){
-    const missing=BGS_SCRIPT_END.repeat(opens-closes);
-    if(/<\/body>/i.test(html))html=html.replace(/<\/body>/i,()=>missing+'</body>');
-    else if(/<\/html>/i.test(html))html=html.replace(/<\/html>/i,()=>missing+'</html>');
-    else html+=missing;
-  }
-  if(!/<\/body>/i.test(html)&&/<\/html>/i.test(html))html=html.replace(/<\/html>/i,'</body></html>');
-  else if(!/<\/html>/i.test(html))html+=(/<\/body>/i.test(html)?'':'</body>')+'</html>';
-  return html;
-}
 function wireGameFrame(fr){
   try{
     const win=fr.contentWindow,doc=fr.contentDocument;
@@ -1131,9 +1178,11 @@ MOBILE/TOUCH REQUIREMENTS:
   const system=`You are a world-class Three.js game developer. Generate a complete, stunning, self-contained 3D browser game.
 
 ABSOLUTE OUTPUT RULES:
-- Output ONLY raw HTML starting with <!DOCTYPE html>
+- Output ONLY raw HTML starting with <!DOCTYPE html>, ending with </html>
 - Zero markdown, zero backticks, zero explanations — pure HTML only
 - Single file, no external assets
+- Keep the game compact (under 450 lines) but MUST fully complete all script/body/html tags
+- Finish the main game script completely — never stop mid-function
 
 REQUIRED LIBRARIES:
 1. Three.js r134: https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
@@ -1148,8 +1197,8 @@ REQUIRED THREE.JS:
 - scene.fog = new THREE.Fog(...)
 - Ground plane receiveShadow MeshStandardMaterial
 - Player mesh castShadow MeshStandardMaterial metalness+roughness
-- 15-20 environmental objects matching theme
-- 3 enemy types castShadow
+- 10-12 environmental objects matching theme
+- 2 enemy types castShadow
 - THREE.Points particle system
 - THREE.Clock getDelta()
 - window resize handler
@@ -1184,14 +1233,14 @@ VISUAL: Rich colors, atmospheric lighting, dense world, animated elements.
 Genre: ${genre}`;
 
   const user=`Create a complete polished ${genre} game: "${prompt}"
-Dense atmospheric world, 3 enemy types with different AI, particle effects, increasing difficulty.
+Compact but complete — 2 enemy types, particle effects, increasing difficulty. Must fully close all script, body, and html tags.
 ${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
 Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
 
   try{
     const res=await fetch(apiUrl('/api/generate'),{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:8000,system,messages:[{role:'user',content:user}]})
+      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:12000,system,messages:[{role:'user',content:user}]})
     });
     if(!res.ok){let m=`HTTP ${res.status}`;try{const e=await res.json();m=e.error?.message||m;}catch(x){}throw new Error(m);}
     const data=await res.json();
@@ -1199,8 +1248,10 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
     code=code.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/g,'').trim();
     if(!code.startsWith('<!'))throw new Error('Unexpected output — try again');
     if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
-    const {opens,closes}=countScriptTags(code);
-    if(opens>closes)throw new Error('Game code was cut off — try a shorter prompt or generate again.');
+    try{validateGameHtml(code);}catch(e){
+      code=sanitizeGameHtml(code);
+      validateGameHtml(code);
+    }
     currentCode=code;
     const id=addToLib(prompt,genre,code);
     if(id)captureThumb(id);
