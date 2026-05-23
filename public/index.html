@@ -900,7 +900,7 @@ ${currentCode.slice(0,6000)}`;
     const res=await fetch(apiUrl('/api/generate'),{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:4000,messages:[{role:'user',content:prompt}]})
     });
     if(!res.ok)throw new Error('API error '+res.status);
     const data=await res.json();
@@ -1111,7 +1111,7 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
   try{
     const res=await fetch(apiUrl('/api/generate'),{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:8000,system,messages:[{role:'user',content:user}]})
+      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:8000,system,messages:[{role:'user',content:user}]})
     });
     if(!res.ok){let m=`HTTP ${res.status}`;try{const e=await res.json();m=e.error?.message||m;}catch(x){}throw new Error(m);}
     const data=await res.json();
@@ -1151,7 +1151,7 @@ async function enhancePrompt(){
   try{
     const res=await fetch(apiUrl('/api/generate'),{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:500,
+      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:500,
         system:`You are a game design expert. Expand a short game idea into a vivid 3-5 sentence description for a ${genre} game. Include: setting, atmosphere, player, 2-3 enemy types, world details, gameplay loop. One flowing paragraph. No bullets. Output only the description.`,
         messages:[{role:'user',content:`Game idea: "${raw}"\nGenre: ${genre}\n\nExpand into a rich 3D game description.`}]})
     });

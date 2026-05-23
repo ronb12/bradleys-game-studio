@@ -6,12 +6,13 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
   try {
     const { _apiKey, ...body } = req.body;
-    if (!_apiKey || !_apiKey.startsWith('sk-ant-')) {
+    const apiKey = _apiKey || process.env.ANTHROPIC_API_KEY;
+    if (!apiKey || !apiKey.startsWith('sk-ant-')) {
       res.status(401).json({ error: { message: 'Invalid or missing API key' } }); return;
     }
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': _apiKey, 'anthropic-version': '2023-06-01' },
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify(body)
     });
     const data = await response.json();
