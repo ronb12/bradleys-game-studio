@@ -591,21 +591,71 @@ function setSplash(icon,title,body,prog){
 }
 
 /* ═══ GAME DISPLAY ═══ */
-function fixGameCode(code){
-  const handlers=[...code.matchAll(/\bonclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi)].map(m=>m[1]);
-  const unique=[...new Set(handlers)];
-  let fixed=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
-  const names=[...new Set([...unique,'startGame','restartGame'])];
-  const wire=names.map(fn=>`document.querySelectorAll('[data-bgs-click="${fn}"]').forEach(function(el){if(el.__bgsWired)return;el.__bgsWired=1;el.addEventListener('click',function(e){e.preventDefault();if(typeof window.${fn}==='function')return window.${fn}(e);console.error('Missing handler: ${fn}');});});`).join('');
-  const patch=`<script>(function(){function wire(){${wire}var s=document.getElementById('start-screen');if(s&&!window.startGame){window.startGame=function(){s.style.display='none';window.__bgsStarted=1;window.dispatchEvent(new Event('bgs-start'));};}var r=document.getElementById('game-over-screen')||document.getElementById('gameover-screen');if(r&&!window.restartGame){window.restartGame=function(){r.style.display='none';location.reload();};}}wire();document.addEventListener('DOMContentLoaded',wire);var n=0,i=setInterval(function(){wire();if(++n>24)clearInterval(i);},250);})();<\/script>`;
-  if(fixed.includes('</body>'))return fixed.replace('</body>',patch+'</body>');
-  if(fixed.includes('</html>'))return fixed.replace('</html>',patch+'</html>');
-  return fixed+patch;
+function sanitizeGameHtml(code){
+  let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
+  const opens=(html.match(/<script\b/gi)||[]).length;
+  const closes=(html.match(/<\/script>/gi)||[]).length;
+  if(opens>closes){
+    const missing='</script>'.repeat(opens-closes);
+    if(/<\/body>/i.test(html))html=html.replace(/<\/body>/i,()=>missing+'</body>');
+    else if(/<\/html>/i.test(html))html=html.replace(/<\/html>/i,()=>missing+'</html>');
+    else html+=missing;
+  }
+  if(!/<\/body>/i.test(html)&&/<\/html>/i.test(html))html=html.replace(/<\/html>/i,'</body></html>');
+  else if(!/<\/html>/i.test(html))html+=(/<\/body>/i.test(html)?'':'</body>')+'</html>';
+  return html;
+}
+function wireGameFrame(fr){
+  try{
+    const win=fr.contentWindow,doc=fr.contentDocument;
+    if(!win||!doc)return;
+    const names=new Set(['startGame','restartGame']);
+    doc.querySelectorAll('[data-bgs-click]').forEach(el=>{const fn=el.getAttribute('data-bgs-click');if(fn)names.add(fn);});
+    doc.querySelectorAll('[onclick]').forEach(el=>{
+      const m=(el.getAttribute('onclick')||'').match(/^([a-zA-Z_$][\w$]*)\s*\(/);
+      if(m)names.add(m[1]);
+    });
+    names.forEach(fn=>{
+      doc.querySelectorAll('[data-bgs-click="'+fn+'"]').forEach(el=>{
+        if(el.__bgsWired===fn)return;
+        el.__bgsWired=fn;
+        el.addEventListener('click',e=>{e.preventDefault();if(typeof win[fn]==='function')win[fn](e);});
+      });
+    });
+    doc.querySelectorAll('[onclick]').forEach(el=>{
+      if(el.__bgsOnclickWired)return;
+      const m=(el.getAttribute('onclick')||'').match(/^([a-zA-Z_$][\w$]*)\s*\(/);
+      if(!m)return;
+      el.__bgsOnclickWired=1;
+      const fn=m[1];
+      el.removeAttribute('onclick');
+      el.addEventListener('click',e=>{
+        e.preventDefault();
+        if(typeof win[fn]==='function')return win[fn](e);
+        if(fn==='startGame'){const s=doc.getElementById('start-screen');if(s)s.style.display='none';}
+      });
+    });
+    const s=doc.getElementById('start-screen');
+    if(s&&typeof win.startGame!=='function'){
+      win.startGame=()=>{s.style.display='none';win.__bgsStarted=1;win.dispatchEvent(new Event('bgs-start'));};
+    }
+    const r=doc.getElementById('game-over-screen')||doc.getElementById('gameover-screen');
+    if(r&&typeof win.restartGame!=='function')win.restartGame=()=>location.reload();
+  }catch(e){console.warn('wireGameFrame',e);}
+}
+function loadGameInFrame(fr,code){
+  fr.onload=()=>{
+    wireGameFrame(fr);
+    let n=0;
+    const t=setInterval(()=>{wireGameFrame(fr);if(++n>=8)clearInterval(t);},300);
+  };
+  fr.srcdoc=sanitizeGameHtml(code);
+  requestAnimationFrame(()=>{try{if(fr.contentDocument?.readyState==='complete')wireGameFrame(fr);}catch(e){}});
 }
 function showGame(code){
   doneProgress();
   const fr=document.getElementById('gframe');
-  fr.srcdoc=fixGameCode(code);fr.style.display='block';
+  loadGameInFrame(fr,code);fr.style.display='block';
   document.getElementById('splash').style.display='none';
   ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
   document.getElementById('cbody').textContent=code;
@@ -751,7 +801,8 @@ function previewGame(id){
   document.getElementById('lpvlbl').textContent=meta?meta.prompt:'preview';
   document.getElementById('lpv-play').style.display='block';
   document.getElementById('lpv-pub').style.display='block';
-  document.getElementById('lpvframe').srcdoc=fixGameCode(code);
+  document.getElementById('lpvframe').srcdoc='';
+  loadGameInFrame(document.getElementById('lpvframe'),code);
 }
 function closePV(){
   document.getElementById('lpv').classList.remove('open');
@@ -1142,7 +1193,9 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
     code=code.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/g,'').trim();
     if(!code.startsWith('<!'))throw new Error('Unexpected output — try again');
     if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
-    code=fixGameCode(code);
+    const opens=(code.match(/<script\b/gi)||[]).length;
+    const closes=(code.match(/<\/script>/gi)||[]).length;
+    if(opens>closes)throw new Error('Game code was cut off — try a shorter prompt or generate again.');
     currentCode=code;
     const id=addToLib(prompt,genre,code);
     if(id)captureThumb(id);
