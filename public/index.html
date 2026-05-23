@@ -506,10 +506,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
 const PROD_ORIGIN = 'https://bradleys-game-studio.vercel.app';
 function apiUrl(path) {
-  if (location.protocol === 'file:') return PROD_ORIGIN + path;
+  // Only use same-origin API routes on deployed Vercel hosts.
   if (location.hostname.endsWith('.vercel.app')) return path;
-  if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && location.port === '3000') return path;
-  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return path;
   return PROD_ORIGIN + path;
 }
 
