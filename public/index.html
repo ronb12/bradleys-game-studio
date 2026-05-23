@@ -504,6 +504,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <script>
 'use strict';
 
+const PROD_ORIGIN = 'https://bradleys-game-studio.vercel.app';
+function apiUrl(path) {
+  if (location.protocol === 'file:') return PROD_ORIGIN + path;
+  if (location.hostname.endsWith('.vercel.app')) return path;
+  if ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') && location.port === '3000') return path;
+  if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return path;
+  return PROD_ORIGIN + path;
+}
+
 /* ═══ CHIPS ═══ */
 const CHIPS={
   '3D platformer':['knight in haunted castle with torches','robot jumping neon factory','alien planet glowing platforms','ninja city rooftops at night'],
@@ -799,7 +808,7 @@ async function publishGame(){
       codeToPublish=currentCode.replace('</head>',`<!-- NEON_URL:${neonUrl} --></head>`);
     }
 
-    const res=await fetch('/api/publish',{
+    const res=await fetch(apiUrl('/api/publish'),{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({vercelToken:token,htmlCode:codeToPublish,gameName:name,gameId:'bgs-'+Date.now()})
@@ -890,7 +899,7 @@ Game code to convert:
 ${currentCode.slice(0,6000)}`;
 
   try{
-    const res=await fetch('/api/generate',{
+    const res=await fetch(apiUrl('/api/generate'),{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
@@ -1102,7 +1111,7 @@ ${isMobile?'Include mobile touch controls with virtual joystick and action butto
 Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
 
   try{
-    const res=await fetch('/api/generate',{
+    const res=await fetch(apiUrl('/api/generate'),{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:8000,system,messages:[{role:'user',content:user}]})
     });
@@ -1142,7 +1151,7 @@ async function enhancePrompt(){
   document.getElementById('edit-btn').textContent='✎ Edit';
   enhancedResult='';
   try{
-    const res=await fetch('/api/generate',{
+    const res=await fetch(apiUrl('/api/generate'),{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:500,
         system:`You are a game design expert. Expand a short game idea into a vivid 3-5 sentence description for a ${genre} game. Include: setting, atmosphere, player, 2-3 enemy types, world details, gameplay loop. One flowing paragraph. No bullets. Output only the description.`,
