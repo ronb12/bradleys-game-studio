@@ -345,7 +345,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           <div id="pst"></div>
         </div>
       </div>
-      <iframe id="gframe" sandbox="allow-scripts allow-same-origin"></iframe>
+      <iframe id="gframe" tabindex="0" sandbox="allow-scripts allow-same-origin"></iframe>
     </div>
     <div id="pzone">
       <div id="chips"></div>
@@ -557,6 +557,11 @@ function validateGameHtml(code){
 }
 function sanitizeGameHtml(code){
   let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
+  const bootstrapStyle='<style id="bgs-bootstrap">html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{display:block!important;width:100%!important;height:100%!important;touch-action:none}#start-screen,#game-over-screen{position:fixed;inset:0;z-index:1000}</style>';
+  if(!html.includes('bgs-bootstrap')){
+    if(/<head[^>]*>/i.test(html))html=html.replace(/<head[^>]*>/i,m=>m+bootstrapStyle);
+    else html=bootstrapStyle+html;
+  }
   const {opens,closes}=countScriptTags(html);
   if(opens>closes){
     const missing=BGS_SCRIPT_END.repeat(opens-closes);
@@ -658,10 +663,40 @@ function setSplash(icon,title,body,prog){
 }
 
 /* ═══ GAME DISPLAY ═══ */
+function kickstartGame(fr,win,doc){
+  ['gameStarted','gameRunning','started','playing','isPlaying','running','isRunning'].forEach(k=>{try{win[k]=true;}catch(e){}});
+  fixIframeLayout(fr,win,doc);
+  win.dispatchEvent(new Event('resize'));
+  win.dispatchEvent(new Event('bgs-start'));
+  ['init','initGame','start','beginGame','setupGame','startGameLoop'].forEach(fn=>{
+    if(typeof win[fn]==='function')try{win[fn]();}catch(e){}
+  });
+}
+function fixIframeLayout(fr,win,doc){
+  const w=fr.clientWidth||win.innerWidth||800,h=fr.clientHeight||win.innerHeight||600;
+  [doc.documentElement,doc.body].forEach(el=>{
+    if(!el)return;
+    el.style.margin='0';el.style.padding='0';el.style.width='100%';el.style.height='100%';el.style.overflow='hidden';
+  });
+  const canvas=doc.querySelector('canvas');
+  if(canvas){canvas.style.display='block';canvas.style.width='100%';canvas.style.height='100%';}
+  try{
+    if(win.renderer?.setSize)win.renderer.setSize(w,h,false);
+    if(win.camera?.aspect!==undefined){win.camera.aspect=w/h;win.camera.updateProjectionMatrix?.();}
+  }catch(e){}
+}
+function invokeStartGame(fr,win,doc){
+  const s=doc.getElementById('start-screen');
+  if(typeof win.startGame==='function'){
+    try{win.startGame();}catch(e){console.warn('startGame',e);}
+  }else if(s)s.style.display='none';
+  kickstartGame(fr,win,doc);
+}
 function wireGameFrame(fr){
   try{
     const win=fr.contentWindow,doc=fr.contentDocument;
     if(!win||!doc)return;
+    fixIframeLayout(fr,win,doc);
     const names=new Set(['startGame','restartGame']);
     doc.querySelectorAll('[data-bgs-click]').forEach(el=>{const fn=el.getAttribute('data-bgs-click');if(fn)names.add(fn);});
     doc.querySelectorAll('[onclick]').forEach(el=>{
@@ -672,7 +707,11 @@ function wireGameFrame(fr){
       doc.querySelectorAll('[data-bgs-click="'+fn+'"]').forEach(el=>{
         if(el.__bgsWired===fn)return;
         el.__bgsWired=fn;
-        el.addEventListener('click',e=>{e.preventDefault();if(typeof win[fn]==='function')win[fn](e);});
+        el.addEventListener('click',e=>{
+          e.preventDefault();
+          if(fn==='startGame')return invokeStartGame(fr,win,doc);
+          if(typeof win[fn]==='function')return win[fn](e);
+        });
       });
     });
     doc.querySelectorAll('[onclick]').forEach(el=>{
@@ -684,23 +723,31 @@ function wireGameFrame(fr){
       el.removeAttribute('onclick');
       el.addEventListener('click',e=>{
         e.preventDefault();
+        if(fn==='startGame')return invokeStartGame(fr,win,doc);
         if(typeof win[fn]==='function')return win[fn](e);
-        if(fn==='startGame'){const s=doc.getElementById('start-screen');if(s)s.style.display='none';}
       });
     });
+    const startBtn=doc.getElementById('start-btn')||doc.querySelector('#start-screen button');
+    if(startBtn&&!startBtn.__bgsStartBtn){
+      startBtn.__bgsStartBtn=1;
+      startBtn.addEventListener('click',()=>invokeStartGame(fr,win,doc));
+    }
     const s=doc.getElementById('start-screen');
     if(s&&typeof win.startGame!=='function'){
-      win.startGame=()=>{s.style.display='none';win.__bgsStarted=1;win.dispatchEvent(new Event('bgs-start'));};
+      win.startGame=()=>invokeStartGame(fr,win,doc);
     }
     const r=doc.getElementById('game-over-screen')||doc.getElementById('gameover-screen');
     if(r&&typeof win.restartGame!=='function')win.restartGame=()=>location.reload();
+    const startVisible=s&&s.style.display!=='none'&&getComputedStyle(s).display!=='none';
+    if(startVisible)setStatus('Click START inside the game window','ok');
+    else kickstartGame(fr,win,doc);
   }catch(e){console.warn('wireGameFrame',e);}
 }
 function loadGameInFrame(fr,code){
   fr.onload=()=>{
     wireGameFrame(fr);
     let n=0;
-    const t=setInterval(()=>{wireGameFrame(fr);if(++n>=8)clearInterval(t);},300);
+    const t=setInterval(()=>{wireGameFrame(fr);if(++n>=10)clearInterval(t);},300);
   };
   fr.srcdoc=sanitizeGameHtml(code);
   requestAnimationFrame(()=>{try{if(fr.contentDocument?.readyState==='complete')wireGameFrame(fr);}catch(e){}});
@@ -709,6 +756,7 @@ function showGame(code){
   doneProgress();
   const fr=document.getElementById('gframe');
   loadGameInFrame(fr,code);fr.style.display='block';
+  fr.focus();
   document.getElementById('splash').style.display='none';
   ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
   document.getElementById('cbody').textContent=code;
@@ -1220,13 +1268,23 @@ REQUIRED HUD + SCREENS:
 
 CRITICAL — START / RESTART HANDLERS (mandatory, global scope only):
 - Define at TOP LEVEL in a script tag (NOT inside DOMContentLoaded, NOT inside IIFE):
-  function startGame(){ document.getElementById('start-screen').style.display='none'; /* start loop */ }
+  let gameStarted = false;
+  function startGame(){
+    gameStarted = true;
+    document.getElementById('start-screen').style.display='none';
+    if(typeof animate==='function'&&!window.__loopRunning){window.__loopRunning=true;animate();}
+    window.dispatchEvent(new Event('resize'));
+  }
   function restartGame(){ location.reload(); }
   window.startGame = startGame;
   window.restartGame = restartGame;
+  window.gameStarted = true; // set true inside startGame
   document.getElementById('start-btn').addEventListener('click', startGame);
-- FORBIDDEN: onclick="startGame()" or any inline onclick on buttons
-- FORBIDDEN: defining startGame/restartGame inside nested functions or block scope
+- Store renderer and camera on window: window.renderer = renderer; window.camera = camera;
+- Append renderer.domElement to document.body
+- html,body{margin:0;height:100%;overflow:hidden}
+- animate loop MUST call renderer.render(scene,camera) every frame once gameStarted is true
+- startGame MUST set gameStarted=true and begin the animate/requestAnimationFrame loop
 ${mobileExtra}
 
 VISUAL: Rich colors, atmospheric lighting, dense world, animated elements.
