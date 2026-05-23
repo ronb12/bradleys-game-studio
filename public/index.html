@@ -591,10 +591,21 @@ function setSplash(icon,title,body,prog){
 }
 
 /* ═══ GAME DISPLAY ═══ */
+function fixGameCode(code){
+  const handlers=[...code.matchAll(/\bonclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi)].map(m=>m[1]);
+  const unique=[...new Set(handlers)];
+  let fixed=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
+  const names=[...new Set([...unique,'startGame','restartGame'])];
+  const wire=names.map(fn=>`document.querySelectorAll('[data-bgs-click="${fn}"]').forEach(function(el){if(el.__bgsWired)return;el.__bgsWired=1;el.addEventListener('click',function(e){e.preventDefault();if(typeof window.${fn}==='function')return window.${fn}(e);console.error('Missing handler: ${fn}');});});`).join('');
+  const patch=`<script>(function(){function wire(){${wire}var s=document.getElementById('start-screen');if(s&&!window.startGame){window.startGame=function(){s.style.display='none';window.__bgsStarted=1;window.dispatchEvent(new Event('bgs-start'));};}var r=document.getElementById('game-over-screen')||document.getElementById('gameover-screen');if(r&&!window.restartGame){window.restartGame=function(){r.style.display='none';location.reload();};}}wire();document.addEventListener('DOMContentLoaded',wire);var n=0,i=setInterval(function(){wire();if(++n>24)clearInterval(i);},250);})();</script>`;
+  if(fixed.includes('</body>'))return fixed.replace('</body>',patch+'</body>');
+  if(fixed.includes('</html>'))return fixed.replace('</html>',patch+'</html>');
+  return fixed+patch;
+}
 function showGame(code){
   doneProgress();
   const fr=document.getElementById('gframe');
-  fr.srcdoc=code;fr.style.display='block';
+  fr.srcdoc=fixGameCode(code);fr.style.display='block';
   document.getElementById('splash').style.display='none';
   ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
   document.getElementById('cbody').textContent=code;
@@ -740,7 +751,7 @@ function previewGame(id){
   document.getElementById('lpvlbl').textContent=meta?meta.prompt:'preview';
   document.getElementById('lpv-play').style.display='block';
   document.getElementById('lpv-pub').style.display='block';
-  document.getElementById('lpvframe').srcdoc=code;
+  document.getElementById('lpvframe').srcdoc=fixGameCode(code);
 }
 function closePV(){
   document.getElementById('lpv').classList.remove('open');
@@ -1097,7 +1108,19 @@ REQUIRED GAMEPLAY:
 - Web Audio API sounds (tones only)
 
 REQUIRED HUD + SCREENS:
-- Start screen, game over screen, score/health/wave HUD overlays
+- Start screen with id="start-screen" and button id="start-btn" (NO inline onclick)
+- Game over screen with restart button id="restart-btn" (NO inline onclick)
+- Score/health/wave HUD overlays
+
+CRITICAL — START / RESTART HANDLERS (mandatory, global scope only):
+- Define at TOP LEVEL in a script tag (NOT inside DOMContentLoaded, NOT inside IIFE):
+  function startGame(){ document.getElementById('start-screen').style.display='none'; /* start loop */ }
+  function restartGame(){ location.reload(); }
+  window.startGame = startGame;
+  window.restartGame = restartGame;
+  document.getElementById('start-btn').addEventListener('click', startGame);
+- FORBIDDEN: onclick="startGame()" or any inline onclick on buttons
+- FORBIDDEN: defining startGame/restartGame inside nested functions or block scope
 ${mobileExtra}
 
 VISUAL: Rich colors, atmospheric lighting, dense world, animated elements.
@@ -1119,6 +1142,7 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
     code=code.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/g,'').trim();
     if(!code.startsWith('<!'))throw new Error('Unexpected output — try again');
     if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
+    code=fixGameCode(code);
     currentCode=code;
     const id=addToLib(prompt,genre,code);
     if(id)captureThumb(id);
