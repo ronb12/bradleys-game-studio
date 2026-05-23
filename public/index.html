@@ -511,6 +511,13 @@ function apiUrl(path) {
   return PROD_ORIGIN + path;
 }
 
+const BGS_SCRIPT_END='<'+'/script>';
+const BGS_SCRIPT_OPEN_RE=/<script\b/gi;
+const BGS_SCRIPT_CLOSE_RE=new RegExp('<'+'/scr'+'ipt>','gi');
+function countScriptTags(html){
+  return{opens:(html.match(BGS_SCRIPT_OPEN_RE)||[]).length,closes:(html.match(BGS_SCRIPT_CLOSE_RE)||[]).length};
+}
+
 /* ═══ CHIPS ═══ */
 const CHIPS={
   '3D platformer':['knight in haunted castle with torches','robot jumping neon factory','alien planet glowing platforms','ninja city rooftops at night'],
@@ -593,10 +600,9 @@ function setSplash(icon,title,body,prog){
 /* ═══ GAME DISPLAY ═══ */
 function sanitizeGameHtml(code){
   let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
-  const opens=(html.match(/<script\b/gi)||[]).length;
-  const closes=(html.match(/<\/script>/gi)||[]).length;
+  const {opens,closes}=countScriptTags(html);
   if(opens>closes){
-    const missing='</script>'.repeat(opens-closes);
+    const missing=BGS_SCRIPT_END.repeat(opens-closes);
     if(/<\/body>/i.test(html))html=html.replace(/<\/body>/i,()=>missing+'</body>');
     else if(/<\/html>/i.test(html))html=html.replace(/<\/html>/i,()=>missing+'</html>');
     else html+=missing;
@@ -1193,8 +1199,7 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
     code=code.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/g,'').trim();
     if(!code.startsWith('<!'))throw new Error('Unexpected output — try again');
     if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
-    const opens=(code.match(/<script\b/gi)||[]).length;
-    const closes=(code.match(/<\/script>/gi)||[]).length;
+    const {opens,closes}=countScriptTags(code);
     if(opens>closes)throw new Error('Game code was cut off — try a shorter prompt or generate again.');
     currentCode=code;
     const id=addToLib(prompt,genre,code);
