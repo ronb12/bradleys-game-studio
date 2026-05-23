@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bradley's Game Studio</title>
+<meta name="description" content="AI-powered 3D game generator. Describe any game and play it instantly.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#05060a;--bg2:#080a10;--bg3:#0d0f18;--bg4:#111520;
+  --c1:#00ffcc;--c2:#ff3366;--c3:#ffcc00;--c4:#6644ff;--c5:#00aaff;
+  --b1:rgba(0,255,204,0.08);--b2:rgba(0,255,204,0.18);
+  --text:#ccd6f0;--muted:#4a5878;--dim:#2a3348;
+  --mono:'JetBrains Mono',monospace;--ui:'Chakra Petch',sans-serif;
+  --g1:rgba(0,255,204,0.12);--g2:rgba(255,51,102,0.12);--g3:rgba(255,204,0,0.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--ui);overflow:hidden}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9997;}
+
+/* ── BAR ── */
+#bar{height:54px;display:flex;align-items:center;background:var(--bg2);border-bottom:1px solid var(--b2);flex-shrink:0;position:relative;z-index:100;}
+#bar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--c1),var(--c4),var(--c2),transparent);}
+#brand{padding:0 16px;display:flex;align-items:center;gap:10px;border-right:1px solid var(--b2);height:100%;min-width:248px;}
+#bb{width:34px;height:34px;border:1.5px solid var(--c1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--c1);box-shadow:0 0 14px var(--g1),inset 0 0 7px var(--g1);animation:bp 3s ease-in-out infinite;position:relative;overflow:hidden;flex-shrink:0;}
+#bb::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 40%,rgba(0,255,204,0.12) 50%,transparent 60%);animation:sw 3s ease-in-out infinite;}
+@keyframes sw{0%,100%{transform:translateX(-110%)}50%{transform:translateX(110%)}}
+@keyframes bp{0%,100%{box-shadow:0 0 14px var(--g1),inset 0 0 7px var(--g1)}50%{box-shadow:0 0 26px rgba(0,255,204,0.22),inset 0 0 12px rgba(0,255,204,0.1)}}
+.t1{font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--c1);text-shadow:0 0 18px rgba(0,255,204,0.5);}
+.t2{font-size:9px;font-family:var(--mono);color:var(--muted);letter-spacing:.14em;margin-top:2px;}
+#tabs{display:flex;height:100%;}
+.tab{padding:0 14px;display:flex;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;position:relative;}
+.tab:hover{color:var(--text);}
+.tab.on{color:var(--c1);border-bottom-color:var(--c1);}
+.f1{flex:1;}
+#kz{display:flex;align-items:center;gap:8px;padding:0 14px;border-left:1px solid var(--b2);height:100%;}
+#kl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;}
+#ak{width:205px;padding:6px 10px;background:var(--bg3);border:1px solid var(--b2);border-radius:5px;color:var(--c1);font-family:var(--mono);font-size:11px;outline:none;transition:all .2s;}
+#ak:focus{border-color:var(--c1);box-shadow:0 0 12px var(--g1);}
+#ak::placeholder{color:var(--muted);}
+#ks{font-family:var(--mono);font-size:9px;min-width:52px;letter-spacing:.06em;}
+#ks.ok{color:var(--c1);}#ks.bad{color:var(--c2);}
+
+/* ── SHELL ── */
+#shell{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px);}
+
+/* ── SIDEBAR ── */
+#side{width:220px;min-width:220px;border-right:1px solid var(--b1);display:flex;flex-direction:column;background:var(--bg2);overflow-y:auto;}
+.ph{padding:11px 13px 7px;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:6px;}
+.ph::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--c1);box-shadow:0 0 6px var(--c1);flex-shrink:0;}
+.gl{padding:5px 7px 3px;}
+.gb{display:flex;align-items:center;gap:7px;width:100%;padding:6px 8px;border-radius:5px;border:1px solid transparent;background:none;cursor:pointer;font-family:var(--ui);font-size:11px;font-weight:500;color:var(--muted);text-align:left;transition:all .15s;margin-bottom:1px;}
+.gb:hover{background:var(--bg4);color:var(--text);}
+.gb.on{background:rgba(0,255,204,0.05);border-color:rgba(0,255,204,0.2);color:var(--c1);}
+.gi{font-size:13px;width:16px;text-align:center;flex-shrink:0;}.gn{flex:1;}
+.gt{font-family:var(--mono);font-size:7px;padding:1px 4px;border-radius:3px;background:rgba(102,68,255,0.22);color:#9988ff;letter-spacing:.05em;flex-shrink:0;}
+.gt.hot{background:rgba(255,51,102,0.18);color:#ff7799;}
+.sla-row{padding:6px 7px 3px;display:flex;gap:4px;}
+.sla{flex:1;padding:4px 5px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:8px;cursor:pointer;transition:all .15s;text-align:center;letter-spacing:.03em;}
+.sla:hover{border-color:var(--c1);color:var(--c1);background:var(--g1);}
+.sla.gold{border-color:rgba(255,204,0,0.2);color:rgba(255,204,0,0.65);}
+.sla.gold:hover{border-color:var(--c3);color:var(--c3);background:var(--g3);}
+#lbadge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:14px;padding:0 4px;background:rgba(0,255,204,0.12);border:1px solid rgba(0,255,204,0.28);border-radius:10px;font-family:var(--mono);font-size:8px;color:var(--c1);margin-left:auto;}
+.hl{padding:4px 7px 7px;}
+.hi{padding:5px 8px;border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:all .15s;}
+.hi:hover{background:var(--bg4);color:var(--text);}
+.he{font-family:var(--mono);font-size:10px;color:var(--dim);padding:4px 8px;}
+
+/* ── CENTER ── */
+#center{flex:1;display:flex;flex-direction:column;min-width:0;}
+#gbar{height:42px;display:flex;align-items:center;gap:7px;padding:0 12px;border-bottom:1px solid var(--b1);background:var(--bg2);flex-shrink:0;}
+#gpill{font-family:var(--mono);font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:2px 9px;border-radius:20px;border:1px solid rgba(0,255,204,0.22);color:var(--c1);background:rgba(0,255,204,0.05);}
+#gname{font-family:var(--mono);font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;}
+.tbtn{padding:4px 10px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:9px;cursor:pointer;transition:all .15s;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:4px;white-space:nowrap;}
+.tbtn:hover{border-color:var(--c1);color:var(--c1);background:var(--g1);}
+.tbtn.on{border-color:var(--c1);color:var(--c1);background:var(--g1);}
+#tbpub{border-color:rgba(0,170,255,0.35);color:var(--c5);}
+#tbpub:hover{border-color:var(--c5);background:rgba(0,170,255,0.08);}
+#tbdl{border-color:rgba(255,204,0,0.22);color:var(--c3);}
+#tbdl:hover{border-color:var(--c3);background:var(--g3);}
+
+/* ── VIEWPORT ── */
+#vp{flex:1;position:relative;overflow:hidden;background:#000;}
+#gframe{width:100%;height:100%;border:none;display:none;}
+#splash{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;background:radial-gradient(ellipse at 50% 55%,#0a0d1a,var(--bg) 70%);}
+.sg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,204,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.022) 1px,transparent 1px);background-size:44px 44px;animation:gm 18s linear infinite;}
+@keyframes gm{from{background-position:0 0}to{background-position:44px 44px}}
+.sc{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column;align-items:center;gap:13px;}
+.si{font-size:50px;filter:drop-shadow(0 0 20px rgba(0,255,204,0.44));}
+.st{font-size:20px;font-weight:700;letter-spacing:.15em;color:var(--c1);text-shadow:0 0 32px rgba(0,255,204,0.52);}
+.ss{font-family:var(--mono);font-size:11px;color:var(--muted);max-width:340px;line-height:2;letter-spacing:.04em;}
+.fcaps{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:420px;}
+.fcap{font-family:var(--mono);font-size:9px;letter-spacing:.05em;padding:3px 9px;border-radius:3px;border:1px solid var(--b2);color:var(--muted);}
+.fcap.lit{border-color:rgba(0,255,204,0.22);color:var(--c1);}
+.fcap.blue{border-color:rgba(0,170,255,0.22);color:var(--c5);}
+.fcap.gold{border-color:rgba(255,204,0,0.22);color:var(--c3);}
+#pw{width:250px;height:2px;background:var(--bg4);border-radius:99px;overflow:hidden;display:none;}
+#pb{height:100%;width:0%;background:linear-gradient(90deg,var(--c1),var(--c4),var(--c2));transition:width .5s;}
+#pst{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.07em;min-height:14px;}
+
+/* ── PROMPT ── */
+#pzone{border-top:1px solid var(--b2);background:var(--bg2);padding:10px 12px;flex-shrink:0;position:relative;}
+#pzone::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--c1),var(--c4),var(--c2),transparent);}
+#chips{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.chip{font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:3px;border:1px solid var(--b1);color:var(--muted);background:none;cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--c1);color:var(--c1);background:var(--g1);}
+#irow{display:flex;gap:8px;align-items:flex-end;}
+#ptxt{flex:1;padding:8px 12px;background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--text);font-family:var(--ui);font-size:13px;resize:none;height:62px;line-height:1.6;outline:none;transition:all .2s;}
+#ptxt:focus{border-color:var(--c1);box-shadow:0 0 14px var(--g1);}
+#ptxt::placeholder{color:var(--muted);}
+.pbtn{height:62px;padding:0 12px;border-radius:6px;font-family:var(--ui);font-size:10px;font-weight:700;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all .2s;flex-shrink:0;}
+.pbtn:disabled{opacity:0.3;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
+#ebtn{min-width:68px;border:1.5px solid rgba(255,204,0,0.32);background:rgba(255,204,0,0.05);color:var(--c3);}
+#ebtn:hover:not(:disabled){border-color:var(--c3);background:var(--g3);box-shadow:0 0 16px rgba(255,204,0,0.12);transform:translateY(-1px);}
+#mbtn{min-width:68px;border:1.5px solid rgba(0,170,255,0.32);background:rgba(0,170,255,0.05);color:var(--c5);}
+#mbtn:hover:not(:disabled){border-color:var(--c5);background:rgba(0,170,255,0.08);box-shadow:0 0 16px rgba(0,170,255,0.12);transform:translateY(-1px);}
+#mbtn.active{border-color:var(--c5);background:rgba(0,170,255,0.12);color:var(--c5);}
+#gbtn{min-width:105px;border:1.5px solid var(--c1);background:rgba(0,255,204,0.06);color:var(--c1);box-shadow:0 0 18px var(--g1);position:relative;overflow:hidden;}
+#gbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,255,204,0.1),transparent);opacity:0;transition:opacity .2s;}
+#gbtn:hover:not(:disabled)::before{opacity:1;}
+#gbtn:hover:not(:disabled){box-shadow:0 0 32px rgba(0,255,204,0.24);transform:translateY(-1px);}
+.pbtn .pi{font-size:20px;}
+#sbar{display:flex;align-items:center;gap:7px;margin-top:7px;min-height:14px;}
+#sdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;display:none;}
+#sdot.s{display:block;background:var(--c1);box-shadow:0 0 7px var(--c1);animation:dp 1s ease-in-out infinite;}
+#sdot.ok{display:block;background:#00ff88;box-shadow:0 0 7px #00ff88;animation:none;}
+#sdot.er{display:block;background:var(--c2);box-shadow:0 0 7px var(--c2);animation:none;}
+@keyframes dp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.55)}}
+#smsg{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.05em;}
+
+/* ── CODE PANEL ── */
+#rp{width:0;border-left:1px solid var(--b1);background:var(--bg2);overflow:hidden;transition:width .26s ease;display:flex;flex-direction:column;flex-shrink:0;}
+#rp.open{width:340px;min-width:340px;}
+#rph{height:42px;display:flex;align-items:center;gap:5px;padding:0 10px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+#rph span{font-family:var(--mono);font-size:9px;color:var(--muted);flex:1;letter-spacing:.07em;}
+.cbtn{padding:3px 7px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:9px;cursor:pointer;transition:all .15s;}
+.cbtn:hover{border-color:var(--c1);color:var(--c1);}
+#cbody{flex:1;overflow-y:auto;padding:10px;font-family:var(--mono);font-size:10px;color:#5878a0;line-height:1.7;white-space:pre-wrap;word-break:break-all;}
+
+/* ── MODAL SHARED ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:2000;align-items:center;justify-content:center;padding:20px;}
+.mbox{background:var(--bg2);border:1px solid var(--b2);border-radius:10px;position:relative;overflow:hidden;display:flex;flex-direction:column;}
+.mbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c1),var(--c4),var(--c2));}
+.mh{display:flex;align-items:center;gap:9px;padding:15px 17px 12px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.mh h2{font-size:13px;font-weight:700;letter-spacing:.1em;color:var(--c1);flex:1;}
+.mclose{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:2px 6px;transition:color .15s;}
+.mclose:hover{color:var(--c2);}
+.lbtn{padding:4px 11px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:9px;cursor:pointer;transition:all .15s;letter-spacing:.06em;text-transform:uppercase;}
+.lbtn:hover{border-color:var(--c1);color:var(--c1);}
+.lbtn.danger:hover{border-color:var(--c2);color:var(--c2);}
+.lbtn.gold{border-color:rgba(255,204,0,0.28);color:var(--c3);}
+.lbtn.gold:hover{border-color:var(--c3);background:var(--g3);}
+.lbtn.blue{border-color:rgba(0,170,255,0.28);color:var(--c5);}
+.lbtn.blue:hover{border-color:var(--c5);background:rgba(0,170,255,0.06);}
+
+/* ── LIBRARY ── */
+#libmodal{padding:22px;}
+#libbox{width:100%;max-width:1020px;height:82vh;}
+#lib-inner{display:flex;flex:1;overflow:hidden;min-height:0;}
+#lib-grid{flex:1;overflow-y:auto;padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(192px,1fr));gap:9px;align-content:start;}
+.lcard{background:var(--bg3);border:1px solid var(--b1);border-radius:7px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:all .2s;}
+.lcard:hover{border-color:var(--b2);}
+.lcard.sel{border-color:rgba(0,255,204,0.32);background:rgba(0,255,204,0.03);}
+.lct{width:100%;height:118px;background:var(--bg4);position:relative;overflow:hidden;flex-shrink:0;}
+.lct img{width:100%;height:100%;object-fit:cover;display:block;}
+.lct-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px;opacity:.18;background:repeating-linear-gradient(45deg,var(--bg3),var(--bg3) 4px,var(--bg4) 4px,var(--bg4) 8px);}
+.lct-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.48);opacity:0;transition:opacity .18s;font-size:24px;}
+.lcard:hover .lct-ov{opacity:1;}
+/* published badge */
+.pub-badge{position:absolute;top:6px;right:6px;background:rgba(0,170,255,0.85);color:#fff;font-family:var(--mono);font-size:8px;padding:2px 6px;border-radius:3px;letter-spacing:.06em;}
+.lci{padding:8px 10px;display:flex;flex-direction:column;gap:4px;}
+.lcg{font-family:var(--mono);font-size:8px;letter-spacing:.07em;text-transform:uppercase;color:var(--c4);padding:2px 5px;border-radius:3px;background:rgba(102,68,255,0.14);border:1px solid rgba(102,68,255,0.18);display:inline-block;width:fit-content;}
+.lcn{font-size:11px;font-weight:600;color:var(--text);line-height:1.4;}
+.lcm{display:flex;gap:7px;font-family:var(--mono);font-size:9px;color:var(--muted);}
+.lca-row{display:flex;gap:4px;padding:0 10px 8px;flex-wrap:wrap;}
+.lca{padding:3px 7px;border-radius:3px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:8px;cursor:pointer;transition:all .15s;}
+.lca:hover{border-color:var(--c1);color:var(--c1);}
+.lca.del:hover{border-color:var(--c2);color:var(--c2);}
+.lca.pub{border-color:rgba(0,170,255,0.28);color:var(--c5);}
+.lca.pub:hover{border-color:var(--c5);}
+.lib-empty{grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:52px 0;font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;}
+#lpv{display:none;width:340px;min-width:340px;border-left:1px solid var(--b2);flex-direction:column;background:var(--bg);flex-shrink:0;}
+#lpv.open{display:flex;}
+#lpvbar{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+#lpvbar span{font-family:var(--mono);font-size:10px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#lpvframe{width:100%;flex:1;border:none;background:#000;}
+#lib-search{width:155px;padding:4px 8px;background:var(--bg3);border:1px solid var(--b2);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:10px;outline:none;}
+#lib-search:focus{border-color:var(--c1);}
+#lib-search::placeholder{color:var(--muted);}
+#lib-count{font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;}
+
+/* ── PUBLISH MODAL ── */
+#pubmodal{padding:22px;}
+#pubbox{width:100%;max-width:500px;}
+.field{padding:0 17px 14px;}
+.field label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;display:block;margin-bottom:6px;}
+.field input{width:100%;padding:7px 11px;background:var(--bg3);border:1px solid var(--b2);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;transition:all .2s;}
+.field input:focus{border-color:var(--c1);box-shadow:0 0 10px var(--g1);}
+.field input::placeholder{color:var(--muted);}
+.field .hint{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:5px;line-height:1.6;}
+.field .hint a{color:var(--c5);text-decoration:none;}
+.field .hint a:hover{text-decoration:underline;}
+#pub-status{margin:0 17px 14px;padding:10px 12px;border-radius:6px;font-family:var(--mono);font-size:11px;display:none;line-height:1.7;}
+#pub-status.ok{background:rgba(0,255,204,0.07);border:1px solid rgba(0,255,204,0.2);color:var(--c1);}
+#pub-status.er{background:rgba(255,51,102,0.07);border:1px solid rgba(255,51,102,0.2);color:var(--c2);}
+#pub-status.loading{background:rgba(0,170,255,0.07);border:1px solid rgba(0,170,255,0.2);color:var(--c5);}
+#pub-url{color:var(--c1);text-decoration:none;font-weight:700;}
+#pub-url:hover{text-decoration:underline;}
+
+/* ── EXPORT MODAL ── */
+#expmodal{padding:22px;}
+#expbox{width:100%;max-width:540px;}
+.exp-opts{padding:14px 17px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.exp-card{background:var(--bg3);border:1px solid var(--b1);border-radius:7px;padding:14px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:8px;}
+.exp-card:hover{border-color:var(--b2);background:var(--bg4);}
+.exp-card.sel{border-color:rgba(0,255,204,0.32);background:rgba(0,255,204,0.04);}
+.exp-ico{font-size:26px;}
+.exp-name{font-size:13px;font-weight:600;color:var(--text);}
+.exp-desc{font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.6;}
+.exp-tag{font-family:var(--mono);font-size:8px;padding:2px 6px;border-radius:3px;width:fit-content;}
+.exp-tag.full{background:rgba(0,255,204,0.1);color:var(--c1);border:1px solid rgba(0,255,204,0.2);}
+.exp-tag.partial{background:rgba(255,204,0,0.1);color:var(--c3);border:1px solid rgba(255,204,0,0.2);}
+#exp-foot{padding:0 17px 15px;display:flex;align-items:center;gap:8px;}
+#exp-note{font-family:var(--mono);font-size:9px;color:var(--muted);flex:1;line-height:1.6;}
+
+/* ── ENHANCER MODAL ── */
+#emodal{padding:22px;}
+#ebox{width:100%;max-width:640px;}
+#orig-box{background:var(--bg3);border:1px solid var(--b1);border-radius:6px;padding:10px 12px;margin:14px 17px 0;}
+#orig-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;margin-bottom:4px;}
+#orig-txt{font-size:12px;color:var(--muted);line-height:1.6;font-style:italic;}
+#enh-box{background:var(--bg3);border:1px solid rgba(0,255,204,0.18);border-radius:6px;padding:12px;margin:9px 17px;}
+#enh-lbl{font-family:var(--mono);font-size:9px;color:var(--c1);letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+#enh-lbl::before{content:'✦';font-size:9px;}
+#enh-txt{font-size:12px;color:var(--text);line-height:1.8;white-space:pre-wrap;min-height:68px;}
+#enh-txt.loading{color:var(--muted);font-family:var(--mono);font-size:11px;}
+#enh-edit{width:100%;margin-top:8px;padding:8px 10px;background:var(--bg4);border:1px solid var(--b2);border-radius:5px;color:var(--text);font-family:var(--ui);font-size:12px;line-height:1.6;resize:vertical;min-height:68px;outline:none;display:none;transition:border-color .2s;}
+#enh-edit:focus{border-color:var(--c1);}
+#efoot{display:flex;align-items:center;gap:6px;padding:11px 17px;border-top:1px solid var(--b1);margin-top:3px;}
+#efoot .hint{font-family:var(--mono);font-size:9px;color:var(--muted);flex:1;}
+.ebtn{padding:4px 11px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:9px;cursor:pointer;transition:all .15s;letter-spacing:.06em;}
+.ebtn:hover{border-color:var(--c1);color:var(--c1);}
+.ebtn.use{border-color:rgba(0,255,204,0.36);color:var(--c1);background:rgba(0,255,204,0.06);}
+.ebtn.use:hover{background:rgba(0,255,204,0.12);}
+.ebtn.regen{border-color:rgba(255,204,0,0.28);color:var(--c3);}
+.ebtn.regen:hover{border-color:var(--c3);}
+
+/* ── HELP ── */
+#hmodal{padding:22px;}
+#hbox{width:100%;max-width:500px;}
+.hrow{display:flex;align-items:flex-start;gap:10px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8;margin:0 17px 8px;}
+.hnum{color:var(--c1);font-weight:700;min-width:14px;}
+.hnote{margin:6px 17px 17px;padding:10px 12px;border-radius:5px;border:1px solid rgba(0,255,204,0.14);background:rgba(0,255,204,0.04);font-family:var(--mono);font-size:10px;color:var(--c1);line-height:1.8;}
+
+/* scrollbar */
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(0,255,204,0.15);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<!-- TITLEBAR -->
+<div id="bar">
+  <div id="brand">
+    <div id="bb">B</div>
+    <div><div class="t1">BRADLEY'S GAME STUDIO</div><div class="t2">3D · AI-POWERED · PUBLISH · EXPORT</div></div>
+  </div>
+  <div id="tabs">
+    <button class="tab on">Studio</button>
+    <button class="tab" onclick="openHelp()">Guide</button>
+  </div>
+  <div class="f1"></div>
+  <div id="kz">
+    <span id="kl">API KEY</span>
+    <input type="password" id="ak" placeholder="sk-ant-api03-..." autocomplete="off" oninput="checkKey()" title="Get your key at console.anthropic.com">
+    <span id="ks"></span>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div id="shell">
+  <!-- SIDEBAR -->
+  <div id="side">
+    <div class="ph">Genres</div>
+    <div class="gl">
+      <button class="gb on" data-g="3D platformer" onclick="setG(this)"><span class="gi">🏃</span><span class="gn">Platformer</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D first-person shooter" onclick="setG(this)"><span class="gi">🔫</span><span class="gn">FPS Shooter</span><span class="gt hot">HOT</span></button>
+      <button class="gb" data-g="3D top-down action" onclick="setG(this)"><span class="gi">🎯</span><span class="gn">Top-Down</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D tank battle" onclick="setG(this)"><span class="gi">🎖️</span><span class="gn">Tank Battle</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D racing game" onclick="setG(this)"><span class="gi">🏎️</span><span class="gn">Racing</span><span class="gt hot">HOT</span></button>
+      <button class="gb" data-g="3D RPG dungeon crawler" onclick="setG(this)"><span class="gi">⚔️</span><span class="gn">RPG / Dungeon</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D space shooter" onclick="setG(this)"><span class="gi">🚀</span><span class="gn">Space Shooter</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D endless runner" onclick="setG(this)"><span class="gi">💨</span><span class="gn">Endless Runner</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D tower defense" onclick="setG(this)"><span class="gi">🏰</span><span class="gn">Tower Defense</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D stealth action" onclick="setG(this)"><span class="gi">🥷</span><span class="gn">Stealth</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D survival horror" onclick="setG(this)"><span class="gi">💀</span><span class="gn">Survival Horror</span><span class="gt hot">HOT</span></button>
+      <button class="gb" data-g="3D puzzle platformer" onclick="setG(this)"><span class="gi">🧩</span><span class="gn">Puzzle</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D arena fighter" onclick="setG(this)"><span class="gi">👊</span><span class="gn">Arena Fighter</span><span class="gt">3D</span></button>
+      <button class="gb" data-g="3D open world adventure" onclick="setG(this)"><span class="gi">🌍</span><span class="gn">Open World</span><span class="gt hot">HOT</span></button>
+      <button class="gb" data-g="3D mobile game with touch controls" onclick="setG(this)"><span class="gi">📱</span><span class="gn">Mobile / iOS</span><span class="gt blue">NEW</span></button>
+    </div>
+    <div class="ph" style="margin-top:3px;">Library <span id="lbadge">0</span></div>
+    <div class="sla-row">
+      <button class="sla" onclick="openLib()">📚 Library</button>
+      <button class="sla gold" onclick="exportAll()">↓ Export ZIP</button>
+    </div>
+    <div class="hl" id="hist"><div class="he">no games yet</div></div>
+  </div>
+
+  <!-- CENTER -->
+  <div id="center">
+    <div id="gbar">
+      <span id="gpill">3D platformer</span>
+      <span id="gname">no game loaded</span>
+      <div class="f1"></div>
+      <button class="tbtn" id="tbplay" onclick="reloadGame()" style="display:none;">▶ PLAY</button>
+      <button class="tbtn" id="tbpub" onclick="openPublish()" style="display:none;">↑ PUBLISH</button>
+      <button class="tbtn" id="tbexp" onclick="openExport()" style="display:none;">⬇ EXPORT</button>
+      <button class="tbtn" id="tbcode" onclick="toggleCode()">{} CODE</button>
+      <button class="tbtn" id="tbdl" onclick="dlGame()" style="display:none;">↓ SAVE</button>
+    </div>
+    <div id="vp">
+      <div id="splash">
+        <div class="sg"></div>
+        <div class="sc">
+          <div class="si">🎮</div>
+          <div class="st">READY TO BUILD</div>
+          <div class="ss">Paste your API key · pick a genre · describe your world · generate</div>
+          <div class="fcaps">
+            <div class="fcap lit">Three.js WebGL</div>
+            <div class="fcap lit">Cannon.js physics</div>
+            <div class="fcap lit">Real-time lighting</div>
+            <div class="fcap lit">Particle systems</div>
+            <div class="fcap blue">Publish to Vercel</div>
+            <div class="fcap blue">Neon leaderboards</div>
+            <div class="fcap blue">Mobile / iOS</div>
+            <div class="fcap gold">Unity C# export</div>
+            <div class="fcap gold">Godot GDScript</div>
+            <div class="fcap">Unlimited library</div>
+          </div>
+          <div id="pw"><div id="pb"></div></div>
+          <div id="pst"></div>
+        </div>
+      </div>
+      <iframe id="gframe" sandbox="allow-scripts allow-same-origin"></iframe>
+    </div>
+    <div id="pzone">
+      <div id="chips"></div>
+      <div id="irow">
+        <textarea id="ptxt" placeholder="Describe your game… even 3 words works — hit ✦ ENHANCE to expand it automatically"></textarea>
+        <button class="pbtn" id="ebtn" onclick="enhancePrompt()" title="AI expands your idea"><span class="pi">✦</span>ENHANCE</button>
+        <button class="pbtn" id="mbtn" onclick="toggleMobile()" title="Toggle mobile touch controls"><span class="pi">📱</span>MOBILE</button>
+        <button class="pbtn" id="gbtn" onclick="generate()"><span class="pi">◈</span>GENERATE</button>
+      </div>
+      <div id="sbar"><div id="sdot"></div><span id="smsg">Paste your API key above, describe a game, and hit Generate</span></div>
+    </div>
+  </div>
+
+  <!-- CODE PANEL -->
+  <div id="rp">
+    <div id="rph">
+      <span>// three.js source</span>
+      <button class="cbtn" onclick="copyCode()">copy</button>
+      <button class="cbtn" onclick="dlGame()">↓ save</button>
+      <button class="cbtn" onclick="toggleCode()">✕</button>
+    </div>
+    <div id="cbody">// No game generated yet&#10;// Source appears here after generating</div>
+  </div>
+</div>
+
+<!-- PUBLISH MODAL -->
+<div class="modal-bg" id="pubmodal">
+  <div class="mbox" id="pubbox">
+    <div class="mh"><h2>↑ PUBLISH TO VERCEL</h2><button class="mclose" onclick="closePub()">✕</button></div>
+    <div style="height:12px"></div>
+    <div class="field">
+      <label>Game Name</label>
+      <input type="text" id="pub-name" placeholder="e.g. Tank Battle Arena" maxlength="40">
+    </div>
+    <div class="field">
+      <label>Vercel Token <span style="color:var(--c5)">*</span></label>
+      <input type="password" id="pub-token" placeholder="Get from vercel.com/account/tokens" autocomplete="off">
+      <div class="hint">Go to <a href="https://vercel.com/account/tokens" target="_blank">vercel.com/account/tokens</a> → Create Token → paste here.<br>Your game gets its own live URL + global leaderboard powered by Neon.</div>
+    </div>
+    <div class="field">
+      <label>Neon Database URL <span style="color:var(--muted)">(optional — for leaderboards)</span></label>
+      <input type="password" id="pub-neon" placeholder="postgres://... from neon.tech" autocomplete="off">
+      <div class="hint">Free at <a href="https://neon.tech" target="_blank">neon.tech</a> — enables global high score leaderboards in your published game.</div>
+    </div>
+    <div id="pub-status"></div>
+    <div style="padding:0 17px 15px;display:flex;gap:8px;align-items:center;">
+      <button class="lbtn blue" id="pub-go" onclick="publishGame()">↑ Deploy Now</button>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--muted);">Takes ~30 seconds</span>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT MODAL -->
+<div class="modal-bg" id="expmodal">
+  <div class="mbox" id="expbox">
+    <div class="mh"><h2>⬇ EXPORT GAME</h2><button class="mclose" onclick="closeExp()">✕</button></div>
+    <div class="exp-opts">
+      <div class="exp-card sel" id="exp-unity" onclick="selExp('unity')">
+        <div class="exp-ico">🎮</div>
+        <div class="exp-name">Unity C#</div>
+        <div class="exp-desc">Player controller, enemy AI, game manager, scoring — as Unity MonoBehaviour scripts ready to drag into a scene.</div>
+        <div class="exp-tag partial">Logic + structure</div>
+      </div>
+      <div class="exp-card" id="exp-godot" onclick="selExp('godot')">
+        <div class="exp-ico">🤖</div>
+        <div class="exp-name">Godot GDScript</div>
+        <div class="exp-desc">Player, enemies, game manager as GDScript nodes. Includes scene structure guide for Godot 4.</div>
+        <div class="exp-tag partial">Logic + structure</div>
+      </div>
+      <div class="exp-card" id="exp-html" onclick="selExp('html')">
+        <div class="exp-ico">🌐</div>
+        <div class="exp-name">HTML5 / Three.js</div>
+        <div class="exp-desc">The complete standalone game file — runs in any browser. No server needed.</div>
+        <div class="exp-tag full">Complete game</div>
+      </div>
+      <div class="exp-card" id="exp-mobile" onclick="selExp('mobile')">
+        <div class="exp-ico">📱</div>
+        <div class="exp-name">Mobile / iOS</div>
+        <div class="exp-desc">Touch-optimized HTML5 game + Capacitor config to wrap as a native iOS or Android app.</div>
+        <div class="exp-tag partial">HTML + config</div>
+      </div>
+    </div>
+    <div id="exp-foot">
+      <span id="exp-note">Unity/Godot exports contain game logic scripts — you add your own 3D models in the engine.</span>
+      <button class="lbtn gold" onclick="doExport()">⬇ Export</button>
+    </div>
+  </div>
+</div>
+
+<!-- ENHANCER MODAL -->
+<div class="modal-bg" id="emodal">
+  <div class="mbox" id="ebox">
+    <div class="mh">
+      <h2>✦ PROMPT ENHANCER</h2>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--muted);">AI expands your idea into a rich description</span>
+      <button class="ebtn regen" id="regen-btn" onclick="runEnhance()" style="display:none;">↺ Re-enhance</button>
+      <button class="mclose" onclick="closeEnhancer()">✕</button>
+    </div>
+    <div id="orig-box"><div id="orig-lbl">YOUR IDEA</div><div id="orig-txt"></div></div>
+    <div id="enh-box">
+      <div id="enh-lbl">AI-ENHANCED DESCRIPTION</div>
+      <div id="enh-txt" class="loading">Enhancing…</div>
+      <textarea id="enh-edit" placeholder="Edit the enhanced prompt…"></textarea>
+    </div>
+    <div id="efoot">
+      <span class="hint">Edit before using if you want to tweak it</span>
+      <button class="ebtn" onclick="toggleEdit()" id="edit-btn">✎ Edit</button>
+      <button class="ebtn use" id="use-btn" onclick="useEnhanced()" style="display:none;">USE THIS → GENERATE ◈</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIBRARY MODAL -->
+<div class="modal-bg" id="libmodal">
+  <div class="mbox" id="libbox">
+    <div class="mh">
+      <h2>🗂 GAME LIBRARY</h2>
+      <span id="lib-count">0 games</span>
+      <input id="lib-search" placeholder="Search…" oninput="filterLib(this.value)">
+      <button class="lbtn gold" onclick="exportAll()">↓ Export ZIP</button>
+      <button class="lbtn danger" onclick="clearLib()">🗑 Clear All</button>
+      <button class="mclose" onclick="closeLib()">✕</button>
+    </div>
+    <div id="lib-inner">
+      <div id="lib-grid"></div>
+      <div id="lpv">
+        <div id="lpvbar">
+          <span id="lpvlbl">click a game to preview</span>
+          <button class="lbtn blue" id="lpv-pub" onclick="pubFromLib()" style="display:none;">↑ Publish</button>
+          <button class="lbtn" id="lpv-play" onclick="playPreviewed()" style="display:none;">▶ Play</button>
+          <button class="cbtn" onclick="closePV()">✕</button>
+        </div>
+        <iframe id="lpvframe" sandbox="allow-scripts allow-same-origin"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="modal-bg" id="hmodal">
+  <div class="mbox" id="hbox">
+    <div class="mh"><h2>HOW TO USE</h2><button class="mclose" onclick="closeHelp()">✕</button></div>
+    <div style="height:12px"></div>
+    <div class="hrow"><span class="hnum">1</span><span>Get API key at <strong style="color:var(--c3)">console.anthropic.com</strong> → API Keys → Create Key</span></div>
+    <div class="hrow"><span class="hnum">2</span><span>Paste it top-right — saves automatically</span></div>
+    <div class="hrow"><span class="hnum">3</span><span>Pick a genre — including 📱 Mobile/iOS for touch games</span></div>
+    <div class="hrow"><span class="hnum">4</span><span>Type an idea, hit ✦ ENHANCE to expand it, then ◈ GENERATE</span></div>
+    <div class="hrow"><span class="hnum">5</span><span>Click inside the game viewport to play (WASD + Space)</span></div>
+    <div class="hrow"><span class="hnum">6</span><span>Hit ↑ PUBLISH to deploy your game live on Vercel with a shareable URL + Neon leaderboard</span></div>
+    <div class="hrow"><span class="hnum">7</span><span>Hit ⬇ EXPORT to get Unity C#, Godot GDScript, HTML5, or Mobile/iOS package</span></div>
+    <div class="hrow"><span class="hnum">8</span><span>📚 Library saves every game — click any card to preview live</span></div>
+    <div class="hnote">Publish needs a Vercel token (vercel.com/account/tokens). Leaderboards need a free Neon DB (neon.tech). Unity/Godot exports are game logic scripts — add your own 3D models in-engine.</div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══ CHIPS ═══ */
+const CHIPS={
+  '3D platformer':['knight in haunted castle with torches','robot jumping neon factory','alien planet glowing platforms','ninja city rooftops at night'],
+  '3D first-person shooter':['marines vs alien horde in bunker','zombie apocalypse FPS survival','cyberpunk corridor shooter','dungeon FPS with magic spells'],
+  '3D top-down action':['military base assault','wizard arena battle royal','zombie swarm survivor','police pursuit with roadblocks'],
+  '3D tank battle':['tank warfare in destroyed city','sci-fi hover tanks lunar base','desert tank siege battle','tanks vs mechs in jungle'],
+  '3D racing game':['neon city night street race','off-road mountain rally','F1 circuit time trial','futuristic hover car championship'],
+  '3D RPG dungeon crawler':['hero vs orc army in dungeon','wizard fighting undead crypt','samurai in feudal fortress','rogue exploring cursed temple'],
+  '3D space shooter':['asteroid field survival run','assault the alien mothership','defend space station from invasion','starfighter squadron battle'],
+  '3D endless runner':['ninja sprinting over rooftops','space debris dodger','mine cart cave run','parkour cyberpunk sprint'],
+  '3D tower defense':['defend base from robot waves','medieval castle arrow defense','alien invasion laser towers','zombie horde tower strategy'],
+  '3D stealth action':['ninja infiltrates samurai fortress','spy through laser grid facility','assassin in dark medieval castle','ghost through military base'],
+  '3D survival horror':['survive zombie-filled hospital','dark forest creature hunt','abandoned spaceship horror','haunted mansion escape'],
+  '3D puzzle platformer':['gravity-flip cube chambers','push crates onto plates','color beam redirect puzzle','rotating maze 3D escape'],
+  '3D arena fighter':['gladiator arena last standing','robot battle royale','ninja tournament bracket','street brawler arena'],
+  '3D open world adventure':['explore magical fantasy island','post-apocalyptic wasteland roam','pirate island treasure hunt','viking village raid'],
+  '3D mobile game with touch controls':['tap-to-jump endless runner','swipe shooter on mobile','touch dodge arcade game','drag-to-aim slingshot game']
+};
+const PMSG=['Initializing Three.js engine…','Generating 3D world geometry…','Setting up lighting & shadows…','Building enemy AI systems…','Adding Cannon.js physics…','Creating particle effects…','Compiling game logic…','Finalizing your world…'];
+
+/* ═══ STATE ═══ */
+let genre='3D platformer',busy=false,currentCode=null,enhancedResult='',pvId=null,mobileMode=false,selectedExp='unity';
+
+/* ═══ KEY ═══ */
+function checkKey(){
+  const k=document.getElementById('ak').value.trim(),el=document.getElementById('ks');
+  if(!k){el.textContent='';el.className='';return;}
+  const ok=k.startsWith('sk-ant-')&&k.length>20;
+  el.textContent=ok?'✓ READY':'✗ INVALID';el.className=ok?'ok':'bad';
+  try{localStorage.setItem('bgs_key',k);}catch(e){}
+}
+function getKey(){return document.getElementById('ak').value.trim();}
+
+/* ═══ GENRE ═══ */
+function setG(btn){
+  document.querySelectorAll('.gb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');genre=btn.dataset.g;
+  document.getElementById('gpill').textContent=genre;
+  renderChips();
+}
+function renderChips(){
+  document.getElementById('chips').innerHTML=(CHIPS[genre]||[]).map(s=>`<button class="chip" onclick="useChip(this)">${s}</button>`).join('');
+}
+function useChip(b){document.getElementById('ptxt').value=b.textContent;document.getElementById('ptxt').focus();}
+
+/* ═══ MOBILE TOGGLE ═══ */
+function toggleMobile(){
+  mobileMode=!mobileMode;
+  document.getElementById('mbtn').classList.toggle('active',mobileMode);
+  setStatus(mobileMode?'Mobile mode ON — game will have touch controls':'Mobile mode OFF','ok');
+}
+
+/* ═══ STATUS / PROGRESS ═══ */
+function setStatus(msg,state){
+  const d=document.getElementById('sdot');
+  d.className=state||'';d.style.display=state?'block':'none';
+  document.getElementById('smsg').textContent=msg;
+}
+let ptimer=null,pmsg=0;
+function startProgress(){
+  const pw=document.getElementById('pw'),pb=document.getElementById('pb'),ps=document.getElementById('pst');
+  pw.style.display='block';ps.style.display='block';pb.style.width='0%';pmsg=0;
+  clearInterval(ptimer);let w=0;
+  ptimer=setInterval(()=>{w=Math.min(w+(Math.random()*2.2+0.4),90);pb.style.width=w+'%';if(pmsg<PMSG.length)ps.textContent=PMSG[pmsg++];},650);
+}
+function doneProgress(){
+  clearInterval(ptimer);
+  document.getElementById('pb').style.width='100%';
+  setTimeout(()=>{document.getElementById('pw').style.display='none';document.getElementById('pst').style.display='none';},700);
+}
+function setSplash(icon,title,body,prog){
+  document.getElementById('splash').style.display='flex';
+  document.getElementById('gframe').style.display='none';
+  document.getElementById('splash').querySelector('.si').textContent=icon;
+  document.getElementById('splash').querySelector('.st').textContent=title;
+  document.getElementById('splash').querySelector('.ss').textContent=body;
+  if(prog)startProgress();else{clearInterval(ptimer);document.getElementById('pw').style.display='none';document.getElementById('pst').style.display='none';}
+}
+
+/* ═══ GAME DISPLAY ═══ */
+function showGame(code){
+  doneProgress();
+  const fr=document.getElementById('gframe');
+  fr.srcdoc=code;fr.style.display='block';
+  document.getElementById('splash').style.display='none';
+  ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
+  document.getElementById('cbody').textContent=code;
+}
+function reloadGame(){if(currentCode)showGame(currentCode);}
+function toggleCode(){document.getElementById('rp').classList.toggle('open');document.getElementById('tbcode').classList.toggle('on');}
+function copyCode(){
+  if(!currentCode)return;
+  navigator.clipboard.writeText(currentCode).then(()=>{
+    const b=document.querySelector('#rph .cbtn'),o=b.textContent;b.textContent='copied!';setTimeout(()=>b.textContent=o,1800);
+  });
+}
+function dlGame(){
+  if(!currentCode)return;
+  const blob=new Blob([currentCode],{type:'text/html'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=(document.getElementById('ptxt').value.trim().slice(0,40)||'game').replace(/[^a-z0-9]+/gi,'-')+'.html';
+  a.click();
+}
+
+/* ═══ LIBRARY ═══ */
+const LIK='bgs_lib_index',LGK=id=>'bgs_game_'+id,LTK=id=>'bgs_thumb_'+id;
+function libIdx(){try{return JSON.parse(localStorage.getItem(LIK)||'[]');}catch(e){return[];}}
+function saveIdx(idx){try{localStorage.setItem(LIK,JSON.stringify(idx));}catch(e){alert('Storage full.');}}
+function saveGame(id,code){try{localStorage.setItem(LGK(id),code);return true;}catch(e){alert('Storage full — export and delete some games.');return false;}}
+function loadCode(id){try{return localStorage.getItem(LGK(id))||null;}catch(e){return null;}}
+function getThumb(id){try{return localStorage.getItem(LTK(id))||null;}catch(e){return null;}}
+function saveThumb(id,d){try{localStorage.setItem(LTK(id),d);}catch(e){}}
+function delThumb(id){try{localStorage.removeItem(LTK(id));}catch(e){}}
+
+function addToLib(prompt,g,code,pubUrl){
+  const id='g_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  if(!saveGame(id,code))return null;
+  const idx=libIdx();
+  idx.unshift({id,prompt,genre:g,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),size:Math.round(code.length/1024),pubUrl:pubUrl||null});
+  saveIdx(idx);refreshSidebar();return id;
+}
+function setPubUrl(id,url){
+  const idx=libIdx(),g=idx.find(x=>x.id===id);
+  if(g){g.pubUrl=url;saveIdx(idx);}
+}
+function deleteGame(id){
+  delThumb(id);
+  try{localStorage.removeItem(LGK(id));}catch(e){}
+  saveIdx(libIdx().filter(g=>g.id!==id));
+  if(pvId===id)closePV();
+  refreshSidebar();renderLibGrid();
+}
+function refreshSidebar(){
+  const idx=libIdx();
+  document.getElementById('lbadge').textContent=idx.length;
+  const el=document.getElementById('hist');
+  if(!idx.length){el.innerHTML='<div class="he">no games yet</div>';return;}
+  el.innerHTML=idx.slice(0,8).map(g=>`<div class="hi" onclick="loadFromLib('${g.id}')" title="${g.prompt}">${g.pubUrl?'🌐 ':''}<span style="color:var(--c4);font-size:8px;margin-right:3px;">3D</span>${g.prompt}</div>`).join('');
+}
+function loadFromLib(id){
+  const code=loadCode(id);if(!code){setStatus('Game not found','er');return;}
+  const meta=libIdx().find(g=>g.id===id);
+  if(meta){document.getElementById('ptxt').value=meta.prompt;document.getElementById('gname').textContent=meta.prompt;document.getElementById('gpill').textContent=meta.genre||genre;}
+  currentCode=code;showGame(code);setStatus('Loaded — click inside to play.','ok');
+}
+function captureThumb(gameId){
+  setTimeout(()=>{
+    try{
+      const c=document.createElement('canvas');c.width=360;c.height=200;
+      const cx=c.getContext('2d'),meta=libIdx().find(g=>g.id===gameId);
+      cx.fillStyle='#0d0f18';cx.fillRect(0,0,360,200);
+      cx.strokeStyle='rgba(0,255,204,0.05)';cx.lineWidth=1;
+      for(let x=0;x<360;x+=36){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,200);cx.stroke();}
+      for(let y=0;y<200;y+=36){cx.beginPath();cx.moveTo(0,y);cx.lineTo(360,y);cx.stroke();}
+      if(meta){
+        cx.fillStyle='rgba(0,255,204,0.45)';cx.font='bold 10px monospace';cx.textAlign='center';
+        cx.fillText((meta.genre||'3D GAME').toUpperCase(),180,78);
+        cx.fillStyle='rgba(255,255,255,0.72)';cx.font='600 12px sans-serif';
+        const words=meta.prompt.split(' ');let line='',lines=[];
+        words.forEach(w=>{const t=line+w+' ';if(cx.measureText(t).width>310&&line){lines.push(line);line=w+' ';}else line=t;});
+        lines.push(line);
+        lines.slice(0,3).forEach((l,i)=>cx.fillText(l.trim(),180,98+i*17));
+        cx.fillStyle='rgba(0,255,204,0.35)';cx.font='9px monospace';
+        cx.fillText('▶ CLICK TO PREVIEW',180,174);
+      }
+      saveThumb(gameId,c.toDataURL('image/jpeg',0.72));
+    }catch(e){}
+  },900);
+}
+
+/* library modal */
+let libFilter='';
+function openLib(){renderLibGrid();document.getElementById('libmodal').style.display='flex';}
+function closeLib(){document.getElementById('libmodal').style.display='none';closePV();}
+function filterLib(v){libFilter=v.toLowerCase();renderLibGrid();}
+function renderLibGrid(){
+  const idx=libIdx();
+  const list=libFilter?idx.filter(g=>g.prompt.toLowerCase().includes(libFilter)||(g.genre||'').toLowerCase().includes(libFilter)):idx;
+  document.getElementById('lib-count').textContent=idx.length+' game'+(idx.length===1?'':'s');
+  const grid=document.getElementById('lib-grid');
+  if(!list.length){grid.innerHTML=`<div class="lib-empty"><div style="font-size:30px;opacity:.2;">🎮</div><div>${libFilter?'No games match.':'No games saved yet!'}</div></div>`;return;}
+  grid.innerHTML=list.map(g=>{
+    const th=getThumb(g.id);
+    return`<div class="lcard${pvId===g.id?' sel':''}" id="lc_${g.id}" onclick="previewGame('${g.id}')">
+      <div class="lct">${th?`<img src="${th}" alt="">`:'<div class="lct-ph">🎮</div>'}
+        <div class="lct-ov">▶</div>
+        ${g.pubUrl?'<div class="pub-badge">LIVE</div>':''}
+      </div>
+      <div class="lci">
+        <div class="lcg">${g.genre||'3D game'}</div>
+        <div class="lcn">${g.prompt}</div>
+        <div class="lcm"><span>${g.date}</span><span>${g.size}kb</span>${g.pubUrl?`<a href="${g.pubUrl}" target="_blank" style="color:var(--c5);font-size:9px;text-decoration:none;" onclick="event.stopPropagation()">🌐 live</a>`:''}
+        </div>
+      </div>
+      <div class="lca-row">
+        <button class="lca" onclick="event.stopPropagation();loadFromLib('${g.id}');closeLib()">▶ Play</button>
+        <button class="lca pub" onclick="event.stopPropagation();pubFromLibId('${g.id}')">↑ Pub</button>
+        <button class="lca" onclick="event.stopPropagation();dlFromLib('${g.id}')">↓ Save</button>
+        <button class="lca del" onclick="event.stopPropagation();confirmDel('${g.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function dlFromLib(id){
+  const code=loadCode(id);if(!code)return;
+  const meta=libIdx().find(g=>g.id===id);
+  const blob=new Blob([code],{type:'text/html'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=((meta?.prompt||'game').slice(0,40)).replace(/[^a-z0-9]+/gi,'-')+'.html';a.click();
+}
+function confirmDel(id){
+  const meta=libIdx().find(g=>g.id===id);
+  if(confirm(`Delete "${meta?.prompt||'this game'}"?\nCannot be undone.`))deleteGame(id);
+}
+function clearLib(){
+  const idx=libIdx();if(!idx.length){alert('Library empty.');return;}
+  if(!confirm(`Delete ALL ${idx.length} games?\nExport first to be safe.`))return;
+  idx.forEach(g=>{try{localStorage.removeItem(LGK(g.id));delThumb(g.id);}catch(e){}});
+  saveIdx([]);refreshSidebar();renderLibGrid();closePV();
+}
+function previewGame(id){
+  const code=loadCode(id);if(!code)return;
+  const meta=libIdx().find(g=>g.id===id);pvId=id;
+  document.querySelectorAll('.lcard').forEach(c=>c.classList.remove('sel'));
+  const card=document.getElementById('lc_'+id);if(card)card.classList.add('sel');
+  document.getElementById('lpv').classList.add('open');
+  document.getElementById('lpvlbl').textContent=meta?meta.prompt:'preview';
+  document.getElementById('lpv-play').style.display='block';
+  document.getElementById('lpv-pub').style.display='block';
+  document.getElementById('lpvframe').srcdoc=code;
+}
+function closePV(){
+  document.getElementById('lpv').classList.remove('open');
+  document.getElementById('lpvframe').srcdoc='';
+  document.querySelectorAll('.lcard').forEach(c=>c.classList.remove('sel'));
+  ['lpv-play','lpv-pub'].forEach(id=>document.getElementById(id).style.display='none');
+  pvId=null;
+}
+function playPreviewed(){if(pvId){loadFromLib(pvId);closeLib();}}
+function pubFromLib(){if(pvId){pubFromLibId(pvId);}}
+function pubFromLibId(id){
+  const code=loadCode(id);if(!code)return;
+  const meta=libIdx().find(g=>g.id===id);
+  currentCode=code;
+  if(meta)document.getElementById('pub-name').value=meta.prompt.slice(0,40);
+  closeLib();
+  openPublish();
+}
+
+/* export all zip */
+async function exportAll(){
+  const idx=libIdx();if(!idx.length){alert('No games in library yet!');return;}
+  setStatus('Preparing ZIP…','s');
+  const load=()=>new Promise((res,rej)=>{if(window.JSZip){res();return;}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  try{
+    await load();
+    const zip=new JSZip(),folder=zip.folder('bradleys-game-library');
+    let n=0;
+    for(const meta of idx){const code=loadCode(meta.id);if(!code)continue;const nm=(meta.prompt||'game').slice(0,38).replace(/[^a-z0-9]+/gi,'-');folder.file(`${n+1}-${nm}.html`,code);n++;}
+    const ihtml=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bradley's Game Library</title><style>body{font-family:monospace;background:#07080d;color:#ccd6f0;padding:36px;max-width:680px;margin:0 auto}h1{color:#00ffcc;font-size:18px;margin-bottom:6px}p{color:#4a5878;font-size:11px;margin-bottom:28px}.g{padding:12px;border:1px solid rgba(0,255,204,0.14);border-radius:5px;margin-bottom:8px;display:flex;align-items:center;gap:11px}.g a{color:#00ffcc;text-decoration:none;font-size:12px;flex:1}.g a:hover{text-decoration:underline}.m{font-size:9px;color:#4a5878}.n{font-size:10px;color:#4a5878;min-width:24px}</style></head><body><h1>🎮 Bradley's Game Library</h1><p>Exported ${new Date().toLocaleDateString()} · ${n} games</p>${idx.filter((_,i)=>i<n).map((g,i)=>`<div class="g"><span class="n">${i+1}</span><a href="${i+1}-${(g.prompt||'game').slice(0,38).replace(/[^a-z0-9]+/gi,'-')}.html" target="_blank">${g.prompt}${g.pubUrl?` <span style="color:#00aaff">[live]</span>`:''}</a><span class="m">${g.genre} · ${g.date} · ${g.size}kb</span></div>`).join('')}</body></html>`;
+    folder.file('index.html',ihtml);
+    const blob=await zip.generateAsync({type:'blob'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download='bradleys-game-library.zip';a.click();
+    setStatus(`Exported ${n} games as ZIP!`,'ok');
+  }catch(e){setStatus('Export failed: '+e.message,'er');}
+}
+
+/* ═══ PUBLISH ═══ */
+function openPublish(){
+  if(!currentCode){setStatus('Generate a game first','er');return;}
+  const prompt=document.getElementById('ptxt').value.trim();
+  if(prompt)document.getElementById('pub-name').value=prompt.slice(0,40);
+  document.getElementById('pub-status').style.display='none';
+  document.getElementById('pubmodal').style.display='flex';
+}
+function closePub(){document.getElementById('pubmodal').style.display='none';}
+
+async function publishGame(){
+  const token=document.getElementById('pub-token').value.trim();
+  const name=document.getElementById('pub-name').value.trim()||'bgs-game';
+  const neonUrl=document.getElementById('pub-neon').value.trim();
+  if(!token){showPubStatus('Enter your Vercel token','er');return;}
+  if(!currentCode){showPubStatus('No game to publish','er');return;}
+
+  showPubStatus('Deploying to Vercel…','loading');
+  document.getElementById('pub-go').disabled=true;
+
+  try{
+    // inject neon env if provided into the scores API
+    let codeToPublish=currentCode;
+    if(neonUrl){
+      // embed neon URL as env hint comment in the code
+      codeToPublish=currentCode.replace('</head>',`<!-- NEON_URL:${neonUrl} --></head>`);
+    }
+
+    const res=await fetch('/api/publish',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({vercelToken:token,htmlCode:codeToPublish,gameName:name,gameId:'bgs-'+Date.now()})
+    });
+    const data=await res.json();
+    if(!res.ok||data.error)throw new Error(data.error||'Deploy failed');
+
+    // save pub url to library
+    const idx=libIdx();
+    const meta=idx.find(g=>g.prompt===document.getElementById('ptxt').value.trim());
+    if(meta){setPubUrl(meta.id,data.url);renderLibGrid();}
+
+    showPubStatus(`✓ Live at <a href="${data.url}" target="_blank" id="pub-url">${data.url}</a>${neonUrl?'\n🏆 Leaderboard enabled via Neon':''}`, 'ok');
+  }catch(e){
+    showPubStatus('Deploy failed: '+e.message,'er');
+  }
+  document.getElementById('pub-go').disabled=false;
+}
+
+function showPubStatus(html,type){
+  const el=document.getElementById('pub-status');
+  el.style.display='block';el.className=type;el.innerHTML=html;
+}
+
+/* ═══ EXPORT ═══ */
+function openExport(){
+  if(!currentCode){setStatus('Generate a game first','er');return;}
+  document.getElementById('expmodal').style.display='flex';
+}
+function closeExp(){document.getElementById('expmodal').style.display='none';}
+function selExp(type){
+  selectedExp=type;
+  document.querySelectorAll('.exp-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('exp-'+type).classList.add('sel');
+  const notes={
+    unity:'Unity export: C# MonoBehaviour scripts for player, enemies, game manager. Add your own 3D models in Unity.',
+    godot:'Godot export: GDScript nodes for player, enemies, game manager. Scene structure guide included.',
+    html:'HTML5 export: Complete standalone game. Runs in any browser instantly.',
+    mobile:'Mobile export: Touch-optimized HTML5 + Capacitor config for iOS/Android app wrapping.'
+  };
+  document.getElementById('exp-note').textContent=notes[type];
+}
+
+async function doExport(){
+  if(!currentCode){setStatus('No game to export','er');return;}
+  const apiKey=getKey();
+  if(selectedExp==='html'){dlGame();closeExp();return;}
+
+  if(selectedExp==='mobile'){
+    exportMobile();closeExp();return;
+  }
+
+  if(!apiKey){setStatus('API key needed for Unity/Godot export','er');closeExp();return;}
+
+  closeExp();
+  setStatus(`Generating ${selectedExp==='unity'?'Unity C#':'Godot GDScript'} export…`,'s');
+
+  const isUnity=selectedExp==='unity';
+  const prompt=`You are a ${isUnity?'Unity C#':'Godot 4 GDScript'} expert. 
+  
+Analyze this Three.js game code and convert the game logic into ${isUnity?'Unity C# MonoBehaviour scripts':'Godot 4 GDScript files'}.
+
+${isUnity?`Create these files:
+- PlayerController.cs (movement, jumping, shooting, health)
+- EnemyAI.cs (base class with chase/patrol/shoot behaviors)  
+- GameManager.cs (score, waves, game state, UI)
+- Bullet.cs (projectile movement and collision)
+- README_UNITY.txt (scene setup instructions, required components)
+
+Use Unity's CharacterController or Rigidbody, NavMesh for enemies, UI Toolkit or Canvas for HUD.`
+:`Create these files:
+- Player.gd (movement, jumping, shooting, health)
+- Enemy.gd (base class with chase/patrol/shoot behaviors)
+- GameManager.gd (score, waves, game state, signals)
+- Bullet.gd (projectile movement and collision)
+- README_GODOT.txt (scene tree structure, node setup instructions)
+
+Use Godot 4 syntax: @export, CharacterBody3D, NavigationAgent3D, signals.`}
+
+Output ONLY the file contents separated by this exact delimiter: ===FILE:filename===
+Example:
+===FILE:PlayerController.cs===
+// code here
+===FILE:EnemyAI.cs===
+// code here
+
+Game code to convert:
+${currentCode.slice(0,6000)}`;
+
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})
+    });
+    if(!res.ok)throw new Error('API error '+res.status);
+    const data=await res.json();
+    const text=(data.content||[]).map(b=>b.text||'').join('');
+
+    // parse files
+    const load=()=>new Promise((res,rej)=>{if(window.JSZip){res();return;}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+    await load();
+    const zip=new JSZip();
+    const parts=text.split(/===FILE:(.+?)===/g);
+    for(let i=1;i<parts.length;i+=2){
+      const fname=parts[i].trim(),fcontent=parts[i+1]||'';
+      zip.file(fname,fcontent.trim());
+    }
+    if(zip.files&&Object.keys(zip.files).length===0){
+      // fallback: save as single file
+      const ext=isUnity?'.cs':'.gd';
+      zip.file('game_logic'+ext,text);
+    }
+    const blob=await zip.generateAsync({type:'blob'}),a=document.createElement('a');
+    const name=(document.getElementById('ptxt').value.trim().slice(0,30)||'game').replace(/[^a-z0-9]+/gi,'-');
+    a.href=URL.createObjectURL(blob);
+    a.download=name+'-'+(isUnity?'unity':'godot')+'-export.zip';
+    a.click();
+    setStatus(`${isUnity?'Unity C#':'Godot GDScript'} export downloaded!`,'ok');
+  }catch(e){
+    setStatus('Export failed: '+e.message,'er');
+  }
+}
+
+function exportMobile(){
+  if(!currentCode)return;
+  // Inject touch controls + mobile viewport into the game
+  const touchScript=`
+<script>
+// Mobile touch controls injected by Bradley's Game Studio
+(function(){
+  const keys={};
+  window.addEventListener('keydown',e=>{keys[e.code]=true;});
+  window.addEventListener('keyup',e=>{keys[e.code]=false;});
+
+  // Create virtual joystick + buttons
+  const ui=document.createElement('div');
+  ui.style.cssText='position:fixed;bottom:0;left:0;right:0;height:180px;pointer-events:none;z-index:9999;';
+  
+  // Left joystick
+  const joyZone=document.createElement('div');
+  joyZone.style.cssText='position:absolute;bottom:20px;left:20px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.2);pointer-events:all;touch-action:none;';
+  const joyKnob=document.createElement('div');
+  joyKnob.style.cssText='position:absolute;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,0.35);top:40px;left:40px;transition:transform .05s;';
+  joyZone.appendChild(joyKnob);
+
+  // Action buttons
+  const btnA=document.createElement('button');
+  btnA.textContent='⬆';btnA.style.cssText='position:absolute;bottom:60px;right:20px;width:60px;height:60px;border-radius:50%;background:rgba(0,255,204,0.3);border:2px solid rgba(0,255,204,0.6);color:#fff;font-size:24px;pointer-events:all;touch-action:none;';
+  const btnB=document.createElement('button');
+  btnB.textContent='●';btnB.style.cssText='position:absolute;bottom:20px;right:90px;width:50px;height:50px;border-radius:50%;background:rgba(255,100,100,0.3);border:2px solid rgba(255,100,100,0.6);color:#fff;font-size:20px;pointer-events:all;touch-action:none;';
+  
+  ui.appendChild(joyZone);ui.appendChild(btnA);ui.appendChild(btnB);
+  document.body.appendChild(ui);
+
+  // Joystick logic
+  let joyActive=false,joyStartX=0,joyStartY=0;
+  joyZone.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];joyActive=true;joyStartX=t.clientX;joyStartY=t.clientY;},{passive:false});
+  joyZone.addEventListener('touchmove',e=>{
+    e.preventDefault();if(!joyActive)return;
+    const t=e.touches[0],dx=t.clientX-joyStartX,dy=t.clientY-joyStartY;
+    const dist=Math.min(Math.sqrt(dx*dx+dy*dy),50),angle=Math.atan2(dy,dx);
+    const nx=Math.cos(angle)*dist,ny=Math.sin(angle)*dist;
+    joyKnob.style.transform=\`translate(\${nx}px,\${ny}px)\`;
+    keys['KeyW']=dy<-15;keys['KeyS']=dy>15;keys['KeyA']=dx<-15;keys['KeyD']=dx>15;
+    keys['ArrowUp']=keys['KeyW'];keys['ArrowDown']=keys['KeyS'];keys['ArrowLeft']=keys['KeyA'];keys['ArrowRight']=keys['KeyD'];
+  },{passive:false});
+  joyZone.addEventListener('touchend',e=>{e.preventDefault();joyActive=false;joyKnob.style.transform='';['KeyW','KeyS','KeyA','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].forEach(k=>keys[k]=false);},{passive:false});
+
+  // Action button logic
+  btnA.addEventListener('touchstart',e=>{e.preventDefault();keys['Space']=true;window.dispatchEvent(new KeyboardEvent('keydown',{code:'Space'}));},{passive:false});
+  btnA.addEventListener('touchend',e=>{e.preventDefault();keys['Space']=false;},{passive:false});
+  btnB.addEventListener('touchstart',e=>{e.preventDefault();window.dispatchEvent(new KeyboardEvent('keydown',{code:'KeyE'}));},{passive:false});
+})();
+<\/script>`;
+
+  const capacitorConfig=`{
+  "appId": "com.bradleysgamestudio.game",
+  "appName": "My Game",
+  "webDir": "www",
+  "server": { "androidScheme": "https" },
+  "plugins": { "SplashScreen": { "launchShowDuration": 0 } }
+}`;
+
+  const readmeMobile=`# Mobile / iOS Export — Bradley's Game Studio
+
+## Files included:
+- index.html   — Touch-optimized game with virtual joystick
+- capacitor.config.json — Capacitor app config
+
+## How to wrap as native iOS app:
+
+1. Install Node.js and npm
+2. npm install @capacitor/core @capacitor/cli @capacitor/ios
+3. npx cap init "My Game" com.yourname.mygame
+4. Create a www/ folder and copy index.html into it
+5. npx cap add ios
+6. npx cap sync
+7. npx cap open ios
+8. Build and run in Xcode (requires Mac + Apple Developer account)
+
+## How to wrap as Android:
+Same steps but use: @capacitor/android and npx cap add android
+
+## Touch controls:
+- Left virtual joystick = WASD movement  
+- ⬆ button = Space (jump/shoot)
+- ● button = E (interact/action)
+`;
+
+  const load=()=>new Promise((res,rej)=>{if(window.JSZip){res();return;}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  load().then(()=>{
+    const zip=new JSZip();
+    const mobileMeta='<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">';
+    const mobileHtml=currentCode.replace('<head>','<head>'+mobileMeta).replace('</body>',touchScript+'</body>');
+    zip.file('index.html',mobileHtml);
+    zip.file('capacitor.config.json',capacitorConfig);
+    zip.file('README_MOBILE.md',readmeMobile);
+    zip.generateAsync({type:'blob'}).then(blob=>{
+      const name=(document.getElementById('ptxt').value.trim().slice(0,30)||'game').replace(/[^a-z0-9]+/gi,'-');
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+'-mobile.zip';a.click();
+      setStatus('Mobile/iOS package downloaded!','ok');
+    });
+  });
+}
+
+/* ═══ GENERATE ═══ */
+async function generate(){
+  if(busy)return;
+  const apiKey=getKey();
+  if(!apiKey){setStatus('Enter your Anthropic API key first','er');return;}
+  if(!apiKey.startsWith('sk-ant-')){setStatus('Invalid API key format','er');return;}
+  const prompt=document.getElementById('ptxt').value.trim();
+  if(!prompt){setStatus('Describe your game first','er');return;}
+
+  busy=true;
+  ['gbtn','ebtn','mbtn'].forEach(id=>document.getElementById(id).disabled=true);
+  ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='none');
+  setStatus('Generating 3D world — ~25 seconds…','s');
+  setSplash('⚡','BUILDING 3D WORLD','Generating Three.js scene, physics, lighting, enemies, and game logic…',true);
+  document.getElementById('gname').textContent=prompt;
+
+  const isMobile=mobileMode||genre.includes('mobile');
+  const mobileExtra=isMobile?`
+MOBILE/TOUCH REQUIREMENTS:
+- Add virtual on-screen joystick (left side, 120px circle with knob)
+- Add 2 action buttons (right side: jump/shoot + interact)
+- Touch controls map to WASD + Space
+- Use meta viewport: width=device-width, initial-scale=1, user-scalable=no
+- Make canvas fill full screen on mobile
+- Larger hit targets for enemies (easier on touch)
+- HUD text larger (min 16px) for mobile readability`:'';
+
+  const system=`You are a world-class Three.js game developer. Generate a complete, stunning, self-contained 3D browser game.
+
+ABSOLUTE OUTPUT RULES:
+- Output ONLY raw HTML starting with <!DOCTYPE html>
+- Zero markdown, zero backticks, zero explanations — pure HTML only
+- Single file, no external assets
+
+REQUIRED LIBRARIES:
+1. Three.js r134: https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
+2. Cannon.js: https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js
+
+REQUIRED THREE.JS:
+- WebGLRenderer({antialias:true}) shadowMap.enabled=true PCFSoftShadowMap
+- renderer.setPixelRatio(Math.min(devicePixelRatio,2)) setSize(innerWidth,innerHeight)
+- PerspectiveCamera — smooth third-person follow with lerp
+- AmbientLight(0.3) + DirectionalLight castShadow mapSize 2048x2048
+- 2+ colored PointLights/SpotLights matching theme
+- scene.fog = new THREE.Fog(...)
+- Ground plane receiveShadow MeshStandardMaterial
+- Player mesh castShadow MeshStandardMaterial metalness+roughness
+- 15-20 environmental objects matching theme
+- 3 enemy types castShadow
+- THREE.Points particle system
+- THREE.Clock getDelta()
+- window resize handler
+
+REQUIRED CANNON.JS:
+- CANNON.World gravity, player body, ground body
+- Sync meshes to physics bodies each frame
+
+REQUIRED GAMEPLAY:
+- WASD + mouse/arrows + Space + R restart
+- Health system player+enemies, score, waves
+- localStorage high score
+- Web Audio API sounds (tones only)
+
+REQUIRED HUD + SCREENS:
+- Start screen, game over screen, score/health/wave HUD overlays
+${mobileExtra}
+
+VISUAL: Rich colors, atmospheric lighting, dense world, animated elements.
+Genre: ${genre}`;
+
+  const user=`Create a complete polished ${genre} game: "${prompt}"
+Dense atmospheric world, 3 enemy types with different AI, particle effects, increasing difficulty.
+${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
+Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
+
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:8000,system,messages:[{role:'user',content:user}]})
+    });
+    if(!res.ok){let m=`HTTP ${res.status}`;try{const e=await res.json();m=e.error?.message||m;}catch(x){}throw new Error(m);}
+    const data=await res.json();
+    let code=(data.content||[]).map(b=>b.text||'').join('').trim();
+    code=code.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/g,'').trim();
+    if(!code.startsWith('<!'))throw new Error('Unexpected output — try again');
+    if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
+    currentCode=code;
+    const id=addToLib(prompt,genre,code);
+    if(id)captureThumb(id);
+    showGame(code);
+    setStatus(`3D world ready! Click inside to play.${isMobile?' Touch controls included.':' WASD to move.'}`,'ok');
+  }catch(e){
+    doneProgress();setStatus('Error: '+e.message,'er');
+    setSplash('⚠','GENERATION FAILED',e.message+' — try a different prompt.',false);
+    console.error(e);
+  }
+  busy=false;
+  ['gbtn','ebtn','mbtn'].forEach(id=>document.getElementById(id).disabled=false);
+}
+
+/* ═══ ENHANCER ═══ */
+async function enhancePrompt(){
+  const apiKey=getKey();
+  if(!apiKey){setStatus('Enter your API key first','er');return;}
+  const raw=document.getElementById('ptxt').value.trim();
+  if(!raw){setStatus('Type a game idea first','er');return;}
+  document.getElementById('emodal').style.display='flex';
+  document.getElementById('orig-txt').textContent=raw;
+  document.getElementById('enh-txt').className='loading';
+  document.getElementById('enh-txt').textContent='Enhancing…';
+  document.getElementById('enh-edit').style.display='none';
+  document.getElementById('use-btn').style.display='none';
+  document.getElementById('regen-btn').style.display='none';
+  document.getElementById('edit-btn').textContent='✎ Edit';
+  enhancedResult='';
+  try{
+    const res=await fetch('/api/generate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-20250514',max_tokens:500,
+        system:`You are a game design expert. Expand a short game idea into a vivid 3-5 sentence description for a ${genre} game. Include: setting, atmosphere, player, 2-3 enemy types, world details, gameplay loop. One flowing paragraph. No bullets. Output only the description.`,
+        messages:[{role:'user',content:`Game idea: "${raw}"\nGenre: ${genre}\n\nExpand into a rich 3D game description.`}]})
+    });
+    if(!res.ok)throw new Error('API error '+res.status);
+    const data=await res.json();
+    enhancedResult=(data.content||[]).map(b=>b.text||'').join('').trim();
+    document.getElementById('enh-txt').className='';
+    document.getElementById('enh-txt').textContent=enhancedResult;
+    document.getElementById('enh-edit').value=enhancedResult;
+    document.getElementById('use-btn').style.display='block';
+    document.getElementById('regen-btn').style.display='block';
+  }catch(e){
+    document.getElementById('enh-txt').className='loading';
+    document.getElementById('enh-txt').textContent='Enhancement failed: '+e.message;
+    document.getElementById('regen-btn').style.display='block';
+  }
+}
+function runEnhance(){enhancePrompt();}
+function toggleEdit(){
+  const ta=document.getElementById('enh-edit'),tx=document.getElementById('enh-txt'),btn=document.getElementById('edit-btn');
+  if(ta.style.display==='none'||!ta.style.display){ta.value=enhancedResult;ta.style.display='block';tx.style.display='none';btn.textContent='✓ Done';ta.focus();}
+  else{enhancedResult=ta.value.trim();tx.textContent=enhancedResult;tx.style.display='block';ta.style.display='none';btn.textContent='✎ Edit';}
+}
+function useEnhanced(){
+  const ta=document.getElementById('enh-edit');
+  if(ta.style.display==='block')enhancedResult=ta.value.trim();
+  if(!enhancedResult)return;
+  document.getElementById('ptxt').value=enhancedResult;
+  closeEnhancer();generate();
+}
+function closeEnhancer(){document.getElementById('emodal').style.display='none';}
+
+/* ═══ HELP ═══ */
+function openHelp(){document.getElementById('hmodal').style.display='flex';}
+function closeHelp(){document.getElementById('hmodal').style.display='none';}
+
+/* ═══ MODAL CLOSE ═══ */
+['emodal','libmodal','hmodal','pubmodal','expmodal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)document.getElementById(id).style.display='none';});
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')['emodal','libmodal','hmodal','pubmodal','expmodal'].forEach(id=>document.getElementById(id).style.display='none');
+});
+document.getElementById('ptxt').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();generate();}});
+
+/* ═══ INIT ═══ */
+try{const k=localStorage.getItem('bgs_key');if(k){document.getElementById('ak').value=k;checkKey();}}catch(e){}
+try{const t=localStorage.getItem('bgs_vtoken');if(t)document.getElementById('pub-token').value=t;}catch(e){}
+document.getElementById('pub-token').addEventListener('change',()=>{try{localStorage.setItem('bgs_vtoken',document.getElementById('pub-token').value);}catch(e){}});
+renderChips();
+refreshSidebar();
+</script>
+</body>
+</html>
