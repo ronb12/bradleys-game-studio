@@ -2,5 +2,5 @@
   "name": "bradleys-game-studio",
   "version": "1.0.0",
   "description": "Bradley's Game Studio — AI-Powered 3D Game Generator",
-  "engines": { "node": "18.x" }
+  "engines": { "node": "24.x" }
 }
