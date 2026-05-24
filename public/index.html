@@ -621,7 +621,7 @@ function mergeContinuation(base,add){
 }
 const GEN_MAX_TOKENS={full:16384,eco:8192};
 const GEN_MAX_CONTINUATIONS=2;
-const GEN_CONTINUE_USER=`Your game HTML was cut off mid-generation. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with </script></body></html>. You MUST finish buildGameAssets() (world, player, enemies, collectibles, VFX, sounds, HUD), startGame(), animate(), game-over and victory screens.`;
+const GEN_CONTINUE_USER=`Your game HTML was cut off mid-generation. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with ${BGS_SCRIPT_END}</body></html>. You MUST finish buildGameAssets() (world, player, enemies, collectibles, VFX, sounds, HUD), startGame(), animate(), game-over and victory screens.`;
 function gameAssetRules(eco,prompt,g){
   const n=eco?12:22;
   return `
