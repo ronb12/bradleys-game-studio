@@ -1,7 +1,9 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "api/generate.js", "use": "@vercel/node", "config": { "maxDuration": 300, "memory": 1024 } },
+    { "src": "api/billing.js", "use": "@vercel/node", "config": { "maxDuration": 60 } },
+    { "src": "api/publish.js", "use": "@vercel/node", "config": { "maxDuration": 120 } },
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [

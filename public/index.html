@@ -984,14 +984,51 @@ function toggleEco(){
   document.getElementById('ecobtn')?.classList.toggle('on',ecoMode);
   setStatus(ecoMode?'⚡ Eco ON — saves tokens, still builds complete playable games.':'Full detail mode — richest worlds & gameplay','ok');
 }
-async function callAnthropic({apiKey,model,max_tokens,system,messages,label}){
+async function callAnthropicDirect({apiKey,model,max_tokens,system,messages,label}){
   const body={model,max_tokens,messages};
   if(system)body.system=system;
-  const res=await fetch(apiUrl('/api/generate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_apiKey:apiKey,...body})});
-  let data;try{data=await res.json();}catch(e){throw new Error(`HTTP ${res.status}`);}
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':apiKey,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true',
+    },
+    body:JSON.stringify(body),
+  });
+  let data;
+  try{data=await res.json();}catch(e){throw new Error(`HTTP ${res.status}`);}
   if(!res.ok)throw new Error(data.error?.message||`HTTP ${res.status}`);
   recordUsage(data,model,label||model);
   return data;
+}
+async function callAnthropicProxy({apiKey,model,max_tokens,system,messages,label}){
+  const body={model,max_tokens,messages};
+  if(system)body.system=system;
+  const res=await fetch(apiUrl('/api/generate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_apiKey:apiKey,...body})});
+  let data;
+  try{data=await res.json();}catch(e){throw new Error(`HTTP ${res.status}`);}
+  if(!res.ok)throw new Error(data.error?.message||`HTTP ${res.status}`);
+  recordUsage(data,model,label||model);
+  return data;
+}
+async function callAnthropic(opts){
+  try{
+    return await callAnthropicDirect(opts);
+  }catch(directErr){
+    const msg=String(directErr.message||directErr);
+    const corsBlocked=/CORS|not allowed|direct-browser-access|Failed to fetch|NetworkError|Load failed/i.test(msg);
+    if(!corsBlocked)throw directErr;
+    try{
+      return await callAnthropicProxy(opts);
+    }catch(proxyErr){
+      const p=String(proxyErr.message||proxyErr);
+      if(p.includes('504')||p.includes('502')||p.includes('503'))
+        throw new Error('Generation timed out on server. Try ⚡ ECO mode or a shorter prompt, then generate again.');
+      throw proxyErr;
+    }
+  }
 }
 function buildGameSystem(g,isMobile,prompt){
   const assets=gameAssetRules(false,prompt,g);
@@ -2053,7 +2090,8 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
     setStatus(`Game ready! ZIP downloaded.${isMobile?' Touch controls included.':' Click START, then WASD to play.'}`,'ok');
   }catch(e){
     doneProgress();setStatus('Error: '+e.message,'er');
-    setSplash('⚠','GENERATION FAILED',e.message+' — try a different prompt.',false);
+    const hint=/timed out|504/i.test(e.message)?' Try ⚡ ECO or a shorter prompt.':' — try a different prompt.';
+    setSplash('⚠','GENERATION FAILED',e.message+hint,false);
     console.error(e);
   }
   busy=false;
