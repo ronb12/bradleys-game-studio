@@ -42,6 +42,31 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #ak::placeholder{color:var(--muted);}
 #ks{font-family:var(--mono);font-size:9px;min-width:52px;letter-spacing:.06em;}
 #ks.ok{color:var(--c1);}#ks.bad{color:var(--c2);}
+#ecobtn{padding:4px 8px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:8px;cursor:pointer;letter-spacing:.05em;transition:all .15s;white-space:nowrap;}
+#ecobtn:hover{border-color:var(--c3);color:var(--c3);}
+#ecobtn.on{border-color:var(--c3);color:var(--c3);background:var(--g3);box-shadow:0 0 10px rgba(255,204,0,0.12);}
+#usage{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.04em;cursor:pointer;white-space:nowrap;margin-left:auto;}
+#usage:hover{color:var(--c1);}
+#usage-month{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.04em;cursor:pointer;white-space:nowrap;padding:4px 8px;border-radius:4px;border:1px solid var(--b2);transition:all .15s;}
+#usage-month:hover{border-color:var(--c1);color:var(--c1);}
+#usage-month.warn{color:var(--c3);border-color:rgba(255,204,0,0.35);}
+#usage-month.over{color:var(--c2);border-color:rgba(255,51,102,0.35);}
+.um-body{padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px;}
+.um-hero{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.um-card{padding:12px 14px;border-radius:8px;border:1px solid var(--b1);background:var(--bg3);}
+.um-card span{display:block;font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.um-card strong{font-size:20px;font-weight:700;color:var(--c1);}
+.um-card.left strong{color:var(--c3);}
+.um-card.right strong{color:#00ff88;}
+.um-card.right.over strong{color:var(--c2);}
+.um-bar{height:6px;border-radius:99px;background:var(--bg4);overflow:hidden;}
+.um-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--c1),var(--c4));transition:width .3s;}
+.um-bar.warn i{background:linear-gradient(90deg,var(--c3),var(--c2));}
+.um-row{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;color:var(--muted);}
+.um-row input{flex:1;padding:8px 10px;background:var(--bg3);border:1px solid var(--b2);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:12px;outline:none;}
+.um-row input:focus{border-color:var(--c1);}
+.um-note{font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.6;}
+.um-lines{font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.85;border-top:1px solid var(--b1);padding-top:10px;}
 
 /* ── SHELL ── */
 #shell{display:flex;flex:1;overflow:hidden;height:calc(100vh - 54px);}
@@ -82,8 +107,15 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #tbdl:hover{border-color:var(--c3);background:var(--g3);}
 
 /* ── VIEWPORT ── */
-#vp{flex:1;position:relative;overflow:hidden;background:#000;}
-#gframe{width:100%;height:100%;border:none;display:none;}
+#vp{flex:1;position:relative;overflow:hidden;background:#000;min-height:0;}
+#gframe{position:absolute;inset:0;width:100%;height:100%;border:none;display:none;}
+#bgs-play-overlay{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:rgba(0,0,0,0.55);pointer-events:auto;}
+#bgs-play-overlay.show{display:flex;}
+#bgs-play-btn{padding:14px 32px;border-radius:8px;border:2px solid var(--c1);background:rgba(0,255,204,0.12);color:var(--c1);font-family:var(--ui);font-size:14px;font-weight:700;letter-spacing:.12em;cursor:pointer;box-shadow:0 0 24px rgba(0,255,204,0.2);}
+#bgs-play-btn:hover{background:rgba(0,255,204,0.22);transform:translateY(-1px);}
+#bgs-play-hint{font-family:var(--mono);font-size:10px;color:var(--muted);max-width:320px;text-align:center;line-height:1.7;}
+#bgs-iframe-error{position:absolute;bottom:10px;left:10px;right:10px;z-index:21;display:none;padding:8px 12px;border-radius:6px;background:rgba(255,51,102,0.15);border:1px solid rgba(255,51,102,0.35);color:#ff8899;font-family:var(--mono);font-size:9px;line-height:1.5;}
+#bgs-iframe-error.show{display:block;}
 #splash{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;background:radial-gradient(ellipse at 50% 55%,#0a0d1a,var(--bg) 70%);}
 .sg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,204,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.022) 1px,transparent 1px);background-size:44px 44px;animation:gm 18s linear infinite;}
 @keyframes gm{from{background-position:0 0}to{background-position:44px 44px}}
@@ -122,7 +154,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #gbtn:hover:not(:disabled)::before{opacity:1;}
 #gbtn:hover:not(:disabled){box-shadow:0 0 32px rgba(0,255,204,0.24);transform:translateY(-1px);}
 .pbtn .pi{font-size:20px;}
-#sbar{display:flex;align-items:center;gap:7px;margin-top:7px;min-height:14px;}
+#sbar{display:flex;align-items:center;gap:7px;margin-top:7px;min-height:14px;flex-wrap:wrap;}
 #sdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;display:none;}
 #sdot.s{display:block;background:var(--c1);box-shadow:0 0 7px var(--c1);animation:dp 1s ease-in-out infinite;}
 #sdot.ok{display:block;background:#00ff88;box-shadow:0 0 7px #00ff88;animation:none;}
@@ -277,6 +309,8 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <span id="kl">API KEY</span>
     <input type="password" id="ak" placeholder="sk-ant-api03-..." autocomplete="off" oninput="checkKey()" title="Get your key at console.anthropic.com">
     <span id="ks"></span>
+    <button type="button" id="ecobtn" onclick="toggleEco()" title="Eco ON = lower API cost (shorter prompts). Both modes build complete playable games.">⚡ ECO</button>
+    <span id="usage-month" onclick="showUsage()" title="Monthly API spend estimate — click to set budget"></span>
   </div>
 </div>
 
@@ -320,7 +354,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <button class="tbtn" id="tbpub" onclick="openPublish()" style="display:none;">↑ PUBLISH</button>
       <button class="tbtn" id="tbexp" onclick="openExport()" style="display:none;">⬇ EXPORT</button>
       <button class="tbtn" id="tbcode" onclick="toggleCode()">{} CODE</button>
-      <button class="tbtn" id="tbdl" onclick="dlGame()" style="display:none;">↓ SAVE</button>
+      <button class="tbtn" id="tbdl" onclick="dlGame()" style="display:none;">↓ ZIP</button>
     </div>
     <div id="vp">
       <div id="splash">
@@ -345,7 +379,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           <div id="pst"></div>
         </div>
       </div>
-      <iframe id="gframe" tabindex="0" sandbox="allow-scripts allow-same-origin"></iframe>
+      <iframe id="gframe" tabindex="0" sandbox="allow-scripts allow-same-origin allow-pointer-lock"></iframe>
+      <div id="bgs-play-overlay">
+        <button type="button" id="bgs-play-btn" onclick="parentStartGame()">▶ START GAME</button>
+        <p id="bgs-play-hint">Game loaded — click to begin rendering.<br>If the in-game START button isn't visible, use this.</p>
+      </div>
+      <div id="bgs-iframe-error"></div>
     </div>
     <div id="pzone">
       <div id="chips"></div>
@@ -355,7 +394,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
         <button class="pbtn" id="mbtn" onclick="toggleMobile()" title="Toggle mobile touch controls"><span class="pi">📱</span>MOBILE</button>
         <button class="pbtn" id="gbtn" onclick="generate()"><span class="pi">◈</span>GENERATE</button>
       </div>
-      <div id="sbar"><div id="sdot"></div><span id="smsg">Paste your API key above, describe a game, and hit Generate</span></div>
+      <div id="sbar"><div id="sdot"></div><span id="smsg">Paste your API key above, describe a game, and hit Generate</span><span id="usage" onclick="showUsage()" title="API usage this session"></span></div>
     </div>
   </div>
 
@@ -364,7 +403,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div id="rph">
       <span>// three.js source</span>
       <button class="cbtn" onclick="copyCode()">copy</button>
-      <button class="cbtn" onclick="dlGame()">↓ save</button>
+      <button class="cbtn" onclick="dlGame()">↓ zip</button>
       <button class="cbtn" onclick="toggleCode()">✕</button>
     </div>
     <div id="cbody">// No game generated yet&#10;// Source appears here after generating</div>
@@ -418,7 +457,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <div class="exp-card" id="exp-html" onclick="selExp('html')">
         <div class="exp-ico">🌐</div>
         <div class="exp-name">HTML5 / Three.js</div>
-        <div class="exp-desc">The complete standalone game file — runs in any browser. No server needed.</div>
+        <div class="exp-desc">Full ZIP package: index.html, source.html, README.txt, and game-info.json — runs in any browser.</div>
         <div class="exp-tag full">Complete game</div>
       </div>
       <div class="exp-card" id="exp-mobile" onclick="selExp('mobile')">
@@ -484,6 +523,27 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </div>
 </div>
 
+<!-- USAGE / BUDGET MODAL -->
+<div class="modal-bg" id="umodal" onclick="if(event.target===this)closeUsage()">
+  <div class="mbox" style="width:100%;max-width:440px">
+    <div class="mh"><h2>MONTHLY API SPEND</h2><button class="mclose" onclick="closeUsage()">✕</button></div>
+    <div class="um-body">
+      <div class="um-hero">
+        <div class="um-card"><span id="um-month-label">This month</span><strong id="um-spent">$0.00</strong></div>
+        <div class="um-card right" id="um-left-card"><span>Remaining</span><strong id="um-left">—</strong></div>
+      </div>
+      <div class="um-bar" id="um-bar-wrap" style="display:none"><i id="um-bar" style="width:0%"></i></div>
+      <div class="um-row">
+        <label for="um-budget">Monthly budget $</label>
+        <input type="number" id="um-budget" min="0" step="1" placeholder="e.g. 25" onkeydown="if(event.key==='Enter')saveMonthlyBudget()">
+        <button class="lbtn gold" type="button" onclick="saveMonthlyBudget()">SAVE</button>
+      </div>
+      <p class="um-note">Estimates from Anthropic token pricing in this browser — not your live Anthropic invoice. Resets each calendar month. Set a budget to see how much is left.</p>
+      <div class="um-lines" id="um-detail"></div>
+    </div>
+  </div>
+</div>
+
 <!-- HELP MODAL -->
 <div class="modal-bg" id="hmodal">
   <div class="mbox" id="hbox">
@@ -495,9 +555,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="hrow"><span class="hnum">4</span><span>Type an idea, hit ✦ ENHANCE to expand it, then ◈ GENERATE</span></div>
     <div class="hrow"><span class="hnum">5</span><span>Click inside the game viewport to play (WASD + Space)</span></div>
     <div class="hrow"><span class="hnum">6</span><span>Hit ↑ PUBLISH to deploy your game live on Vercel with a shareable URL + Neon leaderboard</span></div>
-    <div class="hrow"><span class="hnum">7</span><span>Hit ⬇ EXPORT to get Unity C#, Godot GDScript, HTML5, or Mobile/iOS package</span></div>
+    <div class="hrow"><span class="hnum">7</span><span>Every generated game auto-downloads as a ZIP (index.html, source, README, metadata). Use ⬇ EXPORT for Unity, Godot, or Mobile packages.</span></div>
     <div class="hrow"><span class="hnum">8</span><span>📚 Library saves every game — click any card to preview live</span></div>
-    <div class="hnote">Your API key stays in your browser only — other visitors must use their own key. Publish needs a Vercel token (vercel.com/account/tokens). Leaderboards need a free Neon DB (neon.tech). Unity/Godot exports are game logic scripts — add your own 3D models in-engine.</div>
+    <div class="hnote">⚡ ECO OFF (default) = full Anthropic games with waves, bosses, and themed worlds. ECO ON = lower API cost (both modes build complete playable games). Top-right shows <strong style="color:var(--c1)">monthly spend & amount left</strong> once you set a budget (click it). Status bar has session totals. Estimates are local — check console.anthropic.com for real billing. Your API key stays in your browser only. Publish needs a Vercel token. Leaderboards need Neon (neon.tech).</div>
   </div>
 </div>
 
@@ -539,28 +599,95 @@ function repairScriptContent(js){
   for(let i=0;i<depth;i++)out+='\n}';
   return out;
 }
+function cleanGeneratedHtml(text){
+  return (text||'').replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/g,'').trim();
+}
+function mergeContinuation(base,add){
+  const a=cleanGeneratedHtml(add);
+  if(!a)return base;
+  if(/^<!DOCTYPE/i.test(a)&&/<\/html>\s*$/i.test(a)&&a.length>base.length*0.75)return a;
+  const maxOverlap=Math.min(1200,base.length,a.length);
+  for(let len=maxOverlap;len>=24;len--){
+    const tail=base.slice(-len);
+    if(a.startsWith(tail))return base+a.slice(len);
+  }
+  return base+a;
+}
+const GEN_MAX_TOKENS={full:16384,eco:8192};
+const GEN_MAX_CONTINUATIONS=2;
+const GEN_CONTINUE_USER=`Your game HTML was cut off mid-generation. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with </script></body></html>. Include working startGame(), animate(), game-over and victory screens if not yet written.`;
+async function generateGameCode({apiKey,system,user,ecoMode}){
+  const max_tokens=ecoMode?GEN_MAX_TOKENS.eco:GEN_MAX_TOKENS.full;
+  const messages=[{role:'user',content:user}];
+  let code='',continuations=0;
+  for(let pass=0;pass<1+GEN_MAX_CONTINUATIONS;pass++){
+    const label=pass===0?'Generate game':`Generate game (continue ${pass})`;
+    if(pass>0)setStatus(`Finishing game (${pass}/${GEN_MAX_CONTINUATIONS})…`,'s');
+    const data=await callAnthropic({apiKey,model:MODELS.SONNET,max_tokens,system,messages,label});
+    const chunk=cleanGeneratedHtml((data.content||[]).map(b=>b.text||'').join(''));
+    if(!chunk)throw new Error('Empty response — try again');
+    code=pass===0?chunk:mergeContinuation(code,chunk);
+    if(data.stop_reason==='max_tokens'&&continuations<GEN_MAX_CONTINUATIONS){
+      messages.push({role:'assistant',content:chunk});
+      messages.push({role:'user',content:GEN_CONTINUE_USER});
+      continuations++;
+      continue;
+    }
+    if(!code.startsWith('<!'))throw new Error('Unexpected output — try again');
+    if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
+    try{validateGameHtml(code);return code;}
+    catch(e){
+      if(continuations<GEN_MAX_CONTINUATIONS){
+        messages.push({role:'assistant',content:code});
+        messages.push({role:'user',content:GEN_CONTINUE_USER+'\n\nValidation: '+e.message});
+        continuations++;
+        continue;
+      }
+      code=sanitizeGameHtml(code);
+      validateGameHtml(code);
+      return code;
+    }
+  }
+  throw new Error('Game still incomplete — try a shorter prompt or turn ECO off');
+}
+function extractMainJs(code){
+  const tagOpen='<'+'script';
+  const lastStart=code.toLowerCase().lastIndexOf(tagOpen);
+  if(lastStart===-1)return '';
+  const contentStart=code.indexOf('>',lastStart)+1;
+  const closeIdx=code.indexOf(BGS_SCRIPT_END,contentStart);
+  if(closeIdx===-1)return '';
+  return code.slice(contentStart,closeIdx);
+}
 function validateGameHtml(code){
   if(!/<\/html>\s*$/i.test(code.trim()))throw new Error('Game incomplete — try a shorter description or generate again.');
   const {opens,closes}=countScriptTags(code);
   if(opens>closes)throw new Error('Game code was cut off — try a shorter prompt or generate again.');
-  const tagOpen='<'+'script';
-  const lastStart=code.toLowerCase().lastIndexOf(tagOpen);
-  if(lastStart!==-1){
-    const contentStart=code.indexOf('>',lastStart)+1;
-    const closeIdx=code.indexOf(BGS_SCRIPT_END,contentStart);
-    if(closeIdx!==-1){
-      const js=code.slice(contentStart,closeIdx);
-      const {depth,inStr}=jsBraceDepth(js);
-      if(depth>0||inStr)throw new Error('Game script incomplete — try a simpler/shorter prompt.');
-    }
+  const js=extractMainJs(code);
+  if(js){
+    const {depth,inStr}=jsBraceDepth(js);
+    if(depth>0||inStr)throw new Error('Game script incomplete — try a simpler/shorter prompt.');
+    const tail=js.trim().slice(-160);
+    if(/\b(if|for|while|function|else)\s*(\([^)]*)?\s*$/.test(tail)||/\{\s*$/.test(tail))
+      throw new Error('Game code was cut off — try again (shorter prompt).');
+    if(!/function\s+startGame\s*\(/i.test(js)&&!/window\.startGame\s*=/i.test(js))
+      throw new Error('Game missing startGame() — generate again.');
+    if(!/function\s+animate\s*\(/i.test(js)&&!/requestAnimationFrame\s*\(\s*animate/i.test(js))
+      throw new Error('Game missing render loop — generate again.');
+    if(!/WebGLRenderer/i.test(js))throw new Error('Game missing 3D renderer — generate again.');
   }
 }
 function sanitizeGameHtml(code){
   let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
-  const bootstrapStyle='<style id="bgs-bootstrap">html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{display:block!important;width:100%!important;height:100%!important;touch-action:none}#start-screen,#game-over-screen{position:fixed;inset:0;z-index:1000}</style>';
+  const bootstrapStyle='<style id="bgs-bootstrap">html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{display:block!important;position:relative!important;z-index:0!important;width:100%!important;height:100%!important;touch-action:none}#start-screen,#game-over-screen{position:fixed!important;inset:0!important;z-index:99999!important;pointer-events:auto!important}#start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.92),rgba(12,16,32,0.96))!important;color:#fff!important;font-family:system-ui,sans-serif;text-align:center;padding:24px}#start-btn,#start-screen button{margin-top:16px;padding:12px 28px;font-size:16px;font-weight:700;cursor:pointer;border:2px solid #00ffcc;background:rgba(0,255,204,0.12);color:#00ffcc;border-radius:6px}#start-btn:hover,#start-screen button:hover{background:rgba(0,255,204,0.25)}</style>';
   if(!html.includes('bgs-bootstrap')){
     if(/<head[^>]*>/i.test(html))html=html.replace(/<head[^>]*>/i,m=>m+bootstrapStyle);
     else html=bootstrapStyle+html;
+  }
+  if(!/id=["']start-screen["']/i.test(html)){
+    const startUi='<div id="start-screen"><h1 style="color:#0fc;font-family:sans-serif">Ready</h1><button id="start-btn">START</button></div>';
+    if(/<body[^>]*>/i.test(html))html=html.replace(/<body[^>]*>/i,m=>m+startUi);
+    else html=startUi+html;
   }
   const {opens,closes}=countScriptTags(html);
   if(opens>closes){
@@ -604,7 +731,258 @@ const CHIPS={
 const PMSG=['Initializing Three.js engine…','Generating 3D world geometry…','Setting up lighting & shadows…','Building enemy AI systems…','Adding Cannon.js physics…','Creating particle effects…','Compiling game logic…','Finalizing your world…'];
 
 /* ═══ STATE ═══ */
-let genre='3D platformer',busy=false,currentCode=null,enhancedResult='',pvId=null,mobileMode=false,selectedExp='unity';
+let genre='3D platformer',busy=false,currentCode=null,currentGameId=null,enhancedResult='',pvId=null,mobileMode=false,selectedExp='unity';
+/* ═══ API USAGE & ECO ═══ */
+const MODELS={SONNET:'claude-sonnet-4-5-20250929',HAIKU:'claude-haiku-4-5-20251001'};
+const PRICING={'claude-sonnet-4-5-20250929':{in:3,out:15},'claude-haiku-4-5-20251001':{in:0.8,out:4}};
+const UK='bgs_usage';
+const UK_BUDGET='bgs_month_budget';
+let ecoMode=false;
+function currentMonthKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function monthLabel(key){const [y,m]=(key||currentMonthKey()).split('-');const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (names[+m-1]||m)+' '+y;}
+function rollUsageMonth(u){
+  const mk=currentMonthKey();
+  if(u.monthKey===mk)return u;
+  return{...u,monthKey:mk,monthIn:0,monthOut:0,monthCost:0};
+}
+function loadUsage(){
+  try{
+    const u=JSON.parse(localStorage.getItem(UK)||'{}');
+    let budget=parseFloat(localStorage.getItem(UK_BUDGET)||'');
+    if(!Number.isFinite(budget)||budget<0)budget=null;
+    const base=rollUsageMonth({
+      totalIn:u.totalIn||0,totalOut:u.totalOut||0,totalCost:u.totalCost||0,
+      monthKey:u.monthKey||currentMonthKey(),monthIn:u.monthIn||0,monthOut:u.monthOut||0,monthCost:u.monthCost||0,
+      monthlyBudget:budget,lastCall:u.lastCall||null
+    });
+    return{...base,sessionIn:0,sessionOut:0,sessionCost:0,calls:0};
+  }catch(e){
+    return{totalIn:0,totalOut:0,totalCost:0,monthKey:currentMonthKey(),monthIn:0,monthOut:0,monthCost:0,monthlyBudget:null,sessionIn:0,sessionOut:0,sessionCost:0,calls:0,lastCall:null};
+  }
+}
+let usage=loadUsage();
+function persistUsage(){
+  try{
+    localStorage.setItem(UK,JSON.stringify({
+      totalIn:usage.totalIn,totalOut:usage.totalOut,totalCost:usage.totalCost,
+      monthKey:usage.monthKey,monthIn:usage.monthIn,monthOut:usage.monthOut,monthCost:usage.monthCost,
+      lastCall:usage.lastCall
+    }));
+    if(usage.monthlyBudget!=null)localStorage.setItem(UK_BUDGET,String(usage.monthlyBudget));
+    else localStorage.removeItem(UK_BUDGET);
+  }catch(e){}
+}
+function fmtTok(n){return n>=1000?(n/1000).toFixed(1)+'k':String(n|0);}
+function fmtCost(n){const x=Number(n)||0;return x<0.01&&x>0?(x*100).toFixed(2)+'¢':'$'+x.toFixed(2);}
+function estCost(model,inT,outT){const p=PRICING[model]||PRICING[MODELS.SONNET];return(inT/1e6)*p.in+(outT/1e6)*p.out;}
+function monthRemaining(){if(usage.monthlyBudget==null||usage.monthlyBudget<=0)return null;return usage.monthlyBudget-usage.monthCost;}
+function monthPct(){if(!usage.monthlyBudget||usage.monthlyBudget<=0)return 0;return Math.min(100,(usage.monthCost/usage.monthlyBudget)*100);}
+function recordUsage(data,model,label){
+  usage=rollUsageMonth(usage);
+  const inT=data.usage?.input_tokens||0,outT=data.usage?.output_tokens||0,c=estCost(model,inT,outT);
+  usage.sessionIn+=inT;usage.sessionOut+=outT;usage.sessionCost+=c;
+  usage.totalIn+=inT;usage.totalOut+=outT;usage.totalCost+=c;
+  usage.monthIn+=inT;usage.monthOut+=outT;usage.monthCost+=c;
+  usage.calls++;
+  usage.lastCall={label,inT,outT,model,at:Date.now(),cost:c};
+  persistUsage();
+  updateUsageUI();
+}
+function updateUsageUI(){
+  usage=rollUsageMonth(usage);
+  const monthEl=document.getElementById('usage-month');
+  const barEl=document.getElementById('usage');
+  const spent=usage.monthCost,left=monthRemaining();
+  if(monthEl){
+    monthEl.classList.remove('warn','over');
+    if(usage.monthlyBudget!=null&&usage.monthlyBudget>0){
+      if(left<=0){monthEl.textContent=fmtCost(spent)+' / '+fmtCost(usage.monthlyBudget)+' · over';monthEl.classList.add('over');}
+      else if(left/usage.monthlyBudget<0.15){monthEl.textContent=fmtCost(spent)+' · '+fmtCost(left)+' left';monthEl.classList.add('warn');}
+      else monthEl.textContent=fmtCost(spent)+' · '+fmtCost(left)+' left';
+    }else if(spent>0)monthEl.textContent=fmtCost(spent)+' this month';
+    else monthEl.textContent='$0 month';
+    monthEl.title='Spent '+fmtCost(spent)+' in '+monthLabel(usage.monthKey)+(usage.monthlyBudget?' · budget '+fmtCost(usage.monthlyBudget):'')+' — click for details';
+  }
+  if(barEl){
+    const tot=usage.sessionIn+usage.sessionOut;
+    const parts=[];
+    if(spent>0||usage.monthlyBudget)parts.push(fmtCost(spent)+' month');
+    if(usage.monthlyBudget!=null&&usage.monthlyBudget>0&&left!=null)parts.push(fmtCost(Math.max(0,left))+' left');
+    if(tot)parts.push(fmtTok(tot)+' tok session');
+    barEl.textContent=parts.join(' · ');
+    barEl.title=monthEl?.title||'API usage';
+  }
+  if(document.getElementById('umodal')?.style.display==='flex')renderUsageModal();
+}
+function renderUsageModal(){
+  const left=monthRemaining(),pct=monthPct(),hasBudget=usage.monthlyBudget!=null&&usage.monthlyBudget>0;
+  document.getElementById('um-month-label').textContent=monthLabel(usage.monthKey);
+  document.getElementById('um-spent').textContent=fmtCost(usage.monthCost);
+  const leftEl=document.getElementById('um-left'),leftCard=document.getElementById('um-left-card');
+  if(hasBudget){
+    leftEl.textContent=left<=0?'$0.00':fmtCost(left);
+    leftCard.classList.toggle('over',left<=0);
+  }else{leftEl.textContent='Set budget';leftCard.classList.remove('over');}
+  const wrap=document.getElementById('um-bar-wrap'),bar=document.getElementById('um-bar');
+  if(hasBudget){wrap.style.display='block';bar.style.width=pct+'%';wrap.classList.toggle('warn',pct>=85);}else wrap.style.display='none';
+  const bud=document.getElementById('um-budget');
+  if(bud&&document.activeElement!==bud)bud.value=hasBudget?String(usage.monthlyBudget):'';
+  document.getElementById('um-detail').innerHTML=[
+    hasBudget?`Budget: <strong style="color:var(--c1)">${fmtCost(usage.monthlyBudget)}</strong> / month`:'',
+    `This month: ${fmtTok(usage.monthIn)} in + ${fmtTok(usage.monthOut)} out tokens`,
+    `Session: ${fmtTok(usage.sessionIn)} in + ${fmtTok(usage.sessionOut)} out · ${fmtCost(usage.sessionCost)}`,
+    `All time: ${fmtTok(usage.totalIn)} in + ${fmtTok(usage.totalOut)} out · ${fmtCost(usage.totalCost)}`,
+    usage.lastCall?`Last call: ${usage.lastCall.label} · ${fmtCost(usage.lastCall.cost)}`:'',
+    ecoMode?'⚡ Eco ON':'Eco OFF — full detail'
+  ].filter(Boolean).join('<br>');
+}
+function showUsage(){document.getElementById('umodal').style.display='flex';renderUsageModal();}
+function closeUsage(){document.getElementById('umodal').style.display='none';}
+function saveMonthlyBudget(){
+  const raw=document.getElementById('um-budget').value.trim();
+  if(!raw){usage.monthlyBudget=null;persistUsage();updateUsageUI();setStatus('Monthly budget cleared','ok');return;}
+  const n=parseFloat(raw);
+  if(!Number.isFinite(n)||n<0){setStatus('Enter a valid budget amount','er');return;}
+  usage.monthlyBudget=n;
+  persistUsage();
+  updateUsageUI();
+  setStatus('Monthly budget set to '+fmtCost(n),'ok');
+}
+function toggleEco(){
+  ecoMode=!ecoMode;
+  try{localStorage.setItem('bgs_eco',ecoMode?'1':'0');}catch(e){}
+  document.getElementById('ecobtn')?.classList.toggle('on',ecoMode);
+  setStatus(ecoMode?'⚡ Eco ON — saves tokens, still builds complete playable games.':'Full detail mode — richest worlds & gameplay','ok');
+}
+async function callAnthropic({apiKey,model,max_tokens,system,messages,label}){
+  const body={model,max_tokens,messages};
+  if(system)body.system=system;
+  const res=await fetch(apiUrl('/api/generate'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_apiKey:apiKey,...body})});
+  let data;try{data=await res.json();}catch(e){throw new Error(`HTTP ${res.status}`);}
+  if(!res.ok)throw new Error(data.error?.message||`HTTP ${res.status}`);
+  recordUsage(data,model,label||model);
+  return data;
+}
+function buildGameSystem(g,isMobile,prompt){
+  if(!ecoMode)return `You are an elite Three.js game studio lead. Deliver a COMPLETE, POLISHED, PLAYABLE 3D browser game — not a tech demo of plain cubes.
+
+OUTPUT RULES:
+- Output ONLY raw HTML: <!DOCTYPE html> … </html>. No markdown, no backticks, no commentary.
+- Single self-contained file. Libraries from CDN only (Three.js r134 + Cannon.js).
+- Must fully close every script/body/html tag. Never truncate mid-function.
+
+CDN:
+- https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
+- https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js
+
+═══ VISUAL QUALITY (CRITICAL — NO LAZY BLOCKS) ═══
+- DO NOT make the player or enemies a single BoxGeometry. Build every character as THREE.Group with 4–8 parts (torso, head, limbs, weapon/wings) using SphereGeometry, CylinderGeometry, ConeGeometry, TorusGeometry combined.
+- Environment: minimum 22 themed props (not random cubes) — arches, pillars, trees, crystals, fences, lamps, crates, ramps, bridges. Match the user's theme: "${prompt||'fantasy world'}".
+- Ground: use CanvasTexture or procedural pattern (stone grid, grass noise, neon grid) — NOT flat gray.
+- Materials: MeshStandardMaterial with unique metalness/roughness/emissive per object. 3+ colored PointLights/SpotLights. scene.fog. HemisphereLight for sky tint.
+- Sky: colored scene.background + fog, or large inverted sphere gradient.
+- Particles: THREE.Points for atmosphere (sparks, dust, snow, embers) themed to setting.
+- Shadows: renderer.shadowMap enabled, cast/receive on player, enemies, props.
+- Animate: rotating elements, bobbing collectibles, flickering torches (emissive pulse), enemy idle sway.
+
+═══ FULL GAMEPLAY (NOT A SANDBOX) ═══
+Genre: ${g}
+- Clear objective shown on start screen (collect N items, survive N waves, reach score, defeat boss).
+- Victory screen id="victory-screen" when objective met. Game over id="game-over-screen" on death.
+- 3 distinct enemy types: e.g. chaser (melee), patroller (guards area), shooter/ranged (keeps distance). Different meshes per type.
+- Wave system: 5+ waves, increasing spawn count/speed. Boss on final wave (larger multi-part mesh, more HP).
+- Collectibles (coins/orbs/flags) + 2 power-up types (health pack, speed/shield boost).
+- Player: WASD/arrows move, Space jump OR shoot (genre-appropriate), mouse look if FPS, R restart.
+
+═══ INPUT (mandatory — must work in iframe embed) ═══
+window.keys={};
+document.addEventListener('keydown',e=>{window.keys[e.code]=true;});
+document.addEventListener('keyup',e=>{window.keys[e.code]=false;});
+In animate(), read window.keys['KeyW'], KeyA, KeyS, KeyD, Space, Arrow keys. Do NOT use pointer lock or document.activeElement checks.
+- Health + score + wave HUD (styled HTML overlay, not plain text). localStorage high score.
+- Cannon.js physics: player body, ground, enemy bodies. Sync meshes each frame.
+- Web Audio API: jump, shoot, hit, collect, wave-start tones (oscillator, no external files).
+- Difficulty curve: enemies faster/stronger each wave.
+
+═══ UI / SCREENS ═══
+- #start-screen: game title, 2-line lore, controls, objective, #start-btn (NO inline onclick).
+- #game-over-screen + #restart-btn. #victory-screen with play-again button.
+- Polished HUD: health bar, score, wave counter, objective reminder.
+
+═══ START / ENGINE (mandatory global scope) ═══
+let gameStarted=false;
+function startGame(){
+  gameStarted=true;
+  document.getElementById('start-screen').style.display='none';
+  if(typeof animate==='function'&&!window.__loopRunning){window.__loopRunning=true;animate();}
+  window.dispatchEvent(new Event('resize'));
+}
+function restartGame(){location.reload();}
+window.startGame=startGame; window.restartGame=restartGame;
+document.getElementById('start-btn').addEventListener('click',startGame);
+window.renderer=renderer; window.scene=scene; window.camera=camera;
+- Third-person or genre-appropriate camera with smooth lerp follow.
+- animate() uses requestAnimationFrame loop, Clock.getDelta(), renderer.render every frame when gameStarted.
+- Do NOT start animate() until startGame(). html,body{margin:0;height:100%;overflow:hidden}
+${isMobile?`MOBILE: virtual joystick (left), 2 action buttons (right), viewport meta, touch-friendly HUD.` : ''}
+
+This must feel like a real indie game someone would publish, built entirely from Three.js primitives — ambitious, themed, and fun.`;
+  return `You are a Three.js game developer. Deliver a COMPLETE, FULLY PLAYABLE 3D browser game — ready to play the moment the user clicks START. Not a demo, not a sandbox, not plain cubes.
+
+OUTPUT: ONLY raw HTML (<!DOCTYPE html>…</html>). No markdown. Single file. Three.js r134 + Cannon.js from CDN. Close every tag — never truncate mid-function.
+
+CDN:
+- https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
+- https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js
+
+PLAYABLE GAME (REQUIRED — Eco still means COMPLETE):
+Genre: ${g} | Theme: "${prompt||'adventure world'}"
+- Clear win condition + objective on start screen (collect items, survive waves, reach score, defeat boss).
+- #start-screen with title, controls, objective, #start-btn (NO inline onclick).
+- #game-over-screen on death + #restart-btn. #victory-screen OR win state when objective met.
+- Health + score + wave HUD. localStorage high score. R to restart.
+- 2 enemy types with different behavior (chase + patrol OR ranged). 4+ waves, difficulty increases.
+- Collectibles + 1 power-up. Player WASD/arrows, Space jump/shoot, Cannon physics synced each frame.
+- Web Audio tones for jump, hit, collect (oscillator only).
+
+INPUT (mandatory): window.keys={}; document.addEventListener('keydown',e=>{window.keys[e.code]=true}); document.addEventListener('keyup',e=>{window.keys[e.code]=false}); read keys in animate(). No pointer lock.
+
+VISUALS (no lazy blocks):
+- Player AND enemies as THREE.Group with 3–6 parts (Sphere/Cylinder/Cone) — NOT single BoxGeometry.
+- 12+ themed props matching setting. CanvasTexture or patterned ground (not flat gray).
+- Fog, shadows, 2+ colored lights, particles. MeshStandardMaterial with varied colors.
+
+START (global scope — mandatory):
+let gameStarted=false;
+function startGame(){gameStarted=true;document.getElementById('start-screen').style.display='none';if(typeof animate==='function'&&!window.__loopRunning){window.__loopRunning=true;animate();}window.dispatchEvent(new Event('resize'));}
+function restartGame(){location.reload();}
+window.startGame=startGame;window.restartGame=restartGame;
+document.getElementById('start-btn').addEventListener('click',startGame);
+window.renderer=renderer;window.scene=scene;window.camera=camera;
+animate uses RAF+Clock; render when gameStarted. Do NOT animate before startGame().
+html,body{margin:0;height:100%;overflow:hidden}
+${isMobile?'MOBILE: virtual joystick + 2 action buttons, touch HUD.' : ''}
+Must be immediately fun and fully playable end-to-end. Write compact code (minimal comments) but never skip waves, enemies, win/lose screens, or HUD.`;
+}
+async function exportStaticEngine(isUnity){
+  await loadJSZip();
+  const zip=new JSZip(),title=(document.getElementById('ptxt').value.trim().slice(0,30)||'game').replace(/[^a-z0-9]+/gi,'-');
+  if(isUnity){
+    zip.file('PlayerController.cs','using UnityEngine;\npublic class PlayerController : MonoBehaviour {\n  public float speed=6f,jumpForce=8f;\n  CharacterController cc;\n  void Start(){cc=GetComponent<CharacterController>();}\n  void Update(){ float h=Input.GetAxis("Horizontal"),v=Input.GetAxis("Vertical");\n    Vector3 m=new Vector3(h,0,v); cc.Move(m*speed*Time.deltaTime);\n    if(Input.GetButtonDown("Jump")&&cc.isGrounded) cc.Move(Vector3.up*jumpForce*Time.deltaTime);}\n}');
+    zip.file('EnemyAI.cs','using UnityEngine;\npublic class EnemyAI : MonoBehaviour {\n  public Transform player; public float speed=3f;\n  void Update(){ if(!player)return; Vector3 d=(player.position-transform.position).normalized;\n    transform.position+=d*speed*Time.deltaTime; transform.LookAt(player);}\n}');
+    zip.file('GameManager.cs','using UnityEngine; using UnityEngine.UI;\npublic class GameManager : MonoBehaviour {\n  public Text scoreText; int score;\n  public void AddScore(int n){ score+=n; if(scoreText)scoreText.text="Score: "+score; }\n}');
+    zip.file('README_UNITY.txt',"Eco stub export — wire scripts to CharacterController player + NavMesh/enemy prefabs.\nGenerated from Bradley's Game Studio HTML game logic outline.");
+  }else{
+    zip.file('Player.gd','extends CharacterBody3D\n@export var speed=6.0\nfunc _physics_process(d):\n  var v=Vector3(Input.get_axis("ui_left","ui_right"),0,Input.get_axis("ui_up","ui_down"))\n  velocity.x=v.x*speed; velocity.z=v.z*speed; move_and_slide()');
+    zip.file('Enemy.gd','extends CharacterBody3D\n@export var player:Node3D\n@export var speed=3.0\nfunc _physics_process(d):\n  if player: look_at(player.global_position); position+=global_transform.basis.z*speed*d');
+    zip.file('GameManager.gd','extends Node\nvar score=0\nfunc add_score(n): score+=n');
+    zip.file('README_GODOT.txt',"Eco stub export — attach to CharacterBody3D nodes in Godot 4.\nGenerated from Bradley's Game Studio HTML game logic outline.");
+  }
+  const blob=await zip.generateAsync({type:'blob'});
+  triggerDownload(blob,title+'-'+(isUnity?'unity':'godot')+'-stubs.zip');
+  setStatus((isUnity?'Unity':'Godot')+' stub export (0 API tokens) downloaded!','ok');
+}
+
 
 /* ═══ KEY ═══ */
 function checkKey(){
@@ -663,17 +1041,146 @@ function setSplash(icon,title,body,prog){
 }
 
 /* ═══ GAME DISPLAY ═══ */
-function kickstartGame(fr,win,doc){
-  ['gameStarted','gameRunning','started','playing','isPlaying','running','isRunning'].forEach(k=>{try{win[k]=true;}catch(e){}});
-  fixIframeLayout(fr,win,doc);
-  win.dispatchEvent(new Event('resize'));
-  win.dispatchEvent(new Event('bgs-start'));
-  ['init','initGame','start','beginGame','setupGame','startGameLoop'].forEach(fn=>{
-    if(typeof win[fn]==='function')try{win[fn]();}catch(e){}
+let gframeObs=null;
+function getGameFrameWin(){
+  const fr=document.getElementById('gframe');
+  if(!fr||fr.style.display==='none')return null;
+  try{return fr.contentWindow;}catch(e){return null;}
+}
+function isTypingInForm(e){
+  const t=e?.target;
+  if(!t||t===document.body||t===document.documentElement)return false;
+  const tag=(t.tagName||'').toLowerCase();
+  return tag==='input'||tag==='textarea'||tag==='select'||!!t.isContentEditable;
+}
+function isModalOpen(){
+  return['emodal','libmodal','hmodal','pubmodal','expmodal','umodal'].some(id=>{
+    const el=document.getElementById(id);
+    return el&&getComputedStyle(el).display!=='none';
   });
 }
+function focusGameFrame(){
+  const fr=document.getElementById('gframe');
+  if(!fr||fr.style.display==='none')return;
+  try{
+    fr.focus({preventScroll:true});
+    const doc=fr.contentDocument,win=fr.contentWindow;
+    const c=doc?.querySelector('canvas');
+    if(c&&win?.gameStarted){c.setAttribute('tabindex','0');c.focus({preventScroll:true});}
+  }catch(e){}
+}
+function forwardKeyToGame(e,type){
+  const win=getGameFrameWin();
+  if(!win||isTypingInForm(e)||isModalOpen())return;
+  try{
+    const opts={key:e.key,code:e.code,location:e.location,repeat:e.repeat,shiftKey:e.shiftKey,ctrlKey:e.ctrlKey,altKey:e.altKey,metaKey:e.metaKey,bubbles:true,cancelable:true};
+    const ev=new win.KeyboardEvent(type,opts);
+    win.dispatchEvent(ev);
+    win.document.dispatchEvent(ev);
+    if(win.document.body)win.document.body.dispatchEvent(ev);
+    const gameKeys=['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','KeyW','KeyA','KeyS','KeyD'];
+    if(type==='keydown'&&gameKeys.includes(e.code))e.preventDefault();
+  }catch(err){}
+}
+function forwardMouseToGame(e,type){
+  const fr=document.getElementById('gframe');
+  const win=getGameFrameWin();
+  if(!fr||!win||isModalOpen())return;
+  const rect=fr.getBoundingClientRect();
+  if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom)return;
+  try{
+    const ev=new win.MouseEvent(type,{clientX:e.clientX,clientY:e.clientY,movementX:e.movementX||0,movementY:e.movementY||0,button:e.button,buttons:e.buttons,bubbles:true,cancelable:true});
+    win.dispatchEvent(ev);
+    win.document.dispatchEvent(ev);
+  }catch(err){}
+}
+function setupGameInputBridge(){
+  if(window.__bgsInputBridge)return;
+  window.__bgsInputBridge=true;
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')['emodal','libmodal','hmodal','pubmodal','expmodal','umodal'].forEach(id=>document.getElementById(id).style.display='none');
+    forwardKeyToGame(e,'keydown');
+  },true);
+  document.addEventListener('keyup',e=>forwardKeyToGame(e,'keyup'),true);
+  const vp=document.getElementById('vp');
+  if(vp){
+    vp.addEventListener('mousedown',()=>focusGameFrame(),true);
+    vp.addEventListener('mousemove',e=>forwardMouseToGame(e,'mousemove'),true);
+    vp.addEventListener('mousedown',e=>forwardMouseToGame(e,'mousedown'),true);
+    vp.addEventListener('mouseup',e=>forwardMouseToGame(e,'mouseup'),true);
+  }
+}
+function showPlayOverlay(show){
+  const el=document.getElementById('bgs-play-overlay');
+  if(el)el.classList.toggle('show',!!show);
+}
+function hidePlayOverlay(){showPlayOverlay(false);}
+function reportGameError(msg){
+  const el=document.getElementById('bgs-iframe-error');
+  if(el){el.textContent='Game error: '+msg+' — try Regenerate or open ↓ ZIP index.html offline.';el.classList.add('show');}
+  setStatus('Game script error — try Regenerate','er');
+}
+function parentStartGame(){
+  const fr=document.getElementById('gframe');
+  try{
+    const win=fr.contentWindow,doc=fr.contentDocument;
+    if(win&&doc)invokeStartGame(fr,win,doc);
+  }catch(e){reportGameError(e.message);}
+  hidePlayOverlay();
+  focusGameFrame();
+  setTimeout(focusGameFrame,150);
+}
+function injectGameRuntime(doc){
+  if(!doc||doc.getElementById('bgs-runtime'))return;
+  const s=doc.createElement('script');
+  s.id='bgs-runtime';
+  s.textContent=
+    '(function(){'+
+    'function fit(){var w=window.innerWidth||0,h=window.innerHeight||0;'+
+    'try{var vp=window.parent.document.getElementById("vp");if(vp){w=Math.max(w,vp.clientWidth||0);h=Math.max(h,vp.clientHeight||0);}}catch(e){}'+
+    'if(w<50||h<50)return;'+
+    'if(window.renderer&&window.renderer.setSize)window.renderer.setSize(w,h,false);'+
+    'if(window.camera&&window.camera.aspect){window.camera.aspect=w/h;window.camera.updateProjectionMatrix&&window.camera.updateProjectionMatrix();}'+
+    'if(window.gameStarted&&window.renderer&&window.scene&&window.camera){try{window.renderer.render(window.scene,window.camera);}catch(e){}}'+
+    '}'+
+    'window.__bgsEnsureLoop=function(){window.gameStarted=true;'+
+    'fit();'+
+    'if(typeof window.animate==="function"){window.__loopRunning=true;try{window.animate();}catch(e){requestAnimationFrame(window.animate);}}'+
+    'else if(window.renderer&&window.scene&&window.camera){try{window.renderer.render(window.scene,window.camera);}catch(e){}}'+
+    '};'+
+    'window.addEventListener("resize",fit);window.addEventListener("bgs-start",fit);'+
+    'document.addEventListener("click",function(e){var t=e.target;if(!t)return;'+
+    'if(t.id==="start-btn"||(t.closest&&t.closest("#start-screen button"))){setTimeout(window.__bgsEnsureLoop,0);setTimeout(window.__bgsEnsureLoop,120);}'+
+    '},false);'+
+    'setTimeout(fit,0);setTimeout(fit,150);setTimeout(fit,400);'+
+    'window.addEventListener("error",function(e){try{window.parent.postMessage({type:"bgs-game-error",msg:e.message||"Script error"},"*");}catch(x){}});'+
+    'window.__bgsKeys=window.__bgsKeys||{};'+
+    'var __k=window.__bgsKeys;'+
+    'function __bgsSetKey(e,down){__k[e.code]=down;}'+
+    'window.addEventListener("keydown",function(e){__bgsSetKey(e,true);});'+
+    'window.addEventListener("keyup",function(e){__bgsSetKey(e,false);});'+
+    'if(typeof window.keys!=="object"||!window.keys)window.keys=__k;'+
+    'document.addEventListener("click",function(){try{window.focus();var c=document.querySelector("canvas");if(c)c.focus();}catch(x){}},true);'+
+    '})();';
+  (doc.body||doc.head||doc.documentElement).appendChild(s);
+}
+function ensureRenderLoop(win){
+  try{
+    win.gameStarted=true;
+    if(typeof win.__bgsEnsureLoop==='function')win.__bgsEnsureLoop();
+    else if(typeof win.animate==='function'){
+      win.__loopRunning=true;
+      try{win.animate();}catch(e){requestAnimationFrame(()=>win.animate());}
+    }else if(win.renderer&&win.scene&&win.camera){
+      win.renderer.render(win.scene,win.camera);
+    }
+  }catch(e){}
+}
 function fixIframeLayout(fr,win,doc){
-  const w=fr.clientWidth||win.innerWidth||800,h=fr.clientHeight||win.innerHeight||600;
+  const vp=document.getElementById('vp');
+  const fw=Math.max(fr.clientWidth||0,vp?.clientWidth||0,win.innerWidth||0);
+  const fh=Math.max(fr.clientHeight||0,vp?.clientHeight||0,win.innerHeight||0);
+  if(fw<50||fh<50)return false;
   [doc.documentElement,doc.body].forEach(el=>{
     if(!el)return;
     el.style.margin='0';el.style.padding='0';el.style.width='100%';el.style.height='100%';el.style.overflow='hidden';
@@ -681,21 +1188,57 @@ function fixIframeLayout(fr,win,doc){
   const canvas=doc.querySelector('canvas');
   if(canvas){canvas.style.display='block';canvas.style.width='100%';canvas.style.height='100%';}
   try{
-    if(win.renderer?.setSize)win.renderer.setSize(w,h,false);
-    if(win.camera?.aspect!==undefined){win.camera.aspect=w/h;win.camera.updateProjectionMatrix?.();}
+    if(win.renderer?.setSize)win.renderer.setSize(fw,fh,false);
+    if(win.camera?.aspect!==undefined){win.camera.aspect=fw/fh;win.camera.updateProjectionMatrix?.();}
+    if(win.gameStarted&&win.renderer&&win.scene&&win.camera)win.renderer.render(win.scene,win.camera);
   }catch(e){}
+  return true;
+}
+function kickstartGame(fr,win,doc){
+  ['gameStarted','gameRunning','started','playing','isPlaying','running','isRunning'].forEach(k=>{try{win[k]=true;}catch(e){}});
+  fixIframeLayout(fr,win,doc);
+  win.dispatchEvent(new Event('resize'));
+  win.dispatchEvent(new Event('bgs-start'));
+  ['init','initGame','beginGame','setupGame','startGameLoop'].forEach(fn=>{
+    if(typeof win[fn]==='function')try{win[fn]();}catch(e){}
+  });
+  ensureRenderLoop(win);
 }
 function invokeStartGame(fr,win,doc){
-  const s=doc.getElementById('start-screen');
-  if(typeof win.startGame==='function'){
-    try{win.startGame();}catch(e){console.warn('startGame',e);}
-  }else if(s)s.style.display='none';
-  kickstartGame(fr,win,doc);
+  if(win.__bgsInvokingStart)return;
+  win.__bgsInvokingStart=true;
+  try{
+    const s=doc.getElementById('start-screen');
+    const sg=win.startGame;
+    if(typeof sg==='function'&&!sg.__bgsStub){
+      try{sg.call(win);}catch(e){console.warn('startGame',e);}
+    }else if(s){
+      s.style.display='none';
+    }
+    kickstartGame(fr,win,doc);
+    focusGameFrame();
+    setTimeout(()=>{fixIframeLayout(fr,win,doc);ensureRenderLoop(win);if(win.gameStarted)hidePlayOverlay();focusGameFrame();},50);
+    setTimeout(()=>{fixIframeLayout(fr,win,doc);ensureRenderLoop(win);if(win.gameStarted)hidePlayOverlay();focusGameFrame();},200);
+  }finally{
+    win.__bgsInvokingStart=false;
+  }
+}
+function observeGameFrame(fr){
+  if(gframeObs)gframeObs.disconnect();
+  if(typeof ResizeObserver==='undefined')return;
+  gframeObs=new ResizeObserver(()=>{
+    try{
+      const win=fr.contentWindow,doc=fr.contentDocument;
+      if(win&&doc){fixIframeLayout(fr,win,doc);if(win.gameStarted)ensureRenderLoop(win);}
+    }catch(e){}
+  });
+  gframeObs.observe(fr);
 }
 function wireGameFrame(fr){
   try{
     const win=fr.contentWindow,doc=fr.contentDocument;
     if(!win||!doc)return;
+    injectGameRuntime(doc);
     fixIframeLayout(fr,win,doc);
     const names=new Set(['startGame','restartGame']);
     doc.querySelectorAll('[data-bgs-click]').forEach(el=>{const fn=el.getAttribute('data-bgs-click');if(fn)names.add(fn);});
@@ -707,10 +1250,9 @@ function wireGameFrame(fr){
       doc.querySelectorAll('[data-bgs-click="'+fn+'"]').forEach(el=>{
         if(el.__bgsWired===fn)return;
         el.__bgsWired=fn;
-        el.addEventListener('click',e=>{
-          e.preventDefault();
+        el.addEventListener('click',()=>{
           if(fn==='startGame')return invokeStartGame(fr,win,doc);
-          if(typeof win[fn]==='function')return win[fn](e);
+          if(typeof win[fn]==='function')return win[fn]();
         });
       });
     });
@@ -721,42 +1263,53 @@ function wireGameFrame(fr){
       el.__bgsOnclickWired=1;
       const fn=m[1];
       el.removeAttribute('onclick');
-      el.addEventListener('click',e=>{
-        e.preventDefault();
+      el.addEventListener('click',()=>{
         if(fn==='startGame')return invokeStartGame(fr,win,doc);
-        if(typeof win[fn]==='function')return win[fn](e);
+        if(typeof win[fn]==='function')return win[fn]();
       });
     });
-    const startBtn=doc.getElementById('start-btn')||doc.querySelector('#start-screen button');
-    if(startBtn&&!startBtn.__bgsStartBtn){
-      startBtn.__bgsStartBtn=1;
-      startBtn.addEventListener('click',()=>invokeStartGame(fr,win,doc));
-    }
     const s=doc.getElementById('start-screen');
-    if(s&&typeof win.startGame!=='function'){
-      win.startGame=()=>invokeStartGame(fr,win,doc);
-    }
     const r=doc.getElementById('game-over-screen')||doc.getElementById('gameover-screen');
     if(r&&typeof win.restartGame!=='function')win.restartGame=()=>location.reload();
     const startVisible=s&&s.style.display!=='none'&&getComputedStyle(s).display!=='none';
-    if(startVisible)setStatus('Click START inside the game window','ok');
-    else kickstartGame(fr,win,doc);
+    const started=!!win.gameStarted;
+    if(!started)showPlayOverlay(true);
+    else hidePlayOverlay();
+    if(startVisible&&!started)setStatus('Click START (in game or green button overlay)','ok');
+    else if(!started)setStatus('Click ▶ START GAME then WASD/Space to play','ok');
+    else if(started)hidePlayOverlay();
+    if(!startVisible&&!started)kickstartGame(fr,win,doc);
+    else if(!startVisible&&started)ensureRenderLoop(win);
+    doc.addEventListener('click',()=>focusGameFrame(),{once:false});
   }catch(e){console.warn('wireGameFrame',e);}
 }
 function loadGameInFrame(fr,code){
   fr.onload=()=>{
     wireGameFrame(fr);
     let n=0;
-    const t=setInterval(()=>{wireGameFrame(fr);if(++n>=10)clearInterval(t);},300);
+    const t=setInterval(()=>{
+      wireGameFrame(fr);
+      try{
+        const win=fr.contentWindow,doc=fr.contentDocument;
+        if(win&&doc&&fixIframeLayout(fr,win,doc)&&win.gameStarted)ensureRenderLoop(win);
+      }catch(e){}
+      if(++n>=15)clearInterval(t);
+    },200);
   };
   fr.srcdoc=sanitizeGameHtml(code);
   requestAnimationFrame(()=>{try{if(fr.contentDocument?.readyState==='complete')wireGameFrame(fr);}catch(e){}});
 }
 function showGame(code){
   doneProgress();
+  document.getElementById('bgs-iframe-error')?.classList.remove('show');
   const fr=document.getElementById('gframe');
-  loadGameInFrame(fr,code);fr.style.display='block';
+  observeGameFrame(fr);
+  loadGameInFrame(fr,code);
+  fr.style.display='block';
   fr.focus();
+  setupGameInputBridge();
+  showPlayOverlay(true);
+  requestAnimationFrame(()=>{try{wireGameFrame(fr);}catch(e){}});
   document.getElementById('splash').style.display='none';
   ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
   document.getElementById('cbody').textContent=code;
@@ -771,10 +1324,113 @@ function copyCode(){
 }
 function dlGame(){
   if(!currentCode)return;
-  const blob=new Blob([currentCode],{type:'text/html'}),a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=(document.getElementById('ptxt').value.trim().slice(0,40)||'game').replace(/[^a-z0-9]+/gi,'-')+'.html';
-  a.click();
+  const meta=gameMetaForCurrent();
+  dlGamePackage(currentCode,meta);
+}
+
+/* ═══ DOWNLOAD PACKAGE ═══ */
+function gameSlug(text){
+  return (text||'game').trim().slice(0,40).replace(/[^a-z0-9]+/gi,'-').replace(/^-+|-+$/g,'')||'game';
+}
+function gameMetaForCurrent(){
+  const meta={
+    prompt:document.getElementById('ptxt').value.trim(),
+    genre,
+    date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+  };
+  if(currentGameId){
+    const lib=libIdx().find(g=>g.id===currentGameId);
+    if(lib)Object.assign(meta,lib);
+  }else{
+    const match=libIdx().find(g=>loadCode(g.id)===currentCode);
+    if(match)Object.assign(meta,match);
+  }
+  return meta;
+}
+function gameReadme(meta){
+  const title=meta.prompt||'Untitled game';
+  const live=meta.pubUrl?'\nLive URL: '+meta.pubUrl:'';
+  return `Bradley's Game Studio — Game Export
+================================
+
+Title: ${title}
+Genre: ${meta.genre||'3D game'}
+Built: ${meta.date||new Date().toLocaleDateString()}${live}
+
+FILES INCLUDED
+--------------
+index.html       Playable game (open in any browser)
+source.html      Original generated source code
+game-info.json   Build metadata (title, genre, dates)
+README.txt       This file
+
+HOW TO PLAY
+-----------
+1. Open index.html in Chrome, Firefox, or Safari
+2. Click inside the game window, then click START
+3. WASD — move | Space — jump/shoot | R — restart
+
+OFFLINE / HOSTING
+-----------------
+Upload index.html to any static host (Vercel, Netlify, GitHub Pages).
+No build step required — all libraries load from CDN.
+
+Generated by Bradley's Game Studio
+https://bradleys-game-studio.vercel.app
+`;
+}
+function loadJSZip(){
+  if(window.JSZip)return Promise.resolve(window.JSZip);
+  return new Promise((res,rej)=>{
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload=()=>res(window.JSZip);
+    s.onerror=()=>rej(new Error('Could not load ZIP library'));
+    document.head.appendChild(s);
+  });
+}
+function triggerDownload(blob,filename){
+  const a=document.createElement('a');
+  const url=URL.createObjectURL(blob);
+  a.href=url;a.download=filename;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+async function buildGameZip(code,meta={}){
+  const JSZip=await loadJSZip();
+  const zip=new JSZip();
+  const folderName=gameSlug(meta.prompt);
+  const folder=zip.folder(folderName);
+  const playable=sanitizeGameHtml(code);
+  const info={
+    title:meta.prompt||'Untitled',
+    genre:meta.genre||genre,
+    createdAt:meta.date||new Date().toISOString(),
+    id:meta.id||null,
+    pubUrl:meta.pubUrl||null,
+    engine:'Three.js + Cannon.js',
+    exportedAt:new Date().toISOString(),
+    files:['index.html','source.html','README.txt','game-info.json']
+  };
+  folder.file('index.html',playable);
+  folder.file('source.html',code);
+  folder.file('README.txt',gameReadme(meta));
+  folder.file('game-info.json',JSON.stringify(info,null,2));
+  return{zip,folderName};
+}
+async function dlGamePackage(code,meta={},opts={}){
+  if(!code){if(!opts.silent)setStatus('No game to download','er');return false;}
+  if(!opts.silent)setStatus('Preparing download package…','s');
+  try{
+    const {zip,folderName}=await buildGameZip(code,meta);
+    const blob=await zip.generateAsync({type:'blob'});
+    triggerDownload(blob,folderName+'-game.zip');
+    if(!opts.silent)setStatus('Downloaded '+folderName+'-game.zip (HTML, source, README, metadata)','ok');
+    return true;
+  }catch(e){
+    if(!opts.silent)setStatus('Download failed: '+e.message,'er');
+    console.warn('Download package failed',e);
+    return false;
+  }
 }
 
 /* ═══ LIBRARY ═══ */
@@ -816,7 +1472,7 @@ function loadFromLib(id){
   const code=loadCode(id);if(!code){setStatus('Game not found','er');return;}
   const meta=libIdx().find(g=>g.id===id);
   if(meta){document.getElementById('ptxt').value=meta.prompt;document.getElementById('gname').textContent=meta.prompt;document.getElementById('gpill').textContent=meta.genre||genre;}
-  currentCode=code;showGame(code);setStatus('Loaded — click inside to play.','ok');
+  currentCode=code;currentGameId=id;showGame(code);setStatus('Loaded — click inside to play.','ok');
 }
 function captureThumb(gameId){
   setTimeout(()=>{
@@ -870,7 +1526,7 @@ function renderLibGrid(){
       <div class="lca-row">
         <button class="lca" onclick="event.stopPropagation();loadFromLib('${g.id}');closeLib()">▶ Play</button>
         <button class="lca pub" onclick="event.stopPropagation();pubFromLibId('${g.id}')">↑ Pub</button>
-        <button class="lca" onclick="event.stopPropagation();dlFromLib('${g.id}')">↓ Save</button>
+        <button class="lca" onclick="event.stopPropagation();dlFromLib('${g.id}')">↓ ZIP</button>
         <button class="lca del" onclick="event.stopPropagation();confirmDel('${g.id}')">🗑</button>
       </div>
     </div>`;
@@ -878,10 +1534,8 @@ function renderLibGrid(){
 }
 function dlFromLib(id){
   const code=loadCode(id);if(!code)return;
-  const meta=libIdx().find(g=>g.id===id);
-  const blob=new Blob([code],{type:'text/html'}),a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=((meta?.prompt||'game').slice(0,40)).replace(/[^a-z0-9]+/gi,'-')+'.html';a.click();
+  const meta=libIdx().find(g=>g.id===id)||{};
+  dlGamePackage(code,meta);
 }
 function confirmDel(id){
   const meta=libIdx().find(g=>g.id===id);
@@ -926,18 +1580,32 @@ function pubFromLibId(id){
 /* export all zip */
 async function exportAll(){
   const idx=libIdx();if(!idx.length){alert('No games in library yet!');return;}
-  setStatus('Preparing ZIP…','s');
-  const load=()=>new Promise((res,rej)=>{if(window.JSZip){res();return;}const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s);});
+  setStatus('Preparing library ZIP…','s');
   try{
-    await load();
-    const zip=new JSZip(),folder=zip.folder('bradleys-game-library');
+    const JSZip=await loadJSZip();
+    const zip=new JSZip(),root=zip.folder('bradleys-game-library');
     let n=0;
-    for(const meta of idx){const code=loadCode(meta.id);if(!code)continue;const nm=(meta.prompt||'game').slice(0,38).replace(/[^a-z0-9]+/gi,'-');folder.file(`${n+1}-${nm}.html`,code);n++;}
-    const ihtml=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bradley's Game Library</title><style>body{font-family:monospace;background:#07080d;color:#ccd6f0;padding:36px;max-width:680px;margin:0 auto}h1{color:#00ffcc;font-size:18px;margin-bottom:6px}p{color:#4a5878;font-size:11px;margin-bottom:28px}.g{padding:12px;border:1px solid rgba(0,255,204,0.14);border-radius:5px;margin-bottom:8px;display:flex;align-items:center;gap:11px}.g a{color:#00ffcc;text-decoration:none;font-size:12px;flex:1}.g a:hover{text-decoration:underline}.m{font-size:9px;color:#4a5878}.n{font-size:10px;color:#4a5878;min-width:24px}</style></head><body><h1>🎮 Bradley's Game Library</h1><p>Exported ${new Date().toLocaleDateString()} · ${n} games</p>${idx.filter((_,i)=>i<n).map((g,i)=>`<div class="g"><span class="n">${i+1}</span><a href="${i+1}-${(g.prompt||'game').slice(0,38).replace(/[^a-z0-9]+/gi,'-')}.html" target="_blank">${g.prompt}${g.pubUrl?` <span style="color:#00aaff">[live]</span>`:''}</a><span class="m">${g.genre} · ${g.date} · ${g.size}kb</span></div>`).join('')}</body></html>`;
-    folder.file('index.html',ihtml);
-    const blob=await zip.generateAsync({type:'blob'}),a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);a.download='bradleys-game-library.zip';a.click();
-    setStatus(`Exported ${n} games as ZIP!`,'ok');
+    const exported=[];
+    for(const meta of idx){
+      const code=loadCode(meta.id);if(!code)continue;
+      const folderName=(n+1)+'-'+gameSlug(meta.prompt);
+      const folder=root.folder(folderName);
+      folder.file('index.html',sanitizeGameHtml(code));
+      folder.file('source.html',code);
+      folder.file('README.txt',gameReadme(meta));
+      folder.file('game-info.json',JSON.stringify({
+        title:meta.prompt,genre:meta.genre,createdAt:meta.date,id:meta.id,pubUrl:meta.pubUrl||null,
+        exportedAt:new Date().toISOString(),files:['index.html','source.html','README.txt','game-info.json']
+      },null,2));
+      exported.push(meta);
+      n++;
+    }
+    const ihtml=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bradley's Game Library</title><style>body{font-family:monospace;background:#07080d;color:#ccd6f0;padding:36px;max-width:680px;margin:0 auto}h1{color:#00ffcc;font-size:18px}p{color:#4a5878;font-size:11px;margin:12px 0 28px}.g{padding:12px;border:1px solid rgba(0,255,204,0.14);border-radius:5px;margin-bottom:8px}.g a{color:#00ffcc;text-decoration:none;font-size:12px}.m{font-size:9px;color:#4a5878;display:block;margin-top:4px}</style></head><body><h1>🎮 Bradley's Game Library</h1><p>Exported ${new Date().toLocaleDateString()} · ${n} games · each folder includes index.html, source.html, README.txt, game-info.json</p>${exported.map((g,i)=>`<div class="g"><a href="${i+1}-${gameSlug(g.prompt)}/index.html" target="_blank">${g.prompt}${g.pubUrl?' <span style="color:#00aaff">[live]</span>':''}</a><span class="m">${g.genre} · ${g.date} · ${g.size}kb</span></div>`).join('')}</body></html>`;
+    root.file('index.html',ihtml);
+    root.file('README.txt','Bradley\'s Game Studio library export.\n\nEach numbered folder is a full game package with index.html, source.html, README.txt, and game-info.json.');
+    const blob=await zip.generateAsync({type:'blob'});
+    triggerDownload(blob,'bradleys-game-library.zip');
+    setStatus(`Exported ${n} full game packages as ZIP!`,'ok');
   }catch(e){setStatus('Export failed: '+e.message,'er');}
 }
 
@@ -1007,7 +1675,7 @@ function selExp(type){
   const notes={
     unity:'Unity export: C# MonoBehaviour scripts for player, enemies, game manager. Add your own 3D models in Unity.',
     godot:'Godot export: GDScript nodes for player, enemies, game manager. Scene structure guide included.',
-    html:'HTML5 export: Complete standalone game. Runs in any browser instantly.',
+    html:'HTML5 export: Full ZIP with index.html, source.html, README.txt, and game-info.json.',
     mobile:'Mobile export: Touch-optimized HTML5 + Capacitor config for iOS/Android app wrapping.'
   };
   document.getElementById('exp-note').textContent=notes[type];
@@ -1016,11 +1684,13 @@ function selExp(type){
 async function doExport(){
   if(!currentCode){setStatus('No game to export','er');return;}
   const apiKey=getKey();
-  if(selectedExp==='html'){dlGame();closeExp();return;}
+  if(selectedExp==='html'){await dlGamePackage(currentCode,gameMetaForCurrent());closeExp();return;}
 
   if(selectedExp==='mobile'){
     exportMobile();closeExp();return;
   }
+
+  if(ecoMode){closeExp();await exportStaticEngine(selectedExp==='unity');return;}
 
   if(!apiKey){setStatus('API key needed for Unity/Godot export','er');closeExp();return;}
 
@@ -1060,13 +1730,7 @@ Game code to convert:
 ${currentCode.slice(0,6000)}`;
 
   try{
-    const res=await fetch(apiUrl('/api/generate'),{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:4000,messages:[{role:'user',content:prompt}]})
-    });
-    if(!res.ok)throw new Error('API error '+res.status);
-    const data=await res.json();
+    const data=await callAnthropic({apiKey,model:MODELS.SONNET,max_tokens:4000,messages:[{role:'user',content:prompt}],label:'Unity/Godot export'});
     const text=(data.content||[]).map(b=>b.text||'').join('');
 
     // parse files
@@ -1208,113 +1872,45 @@ async function generate(){
   busy=true;
   ['gbtn','ebtn','mbtn'].forEach(id=>document.getElementById(id).disabled=true);
   ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='none');
-  setStatus('Generating 3D world — ~25 seconds…','s');
-  setSplash('⚡','BUILDING 3D WORLD','Generating Three.js scene, physics, lighting, enemies, and game logic…',true);
+  setStatus(ecoMode?'Generating complete game (Eco) — may take up to 60s if finishing in parts…':'Generating full-detail game — up to 90s for waves, boss, and full world…','s');
+  setSplash('⚡','BUILDING GAME',ecoMode?'Complete playable game: start screen, waves, enemies, win/lose, HUD…':'Maximum detail: multi-part characters, 22+ props, boss, victory screen…',true);
   document.getElementById('gname').textContent=prompt;
 
   const isMobile=mobileMode||genre.includes('mobile');
-  const mobileExtra=isMobile?`
-MOBILE/TOUCH REQUIREMENTS:
-- Add virtual on-screen joystick (left side, 120px circle with knob)
-- Add 2 action buttons (right side: jump/shoot + interact)
-- Touch controls map to WASD + Space
-- Use meta viewport: width=device-width, initial-scale=1, user-scalable=no
-- Make canvas fill full screen on mobile
-- Larger hit targets for enemies (easier on touch)
-- HUD text larger (min 16px) for mobile readability`:'';
+  const system=buildGameSystem(genre,isMobile,prompt);
 
-  const system=`You are a world-class Three.js game developer. Generate a complete, stunning, self-contained 3D browser game.
+  const user=ecoMode
+    ? `Create a COMPLETE, FULLY PLAYABLE ${genre} game: "${prompt}"
 
-ABSOLUTE OUTPUT RULES:
-- Output ONLY raw HTML starting with <!DOCTYPE html>, ending with </html>
-- Zero markdown, zero backticks, zero explanations — pure HTML only
-- Single file, no external assets
-- Keep the game compact (under 450 lines) but MUST fully complete all script/body/html tags
-- Finish the main game script completely — never stop mid-function
+Must work immediately after clicking START — not a block demo or unfinished prototype.
+- THREE.Group characters (not single boxes), 12+ themed props, patterned ground
+- Start screen + game-over + win/victory when objective complete
+- 2 enemy types, 4+ waves, collectibles, power-up, health/score HUD, physics, sounds
+Must fully close all script, body, and html tags.
+${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
+Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`
+    : `Create a COMPLETE, POLISHED ${genre} game: "${prompt}"
 
-REQUIRED LIBRARIES:
-1. Three.js r134: https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
-2. Cannon.js: https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js
-
-REQUIRED THREE.JS:
-- WebGLRenderer({antialias:true}) shadowMap.enabled=true PCFSoftShadowMap
-- renderer.setPixelRatio(Math.min(devicePixelRatio,2)) setSize(innerWidth,innerHeight)
-- PerspectiveCamera — smooth third-person follow with lerp
-- AmbientLight(0.3) + DirectionalLight castShadow mapSize 2048x2048
-- 2+ colored PointLights/SpotLights matching theme
-- scene.fog = new THREE.Fog(...)
-- Ground plane receiveShadow MeshStandardMaterial
-- Player mesh castShadow MeshStandardMaterial metalness+roughness
-- 10-12 environmental objects matching theme
-- 2 enemy types castShadow
-- THREE.Points particle system
-- THREE.Clock getDelta()
-- window resize handler
-
-REQUIRED CANNON.JS:
-- CANNON.World gravity, player body, ground body
-- Sync meshes to physics bodies each frame
-
-REQUIRED GAMEPLAY:
-- WASD + mouse/arrows + Space + R restart
-- Health system player+enemies, score, waves
-- localStorage high score
-- Web Audio API sounds (tones only)
-
-REQUIRED HUD + SCREENS:
-- Start screen with id="start-screen" and button id="start-btn" (NO inline onclick)
-- Game over screen with restart button id="restart-btn" (NO inline onclick)
-- Score/health/wave HUD overlays
-
-CRITICAL — START / RESTART HANDLERS (mandatory, global scope only):
-- Define at TOP LEVEL in a script tag (NOT inside DOMContentLoaded, NOT inside IIFE):
-  let gameStarted = false;
-  function startGame(){
-    gameStarted = true;
-    document.getElementById('start-screen').style.display='none';
-    if(typeof animate==='function'&&!window.__loopRunning){window.__loopRunning=true;animate();}
-    window.dispatchEvent(new Event('resize'));
-  }
-  function restartGame(){ location.reload(); }
-  window.startGame = startGame;
-  window.restartGame = restartGame;
-  window.gameStarted = true; // set true inside startGame
-  document.getElementById('start-btn').addEventListener('click', startGame);
-- Store renderer and camera on window: window.renderer = renderer; window.camera = camera;
-- Append renderer.domElement to document.body
-- html,body{margin:0;height:100%;overflow:hidden}
-- animate loop MUST call renderer.render(scene,camera) every frame once gameStarted is true
-- startGame MUST set gameStarted=true and begin the animate/requestAnimationFrame loop
-${mobileExtra}
-
-VISUAL: Rich colors, atmospheric lighting, dense world, animated elements.
-Genre: ${genre}`;
-
-  const user=`Create a complete polished ${genre} game: "${prompt}"
-Compact but complete — 2 enemy types, particle effects, increasing difficulty. Must fully close all script, body, and html tags.
+This must be a full playable game — NOT a block demo. Requirements:
+- Multi-part THREE.Group player and enemies (4–8 mesh parts each), themed to the setting
+- 22+ environmental props matching the theme (not random cubes)
+- 3 enemy types, 5+ waves, boss on final wave, collectibles, 2 power-ups
+- Start screen with lore + objective, victory screen, game-over screen, styled HUD
+- CanvasTexture or patterned ground, particles, fog, colored lights, shadows
+Must fully close all script, body, and html tags.
 ${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
 Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
 
   try{
-    const res=await fetch(apiUrl('/api/generate'),{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:12000,system,messages:[{role:'user',content:user}]})
-    });
-    if(!res.ok){let m=`HTTP ${res.status}`;try{const e=await res.json();m=e.error?.message||m;}catch(x){}throw new Error(m);}
-    const data=await res.json();
-    let code=(data.content||[]).map(b=>b.text||'').join('').trim();
-    code=code.replace(/^```html\s*/i,'').replace(/^```\s*/i,'').replace(/```\s*$/g,'').trim();
-    if(!code.startsWith('<!'))throw new Error('Unexpected output — try again');
-    if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
-    try{validateGameHtml(code);}catch(e){
-      code=sanitizeGameHtml(code);
-      validateGameHtml(code);
-    }
+    const code=await generateGameCode({apiKey,system,user,ecoMode});
     currentCode=code;
     const id=addToLib(prompt,genre,code);
+    currentGameId=id;
     if(id)captureThumb(id);
     showGame(code);
-    setStatus(`3D world ready! Click inside to play.${isMobile?' Touch controls included.':' WASD to move.'}`,'ok');
+    const meta={prompt,genre,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),id};
+    await dlGamePackage(code,meta,{silent:false});
+    setStatus(`Game ready! ZIP downloaded.${isMobile?' Touch controls included.':' Click START, then WASD to play.'}`,'ok');
   }catch(e){
     doneProgress();setStatus('Error: '+e.message,'er');
     setSplash('⚠','GENERATION FAILED',e.message+' — try a different prompt.',false);
@@ -1340,14 +1936,9 @@ async function enhancePrompt(){
   document.getElementById('edit-btn').textContent='✎ Edit';
   enhancedResult='';
   try{
-    const res=await fetch(apiUrl('/api/generate'),{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({_apiKey:apiKey,model:'claude-sonnet-4-5-20250929',max_tokens:500,
-        system:`You are a game design expert. Expand a short game idea into a vivid 3-5 sentence description for a ${genre} game. Include: setting, atmosphere, player, 2-3 enemy types, world details, gameplay loop. One flowing paragraph. No bullets. Output only the description.`,
-        messages:[{role:'user',content:`Game idea: "${raw}"\nGenre: ${genre}\n\nExpand into a rich 3D game description.`}]})
-    });
-    if(!res.ok)throw new Error('API error '+res.status);
-    const data=await res.json();
+    const enhModel=ecoMode?MODELS.HAIKU:MODELS.SONNET;
+    const enhSys=ecoMode?`Expand this ${genre} idea in 2-4 sentences. Setting, player goal, win condition, 2 enemy types, one paragraph only.`:`You are a game design expert. Expand a short game idea into a vivid 3-5 sentence description for a ${genre} game. Include: setting, atmosphere, player, 2-3 enemy types, world details, gameplay loop. One flowing paragraph. No bullets. Output only the description.`;
+    const data=await callAnthropic({apiKey,model:enhModel,max_tokens:ecoMode?220:500,system:enhSys,messages:[{role:'user',content:`Game idea: "${raw}"\nGenre: ${genre}`}],label:'Enhance prompt'});
     enhancedResult=(data.content||[]).map(b=>b.text||'').join('').trim();
     document.getElementById('enh-txt').className='';
     document.getElementById('enh-txt').textContent=enhancedResult;
@@ -1380,18 +1971,20 @@ function openHelp(){document.getElementById('hmodal').style.display='flex';}
 function closeHelp(){document.getElementById('hmodal').style.display='none';}
 
 /* ═══ MODAL CLOSE ═══ */
-['emodal','libmodal','hmodal','pubmodal','expmodal'].forEach(id=>{
+['emodal','libmodal','hmodal','pubmodal','expmodal','umodal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)document.getElementById(id).style.display='none';});
 });
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape')['emodal','libmodal','hmodal','pubmodal','expmodal'].forEach(id=>document.getElementById(id).style.display='none');
-});
-document.getElementById('ptxt').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();generate();}});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();generate();}});
+window.addEventListener('message',e=>{if(e.data?.type==='bgs-game-error')reportGameError(e.data.msg||'Unknown error');});
+setupGameInputBridge();
 
 /* ═══ INIT ═══ */
 try{const k=localStorage.getItem('bgs_key');if(k){document.getElementById('ak').value=k;checkKey();}}catch(e){}
 try{const t=localStorage.getItem('bgs_vtoken');if(t)document.getElementById('pub-token').value=t;}catch(e){}
 document.getElementById('pub-token').addEventListener('change',()=>{try{localStorage.setItem('bgs_vtoken',document.getElementById('pub-token').value);}catch(e){}});
+try{ecoMode=localStorage.getItem('bgs_eco')==='1';}catch(e){ecoMode=false;}
+if(ecoMode)document.getElementById('ecobtn')?.classList.add('on');
+updateUsageUI();
 renderChips();
 refreshSidebar();
 </script>
