@@ -6,6 +6,7 @@
   ],
   "routes": [
     { "src": "/api/generate", "dest": "/api/generate.js" },
+    { "src": "/api/billing",  "dest": "/api/billing.js"  },
     { "src": "/api/publish",  "dest": "/api/publish.js"  },
     { "src": "/favicon.ico",  "dest": "/public/favicon.svg" },
     { "src": "/",             "dest": "/public/index.html" },

@@ -310,7 +310,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <input type="password" id="ak" placeholder="sk-ant-api03-..." autocomplete="off" oninput="checkKey()" title="Get your key at console.anthropic.com">
     <span id="ks"></span>
     <button type="button" id="ecobtn" onclick="toggleEco()" title="Eco ON = lower API cost (shorter prompts). Both modes build complete playable games.">⚡ ECO</button>
-    <span id="usage-month" onclick="showUsage()" title="Monthly API spend estimate — click to set budget"></span>
+    <span id="usage-month" onclick="showUsage()" title="Monthly API spend — click for live Anthropic billing"></span>
   </div>
 </div>
 
@@ -529,16 +529,22 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="mh"><h2>MONTHLY API SPEND</h2><button class="mclose" onclick="closeUsage()">✕</button></div>
     <div class="um-body">
       <div class="um-hero">
-        <div class="um-card"><span id="um-month-label">This month</span><strong id="um-spent">$0.00</strong></div>
-        <div class="um-card right" id="um-left-card"><span>Remaining</span><strong id="um-left">—</strong></div>
+        <div class="um-card"><span id="um-month-label">This month</span><strong id="um-spent">$0.00</strong><small id="um-spent-src" style="display:block;font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:4px;font-weight:400"></small></div>
+        <div class="um-card right" id="um-left-card"><span id="um-left-label">Remaining</span><strong id="um-left">—</strong><small id="um-left-src" style="display:block;font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:4px;font-weight:400"></small></div>
       </div>
       <div class="um-bar" id="um-bar-wrap" style="display:none"><i id="um-bar" style="width:0%"></i></div>
       <div class="um-row">
-        <label for="um-budget">Monthly budget $</label>
-        <input type="number" id="um-budget" min="0" step="1" placeholder="e.g. 25" onkeydown="if(event.key==='Enter')saveMonthlyBudget()">
+        <label for="um-admin">Admin key</label>
+        <input type="password" id="um-admin" placeholder="sk-ant-admin…" autocomplete="off" title="Admin API key for live billing from Anthropic">
+        <button class="lbtn blue" type="button" onclick="saveAdminKey(true)">SAVE</button>
+        <button class="lbtn" type="button" onclick="fetchAnthropicBilling(true)">↻</button>
+      </div>
+      <div class="um-row">
+        <label for="um-budget">Budget $</label>
+        <input type="number" id="um-budget" min="0" step="1" placeholder="optional cap" onkeydown="if(event.key==='Enter')saveMonthlyBudget()">
         <button class="lbtn gold" type="button" onclick="saveMonthlyBudget()">SAVE</button>
       </div>
-      <p class="um-note">Estimates from Anthropic token pricing in this browser — not your live Anthropic invoice. Resets each calendar month. Set a budget to see how much is left.</p>
+      <p class="um-note" id="um-note">Live billing uses an <strong>Admin API key</strong> (not your game key) from <a href="https://console.anthropic.com/settings/admin-keys" target="_blank" rel="noopener" style="color:var(--c1)">console.anthropic.com/settings/admin-keys</a>. Shows real month spend from Anthropic plus prepaid credits left when available. Data may lag ~5 minutes. Without an admin key, the studio shows local estimates only.</p>
       <div class="um-lines" id="um-detail"></div>
     </div>
   </div>
@@ -557,7 +563,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="hrow"><span class="hnum">6</span><span>Hit ↑ PUBLISH to deploy your game live on Vercel with a shareable URL + Neon leaderboard</span></div>
     <div class="hrow"><span class="hnum">7</span><span>Every generated game auto-downloads as a ZIP (index.html, source, README, metadata). Use ⬇ EXPORT for Unity, Godot, or Mobile packages.</span></div>
     <div class="hrow"><span class="hnum">8</span><span>📚 Library saves every game — click any card to preview live</span></div>
-    <div class="hnote">⚡ ECO OFF (default) = full Anthropic games with waves, bosses, and themed worlds. ECO ON = lower API cost (both modes build complete playable games). Top-right shows <strong style="color:var(--c1)">monthly spend & amount left</strong> once you set a budget (click it). Status bar has session totals. Estimates are local — check console.anthropic.com for real billing. Your API key stays in your browser only. Publish needs a Vercel token. Leaderboards need Neon (neon.tech).</div>
+    <div class="hnote">⚡ ECO OFF = fullest games. Click <strong style="color:var(--c1)">monthly spend</strong> top-right → add your <strong>Admin API key</strong> (console.anthropic.com/settings/admin-keys) for <strong>live Anthropic billing</strong> — real month spend + prepaid credits left. Game key (sk-ant-api…) stays separate. Optional budget cap if prepaid balance is unavailable.</div>
   </div>
 </div>
 
@@ -615,7 +621,70 @@ function mergeContinuation(base,add){
 }
 const GEN_MAX_TOKENS={full:16384,eco:8192};
 const GEN_MAX_CONTINUATIONS=2;
-const GEN_CONTINUE_USER=`Your game HTML was cut off mid-generation. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with </script></body></html>. Include working startGame(), animate(), game-over and victory screens if not yet written.`;
+const GEN_CONTINUE_USER=`Your game HTML was cut off mid-generation. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with </script></body></html>. You MUST finish buildGameAssets() (world, player, enemies, collectibles, VFX, sounds, HUD), startGame(), animate(), game-over and victory screens.`;
+function gameAssetRules(eco,prompt,g){
+  const n=eco?12:22;
+  return `
+═══ BUILD ALL GAME ASSETS AT LOAD (MANDATORY — FULL VIDEO GAME) ═══
+Theme: "${prompt||'adventure world'}" | Genre: ${g}
+The user must click START and play a COMPLETE game immediately. Every asset is created in JavaScript during page load — no placeholders, no "TODO", no empty scene, no loading external models at runtime.
+
+REQUIRED: function buildGameAssets(){ ... } called once before the start screen. It must create and attach ALL of the following to scene/world/DOM:
+
+1. WORLD ASSETS
+   - Ground: large mesh + CanvasTexture or procedural Texture (NOT flat gray #888)
+   - Sky: scene.background + fog OR gradient sky sphere
+   - ${n}+ themed environment props as THREE.Group (trees, rocks, walls, lamps, crates, arches — match theme)
+   - Boundary or level geometry so the play space feels like a real level
+
+2. CHARACTER ASSETS
+   - Player: THREE.Group with ${eco?'3–6':'4–8'} body parts (torso, head, limbs, weapon) — NOT one BoxGeometry
+   - ${eco?'2':'3'} enemy archetypes (chaser, patroller, shooter): each unique multi-part Group + spawn data
+   ${eco?'':'- Boss mesh on final wave (larger Group, more HP)'}
+   - Cannon.js bodies for player, ground, enemies; sync meshes every frame
+
+3. ITEM & VFX ASSETS
+   - Collectibles: pool of ${eco?'6+':'10+'} coins/orbs/flags with bob animation
+   - ${eco?'1':'2'} power-up type(s) (health, speed/shield) with distinct colored meshes
+   - Particle system(s): atmosphere + hit/collect burst
+   - Optional: muzzle flash, damage numbers, trail on player
+
+4. AUDIO ASSETS (Web Audio API — no external MP3 URLs)
+   - Create 6+ sounds in a sounds{} map using oscillators: jump, shoot, hit, hurt, collect, waveStart, victory
+   - Call play functions from gameplay events
+
+5. UI / SCREEN ASSETS (HTML in <body>)
+   - #start-screen: title, lore, controls, objective, #start-btn
+   - #game-over-screen + restart control
+   - #victory-screen when player wins
+   - #hud or styled overlay: health bar, score, wave counter, objective reminder
+
+6. GAMEPLAY SYSTEMS (must be wired, not stubbed)
+   - Wave spawner: 4–5+ waves escalating difficulty, boss on last wave
+   - Win condition + lose on death (health reaches 0)
+   - Score + localStorage high score
+   - Player controls via window.keys in animate()
+
+Order: init Three.js → buildGameAssets() → show #start-screen → startGame() hides menu and runs animate().
+Never leave scene empty. Never use a single box as the whole player or all enemies.`;
+}
+function validateGameAssets(code,js){
+  const j=(js||'').toLowerCase(),h=code.toLowerCase(),missing=[];
+  if(!/id=["']start-screen["']/i.test(code))missing.push('start screen');
+  if(!/game-over-screen|gameover-screen/i.test(code))missing.push('game over screen');
+  if(!/victory-screen|win-screen|you win|level complete|gamestate\s*=\s*['"]win/i.test(h+j))missing.push('victory/win');
+  if(!/(health|hp-bar|healthbar|playerhp|#health)/i.test(h+j))missing.push('health HUD');
+  if(!/score/i.test(j))missing.push('score');
+  if(!/wave/i.test(j))missing.push('waves');
+  if(!/(enemy|enemies|spawnenemy|enemytypes)/i.test(j))missing.push('enemies');
+  if(!/(collect|coin|orb|pickup|gem|powerup|power-up)/i.test(j))missing.push('collectibles');
+  if(!/(cannon\.world|new\s+cannon\.world|cannon\.physics)/i.test(j))missing.push('physics');
+  if(!/(audiocontext|oscillator|createsound|playsound|sounds\s*[=:{]|sfx|playtone)/i.test(j))missing.push('sound effects');
+  if(!/(canvastexture|textureloader|repeatwrapping|drawimage|createpattern)/i.test(j))missing.push('textures');
+  if(!/(three\.group|new\s+three\.group\(\)|new\s+group\s*\()/i.test(j))missing.push('multi-part models');
+  if(!/buildgameassets|creategameassets|initassets|setupworld|initworld|createlevel/i.test(j))missing.push('asset setup');
+  if(missing.length>=3)throw new Error('Missing game assets: '+missing.slice(0,5).join(', ')+' — building more…');
+}
 async function generateGameCode({apiKey,system,user,ecoMode}){
   const max_tokens=ecoMode?GEN_MAX_TOKENS.eco:GEN_MAX_TOKENS.full;
   const messages=[{role:'user',content:user}];
@@ -675,6 +744,7 @@ function validateGameHtml(code){
     if(!/function\s+animate\s*\(/i.test(js)&&!/requestAnimationFrame\s*\(\s*animate/i.test(js))
       throw new Error('Game missing render loop — generate again.');
     if(!/WebGLRenderer/i.test(js))throw new Error('Game missing 3D renderer — generate again.');
+    validateGameAssets(code,js);
   }
 }
 function sanitizeGameHtml(code){
@@ -728,7 +798,7 @@ const CHIPS={
   '3D open world adventure':['explore magical fantasy island','post-apocalyptic wasteland roam','pirate island treasure hunt','viking village raid'],
   '3D mobile game with touch controls':['tap-to-jump endless runner','swipe shooter on mobile','touch dodge arcade game','drag-to-aim slingshot game']
 };
-const PMSG=['Initializing Three.js engine…','Generating 3D world geometry…','Setting up lighting & shadows…','Building enemy AI systems…','Adding Cannon.js physics…','Creating particle effects…','Compiling game logic…','Finalizing your world…'];
+const PMSG=['Initializing Three.js engine…','Building world & level assets…','Creating player & enemy models…','Adding collectibles & power-ups…','Wiring physics & wave systems…','Generating sound effects…','Building HUD & game screens…','Finalizing playable game…'];
 
 /* ═══ STATE ═══ */
 let genre='3D platformer',busy=false,currentCode=null,currentGameId=null,enhancedResult='',pvId=null,mobileMode=false,selectedExp='unity';
@@ -737,7 +807,10 @@ const MODELS={SONNET:'claude-sonnet-4-5-20250929',HAIKU:'claude-haiku-4-5-202510
 const PRICING={'claude-sonnet-4-5-20250929':{in:3,out:15},'claude-haiku-4-5-20251001':{in:0.8,out:4}};
 const UK='bgs_usage';
 const UK_BUDGET='bgs_month_budget';
+const UK_ADMIN='bgs_admin_key';
 let ecoMode=false;
+let billing={monthCostUsd:null,prepaidCreditsUsd:null,monthKey:null,orgName:null,source:null,error:null,loading:false,fetchedAt:0};
+let billingTimer=null;
 function currentMonthKey(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function monthLabel(key){const [y,m]=(key||currentMonthKey()).split('-');const names=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return (names[+m-1]||m)+' '+y;}
 function rollUsageMonth(u){
@@ -775,68 +848,125 @@ function persistUsage(){
 function fmtTok(n){return n>=1000?(n/1000).toFixed(1)+'k':String(n|0);}
 function fmtCost(n){const x=Number(n)||0;return x<0.01&&x>0?(x*100).toFixed(2)+'¢':'$'+x.toFixed(2);}
 function estCost(model,inT,outT){const p=PRICING[model]||PRICING[MODELS.SONNET];return(inT/1e6)*p.in+(outT/1e6)*p.out;}
-function monthRemaining(){if(usage.monthlyBudget==null||usage.monthlyBudget<=0)return null;return usage.monthlyBudget-usage.monthCost;}
-function monthPct(){if(!usage.monthlyBudget||usage.monthlyBudget<=0)return 0;return Math.min(100,(usage.monthCost/usage.monthlyBudget)*100);}
+function monthSpent(){return billing.monthCostUsd!=null?billing.monthCostUsd:usage.monthCost;}
+function monthRemaining(){
+  if(billing.prepaidCreditsUsd!=null)return billing.prepaidCreditsUsd;
+  if(usage.monthlyBudget!=null&&usage.monthlyBudget>0)return usage.monthlyBudget-monthSpent();
+  return null;
+}
+function monthPct(){
+  const spent=monthSpent();
+  if(billing.prepaidCreditsUsd!=null&&spent>0){
+    const total=spent+billing.prepaidCreditsUsd;
+    if(total>0)return Math.min(100,(spent/total)*100);
+  }
+  if(!usage.monthlyBudget||usage.monthlyBudget<=0)return 0;
+  return Math.min(100,(spent/usage.monthlyBudget)*100);
+}
+function isLiveBilling(){return billing.monthCostUsd!=null&&billing.monthKey===currentMonthKey();}
+function getAdminKey(){return (document.getElementById('um-admin')?.value||localStorage.getItem(UK_ADMIN)||'').trim();}
+function saveAdminKey(refresh){
+  const k=(document.getElementById('um-admin')?.value||'').trim();
+  try{if(k)localStorage.setItem(UK_ADMIN,k);else localStorage.removeItem(UK_ADMIN);}catch(e){}
+  if(refresh)fetchAnthropicBilling(true);
+  else updateUsageUI();
+}
+async function fetchAnthropicBilling(force){
+  const adminKey=getAdminKey();
+  if(!adminKey){billing={...billing,monthCostUsd:null,prepaidCreditsUsd:null,source:null,error:null};updateUsageUI();return;}
+  if(!adminKey.startsWith('sk-ant-admin')){billing.error='Admin key must start with sk-ant-admin';updateUsageUI();return;}
+  if(billing.loading&&!force)return;
+  if(!force&&billing.fetchedAt&&Date.now()-billing.fetchedAt<120000)return;
+  billing.loading=true;billing.error=null;updateUsageUI();
+  try{
+    const res=await fetch(apiUrl('/api/billing'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_adminKey:adminKey})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error?.message||`HTTP ${res.status}`);
+    billing={monthCostUsd:data.monthCostUsd,prepaidCreditsUsd:data.prepaidCreditsUsd,monthKey:data.monthKey,orgName:data.organization?.name||null,source:'anthropic',error:null,loading:false,fetchedAt:data.fetchedAt||Date.now()};
+  }catch(e){
+    billing={...billing,error:e.message,loading:false,source:null};
+  }
+  updateUsageUI();
+}
+function scheduleBillingRefresh(){
+  clearTimeout(billingTimer);
+  billingTimer=setTimeout(()=>fetchAnthropicBilling(false),8000);
+}
 function recordUsage(data,model,label){
   usage=rollUsageMonth(usage);
   const inT=data.usage?.input_tokens||0,outT=data.usage?.output_tokens||0,c=estCost(model,inT,outT);
   usage.sessionIn+=inT;usage.sessionOut+=outT;usage.sessionCost+=c;
   usage.totalIn+=inT;usage.totalOut+=outT;usage.totalCost+=c;
-  usage.monthIn+=inT;usage.monthOut+=outT;usage.monthCost+=c;
+  if(!isLiveBilling()){usage.monthIn+=inT;usage.monthOut+=outT;usage.monthCost+=c;}
   usage.calls++;
   usage.lastCall={label,inT,outT,model,at:Date.now(),cost:c};
   persistUsage();
   updateUsageUI();
+  scheduleBillingRefresh();
 }
 function updateUsageUI(){
   usage=rollUsageMonth(usage);
   const monthEl=document.getElementById('usage-month');
   const barEl=document.getElementById('usage');
-  const spent=usage.monthCost,left=monthRemaining();
+  const spent=monthSpent(),left=monthRemaining(),live=isLiveBilling();
+  const leftLabel=billing.prepaidCreditsUsd!=null?'credits':(usage.monthlyBudget?'budget':'');
   if(monthEl){
     monthEl.classList.remove('warn','over');
-    if(usage.monthlyBudget!=null&&usage.monthlyBudget>0){
-      if(left<=0){monthEl.textContent=fmtCost(spent)+' / '+fmtCost(usage.monthlyBudget)+' · over';monthEl.classList.add('over');}
-      else if(left/usage.monthlyBudget<0.15){monthEl.textContent=fmtCost(spent)+' · '+fmtCost(left)+' left';monthEl.classList.add('warn');}
-      else monthEl.textContent=fmtCost(spent)+' · '+fmtCost(left)+' left';
-    }else if(spent>0)monthEl.textContent=fmtCost(spent)+' this month';
-    else monthEl.textContent='$0 month';
-    monthEl.title='Spent '+fmtCost(spent)+' in '+monthLabel(usage.monthKey)+(usage.monthlyBudget?' · budget '+fmtCost(usage.monthlyBudget):'')+' — click for details';
+    if(billing.loading)monthEl.textContent='syncing…';
+    else if(left!=null&&leftLabel){
+      if(left<=0&&billing.prepaidCreditsUsd!=null){monthEl.textContent=fmtCost(spent)+' · no credits';monthEl.classList.add('over');}
+      else if(left<=0){monthEl.textContent=fmtCost(spent)+' / '+fmtCost(usage.monthlyBudget)+' · over';monthEl.classList.add('over');}
+      else if(usage.monthlyBudget&&left/usage.monthlyBudget<0.15){monthEl.textContent=fmtCost(spent)+' · '+fmtCost(left)+' left';monthEl.classList.add('warn');}
+      else monthEl.textContent=fmtCost(spent)+' · '+fmtCost(left)+' '+leftLabel;
+    }else monthEl.textContent=(spent>0?fmtCost(spent):'$0')+(live?' live':'')+' month';
+    monthEl.title=(live?'Anthropic live · ':'Estimate · ')+'Spent '+fmtCost(spent)+' in '+monthLabel(usage.monthKey)+(left!=null?' · '+fmtCost(Math.max(0,left))+' '+leftLabel+' left':'')+' — click for details';
   }
   if(barEl){
     const tot=usage.sessionIn+usage.sessionOut;
     const parts=[];
-    if(spent>0||usage.monthlyBudget)parts.push(fmtCost(spent)+' month');
-    if(usage.monthlyBudget!=null&&usage.monthlyBudget>0&&left!=null)parts.push(fmtCost(Math.max(0,left))+' left');
+    if(spent>0||live)parts.push(fmtCost(spent)+(live?' live':'')+' month');
+    if(left!=null)parts.push(fmtCost(Math.max(0,left))+' left');
     if(tot)parts.push(fmtTok(tot)+' tok session');
-    barEl.textContent=parts.join(' · ');
+    barEl.textContent=parts.join(' · ')||(billing.error?'billing error':'');
     barEl.title=monthEl?.title||'API usage';
   }
   if(document.getElementById('umodal')?.style.display==='flex')renderUsageModal();
 }
 function renderUsageModal(){
-  const left=monthRemaining(),pct=monthPct(),hasBudget=usage.monthlyBudget!=null&&usage.monthlyBudget>0;
+  const spent=monthSpent(),left=monthRemaining(),pct=monthPct(),live=isLiveBilling();
+  const hasBudget=usage.monthlyBudget!=null&&usage.monthlyBudget>0;
+  const hasPrepaid=billing.prepaidCreditsUsd!=null;
   document.getElementById('um-month-label').textContent=monthLabel(usage.monthKey);
-  document.getElementById('um-spent').textContent=fmtCost(usage.monthCost);
-  const leftEl=document.getElementById('um-left'),leftCard=document.getElementById('um-left-card');
-  if(hasBudget){
-    leftEl.textContent=left<=0?'$0.00':fmtCost(left);
-    leftCard.classList.toggle('over',left<=0);
-  }else{leftEl.textContent='Set budget';leftCard.classList.remove('over');}
+  document.getElementById('um-spent').textContent=billing.loading?'…':fmtCost(spent);
+  document.getElementById('um-spent-src').textContent=live?'Anthropic live billing':(billing.error?'Error: '+billing.error:'Local estimate (add admin key)');
+  const leftEl=document.getElementById('um-left'),leftCard=document.getElementById('um-left-card'),leftLbl=document.getElementById('um-left-label');
+  if(hasPrepaid){leftLbl.textContent='Prepaid credits';leftEl.textContent=fmtCost(Math.max(0,left));leftCard.classList.toggle('over',left<=0);}
+  else if(hasBudget){leftLbl.textContent='Budget left';leftEl.textContent=left<=0?'$0.00':fmtCost(left);leftCard.classList.toggle('over',left<=0);}
+  else{leftLbl.textContent='Remaining';leftEl.textContent='—';leftCard.classList.remove('over');}
+  document.getElementById('um-left-src').textContent=hasPrepaid?'From Anthropic prepaid balance':(hasBudget?'Your monthly cap minus spend':'Set budget or add admin key for credits');
   const wrap=document.getElementById('um-bar-wrap'),bar=document.getElementById('um-bar');
-  if(hasBudget){wrap.style.display='block';bar.style.width=pct+'%';wrap.classList.toggle('warn',pct>=85);}else wrap.style.display='none';
+  if(hasPrepaid||hasBudget){wrap.style.display='block';bar.style.width=pct+'%';wrap.classList.toggle('warn',pct>=85);}else wrap.style.display='none';
   const bud=document.getElementById('um-budget');
   if(bud&&document.activeElement!==bud)bud.value=hasBudget?String(usage.monthlyBudget):'';
+  const adm=document.getElementById('um-admin');
+  if(adm&&document.activeElement!==adm&&!adm.value){try{const s=localStorage.getItem(UK_ADMIN);if(s)adm.value=s;}catch(e){}}
   document.getElementById('um-detail').innerHTML=[
-    hasBudget?`Budget: <strong style="color:var(--c1)">${fmtCost(usage.monthlyBudget)}</strong> / month`:'',
-    `This month: ${fmtTok(usage.monthIn)} in + ${fmtTok(usage.monthOut)} out tokens`,
-    `Session: ${fmtTok(usage.sessionIn)} in + ${fmtTok(usage.sessionOut)} out · ${fmtCost(usage.sessionCost)}`,
-    `All time: ${fmtTok(usage.totalIn)} in + ${fmtTok(usage.totalOut)} out · ${fmtCost(usage.totalCost)}`,
-    usage.lastCall?`Last call: ${usage.lastCall.label} · ${fmtCost(usage.lastCall.cost)}`:'',
+    billing.orgName?`Organization: <strong style="color:var(--c1)">${billing.orgName}</strong>`:'',
+    live?`Anthropic month spend: <strong style="color:var(--c1)">${fmtCost(billing.monthCostUsd)}</strong>`:'',
+    hasPrepaid?`Prepaid credits left: <strong style="color:#00ff88">${fmtCost(billing.prepaidCreditsUsd)}</strong>`:'',
+    hasBudget?`Your budget cap: ${fmtCost(usage.monthlyBudget)} / month`:'',
+    `Studio estimate (session): ${fmtTok(usage.sessionIn)} in + ${fmtTok(usage.sessionOut)} out · ${fmtCost(usage.sessionCost)}`,
+    `Local token tally: ${fmtTok(usage.monthIn)} in + ${fmtTok(usage.monthOut)} out this month`,
+    usage.lastCall?`Last generate: ${usage.lastCall.label} · ~${fmtCost(usage.lastCall.cost)}`:'',
+    billing.fetchedAt?`Last sync: ${new Date(billing.fetchedAt).toLocaleString()}`:'',
     ecoMode?'⚡ Eco ON':'Eco OFF — full detail'
   ].filter(Boolean).join('<br>');
 }
-function showUsage(){document.getElementById('umodal').style.display='flex';renderUsageModal();}
+function showUsage(){
+  document.getElementById('umodal').style.display='flex';
+  renderUsageModal();
+  fetchAnthropicBilling(false);
+}
 function closeUsage(){document.getElementById('umodal').style.display='none';}
 function saveMonthlyBudget(){
   const raw=document.getElementById('um-budget').value.trim();
@@ -864,12 +994,15 @@ async function callAnthropic({apiKey,model,max_tokens,system,messages,label}){
   return data;
 }
 function buildGameSystem(g,isMobile,prompt){
-  if(!ecoMode)return `You are an elite Three.js game studio lead. Deliver a COMPLETE, POLISHED, PLAYABLE 3D browser game — not a tech demo of plain cubes.
+  const assets=gameAssetRules(false,prompt,g);
+  if(!ecoMode)return `You are an elite Three.js game studio lead. Deliver a COMPLETE, POLISHED, PLAYABLE 3D browser game — a full video game the user can play immediately, not a tech demo of plain cubes.
+${assets}
 
 OUTPUT RULES:
 - Output ONLY raw HTML: <!DOCTYPE html> … </html>. No markdown, no backticks, no commentary.
 - Single self-contained file. Libraries from CDN only (Three.js r134 + Cannon.js).
 - Must fully close every script/body/html tag. Never truncate mid-function.
+- ALL visual, audio, UI, and gameplay assets must be built inside buildGameAssets() before the player clicks START.
 
 CDN:
 - https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
@@ -927,9 +1060,11 @@ window.renderer=renderer; window.scene=scene; window.camera=camera;
 ${isMobile?`MOBILE: virtual joystick (left), 2 action buttons (right), viewport meta, touch-friendly HUD.` : ''}
 
 This must feel like a real indie game someone would publish, built entirely from Three.js primitives — ambitious, themed, and fun.`;
-  return `You are a Three.js game developer. Deliver a COMPLETE, FULLY PLAYABLE 3D browser game — ready to play the moment the user clicks START. Not a demo, not a sandbox, not plain cubes.
+  const assetsEco=gameAssetRules(true,prompt,g);
+  return `You are a Three.js game developer. Deliver a COMPLETE, FULLY PLAYABLE 3D browser game — a full video game ready the moment the user clicks START. Not a demo, not a sandbox, not plain cubes.
+${assetsEco}
 
-OUTPUT: ONLY raw HTML (<!DOCTYPE html>…</html>). No markdown. Single file. Three.js r134 + Cannon.js from CDN. Close every tag — never truncate mid-function.
+OUTPUT: ONLY raw HTML (<!DOCTYPE html>…</html>). No markdown. Single file. Three.js r134 + Cannon.js from CDN. Close every tag — never truncate mid-function. Call buildGameAssets() at load with ALL assets before START.
 
 CDN:
 - https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
@@ -988,7 +1123,8 @@ async function exportStaticEngine(isUnity){
 function checkKey(){
   const k=document.getElementById('ak').value.trim(),el=document.getElementById('ks');
   if(!k){el.textContent='';el.className='';return;}
-  const ok=k.startsWith('sk-ant-')&&k.length>20;
+  if(k.startsWith('sk-ant-admin')){el.textContent='↳ admin key — paste in billing';el.className='';return;}
+  const ok=k.startsWith('sk-ant-api')&&k.length>20;
   el.textContent=ok?'✓ READY':'✗ INVALID';el.className=ok?'ok':'bad';
   try{localStorage.setItem('bgs_key',k);}catch(e){}
 }
@@ -1873,31 +2009,35 @@ async function generate(){
   ['gbtn','ebtn','mbtn'].forEach(id=>document.getElementById(id).disabled=true);
   ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='none');
   setStatus(ecoMode?'Generating complete game (Eco) — may take up to 60s if finishing in parts…':'Generating full-detail game — up to 90s for waves, boss, and full world…','s');
-  setSplash('⚡','BUILDING GAME',ecoMode?'Complete playable game: start screen, waves, enemies, win/lose, HUD…':'Maximum detail: multi-part characters, 22+ props, boss, victory screen…',true);
+  setSplash('⚡','BUILDING FULL GAME',ecoMode?'Loading all assets: world, characters, items, sounds, HUD, waves…':'Building complete video game: models, level, enemies, boss, audio, UI…',true);
   document.getElementById('gname').textContent=prompt;
 
   const isMobile=mobileMode||genre.includes('mobile');
   const system=buildGameSystem(genre,isMobile,prompt);
 
   const user=ecoMode
-    ? `Create a COMPLETE, FULLY PLAYABLE ${genre} game: "${prompt}"
+    ? `Create a COMPLETE, FULLY PLAYABLE ${genre} video game: "${prompt}"
 
+Include ALL game assets in buildGameAssets() at page load (before START):
+- World: textured ground, sky/fog, 12+ themed prop Groups, level boundaries
+- Characters: multi-part THREE.Group player + 2 enemy types + collectibles + 1 power-up
+- Audio: 6+ Web Audio synth sounds (jump, hit, collect, shoot, hurt, victory)
+- UI: #start-screen, #game-over-screen, #victory-screen, HUD (health, score, waves)
+- Gameplay: 4+ waves, win/lose logic, Cannon physics, window.keys controls
 Must work immediately after clicking START — not a block demo or unfinished prototype.
-- THREE.Group characters (not single boxes), 12+ themed props, patterned ground
-- Start screen + game-over + win/victory when objective complete
-- 2 enemy types, 4+ waves, collectibles, power-up, health/score HUD, physics, sounds
 Must fully close all script, body, and html tags.
 ${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
 Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`
-    : `Create a COMPLETE, POLISHED ${genre} game: "${prompt}"
+    : `Create a COMPLETE, POLISHED ${genre} video game: "${prompt}"
 
-This must be a full playable game — NOT a block demo. Requirements:
-- Multi-part THREE.Group player and enemies (4–8 mesh parts each), themed to the setting
-- 22+ environmental props matching the theme (not random cubes)
-- 3 enemy types, 5+ waves, boss on final wave, collectibles, 2 power-ups
-- Start screen with lore + objective, victory screen, game-over screen, styled HUD
-- CanvasTexture or patterned ground, particles, fog, colored lights, shadows
-Must fully close all script, body, and html tags.
+Include ALL game assets in buildGameAssets() at page load (before START):
+- World: CanvasTexture ground, sky, fog, 22+ themed props, full level layout
+- Characters: multi-part player (4–8 parts), 3 enemy types, boss, collectibles, 2 power-ups
+- VFX: particles, hit/collect effects
+- Audio: 6+ Web Audio sounds wired to gameplay events
+- UI: start screen with lore, victory screen, game-over screen, styled HUD
+- Gameplay: 5+ waves, boss final wave, Cannon physics, difficulty curve, localStorage high score
+This must be a full video game — NOT a block demo. Must fully close all script, body, and html tags.
 ${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
 Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
 
@@ -1984,7 +2124,9 @@ try{const t=localStorage.getItem('bgs_vtoken');if(t)document.getElementById('pub
 document.getElementById('pub-token').addEventListener('change',()=>{try{localStorage.setItem('bgs_vtoken',document.getElementById('pub-token').value);}catch(e){}});
 try{ecoMode=localStorage.getItem('bgs_eco')==='1';}catch(e){ecoMode=false;}
 if(ecoMode)document.getElementById('ecobtn')?.classList.add('on');
+try{const ak=localStorage.getItem(UK_ADMIN);if(ak&&document.getElementById('um-admin'))document.getElementById('um-admin').value=ak;}catch(e){}
 updateUsageUI();
+fetchAnthropicBilling(false);
 renderChips();
 refreshSidebar();
 </script>
