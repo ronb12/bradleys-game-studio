@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a2838"/>
+      <stop offset="30%" stop-color="#3a5060"/>
+      <stop offset="55%" stop-color="#b89060"/>
+      <stop offset="100%" stop-color="#6a4828"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="78%" cy="22%" r="18%">
+      <stop offset="0%" stop-color="#fff4d8" stop-opacity="0.85"/>
+      <stop offset="40%" stop-color="#ffe0a0" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#ff9040" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vig" cx="50%" cy="45%" r="72%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#000" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.7"/>
+    </radialGradient>
+    <filter id="blur1"><feGaussianBlur stdDeviation="18"/></filter>
+    <filter id="blur2"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="4" stitchTiles="stitch" result="n"/>
+      <feColorMatrix type="saturate" values="0" in="n" result="ng"/>
+      <feBlend in="SourceGraphic" in2="ng" mode="multiply"/>
+    </filter>
+    <pattern id="scan" width="4" height="4" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="2" x2="4" y2="2" stroke="#000" stroke-width="0.5" opacity="0.08"/>
+    </pattern>
+  </defs>
+
+  <!-- Sky -->
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <rect width="1920" height="1080" fill="url(#sun)"/>
+
+  <!-- Desert camo layer 1 — large blobs (base tan) -->
+  <g opacity="0.85" filter="url(#blur1)">
+    <ellipse cx="320" cy="600" rx="380" ry="220" fill="#c8a870"/>
+    <ellipse cx="900" cy="450" rx="440" ry="260" fill="#d4b880"/>
+    <ellipse cx="1500" cy="650" rx="360" ry="200" fill="#c0a068"/>
+    <ellipse cx="600" cy="850" rx="500" ry="180" fill="#b89858"/>
+    <ellipse cx="1700" cy="380" rx="300" ry="240" fill="#ccb478"/>
+    <ellipse cx="200" cy="300" rx="350" ry="200" fill="#b8a068"/>
+    <ellipse cx="1100" cy="800" rx="420" ry="190" fill="#c4a870"/>
+    <ellipse cx="1400" cy="200" rx="280" ry="160" fill="#bca870"/>
+  </g>
+
+  <!-- Desert camo layer 2 — mid brown patches -->
+  <g opacity="0.7" filter="url(#blur2)">
+    <path d="M120 500 Q280 420 440 520 Q560 600 400 680 Q200 640 120 500Z" fill="#8a6840"/>
+    <path d="M700 300 Q900 220 1050 360 Q1100 480 920 500 Q740 440 700 300Z" fill="#906838"/>
+    <path d="M1300 500 Q1480 420 1600 540 Q1650 660 1480 680 Q1320 620 1300 500Z" fill="#886840"/>
+    <path d="M400 800 Q600 720 780 820 Q820 920 620 940 Q440 900 400 800Z" fill="#8a7040"/>
+    <path d="M1100 100 Q1280 60 1380 180 Q1400 300 1220 290 Q1080 220 1100 100Z" fill="#907048"/>
+    <path d="M50 150 Q200 80 340 180 Q380 300 200 310 Q80 260 50 150Z" fill="#886840"/>
+    <path d="M1600 800 Q1780 740 1900 840 Q1920 940 1760 940 Q1620 880 1600 800Z" fill="#8a6838"/>
+    <path d="M960 620 Q1100 560 1180 660 Q1200 760 1040 770 Q940 720 960 620Z" fill="#907050"/>
+  </g>
+
+  <!-- Desert camo layer 3 — dark accent patches -->
+  <g opacity="0.55" filter="url(#blur2)">
+    <path d="M200 480 Q320 430 380 510 Q400 590 300 600 Q200 560 200 480Z" fill="#5a4028"/>
+    <path d="M800 380 Q940 330 1000 420 Q1020 520 890 520 Q780 470 800 380Z" fill="#584030"/>
+    <path d="M1400 560 Q1520 510 1580 590 Q1600 680 1490 680 Q1390 640 1400 560Z" fill="#5a3828"/>
+    <path d="M550 750 Q680 700 740 780 Q760 860 640 870 Q530 830 550 750Z" fill="#584030"/>
+    <path d="M1200 180 Q1320 140 1370 220 Q1380 310 1270 310 Q1190 260 1200 180Z" fill="#5a4028"/>
+    <path d="M1700 250 Q1820 200 1870 290 Q1880 380 1770 370 Q1680 320 1700 250Z" fill="#504028"/>
+    <path d="M100 750 Q220 700 280 790 Q300 880 190 880 Q100 840 100 750Z" fill="#583828"/>
+    <path d="M1050 900 Q1180 850 1240 930 Q1260 1010 1140 1010 Q1030 970 1050 900Z" fill="#5a4030"/>
+  </g>
+
+  <!-- Horizon line & dune silhouettes -->
+  <path d="M0 580 Q240 530 480 560 Q720 590 960 550 Q1200 520 1440 560 Q1680 590 1920 560 L1920 620 L0 620Z" fill="#3a2818" opacity="0.4"/>
+
+  <!-- Tank silhouettes on the horizon -->
+  <g fill="#2a1c12" opacity="0.5">
+    <g transform="translate(280,555) scale(1.2)">
+      <rect x="-20" y="6" width="40" height="14" rx="3"/>
+      <rect x="-14" y="-6" width="22" height="12" rx="2"/>
+      <rect x="10" y="0" width="30" height="5" rx="1"/>
+    </g>
+    <g transform="translate(780,548) scale(0.9)">
+      <rect x="-18" y="6" width="36" height="13" rx="3"/>
+      <rect x="-12" y="-5" width="20" height="11" rx="2"/>
+      <rect x="10" y="1" width="26" height="4" rx="1"/>
+    </g>
+    <g transform="translate(1350,552) scale(1.05)">
+      <rect x="-19" y="6" width="38" height="14" rx="3"/>
+      <rect x="-13" y="-6" width="21" height="12" rx="2"/>
+      <rect x="10" y="0" width="28" height="5" rx="1"/>
+    </g>
+    <g transform="translate(1680,558) scale(0.85)">
+      <rect x="-16" y="6" width="32" height="12" rx="3"/>
+      <rect x="-11" y="-5" width="18" height="10" rx="2"/>
+      <rect x="9" y="1" width="24" height="4" rx="1"/>
+    </g>
+  </g>
+
+  <!-- Foreground dunes -->
+  <path d="M0 780 Q320 720 640 760 T1280 740 T1920 790 L1920 1080 L0 1080Z" fill="#4a3420" opacity="0.85"/>
+  <path d="M0 880 Q480 820 960 850 T1920 840 L1920 1080 L0 1080Z" fill="#2a1c10" opacity="0.9"/>
+
+  <!-- Atmosphere & grading -->
+  <rect width="1920" height="1080" fill="url(#vig)"/>
+  <rect width="1920" height="1080" fill="url(#scan)"/>
+  <rect width="1920" height="1080" fill="#1a1208" opacity="0.18"/>
+</svg>

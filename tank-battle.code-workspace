@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "name": "Tank Battle (Desert Tank Siege)",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "*.html": "html"
+    }
+  }
+}

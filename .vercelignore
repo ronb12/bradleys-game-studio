@@ -1,0 +1,6 @@
+.tmp
+node_modules
+.env
+.env.local
+.env.*.local
+deploy-out.txt

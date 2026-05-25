@@ -45,10 +45,12 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #ecobtn{padding:4px 8px;border-radius:4px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:var(--mono);font-size:8px;cursor:pointer;letter-spacing:.05em;transition:all .15s;white-space:nowrap;}
 #ecobtn:hover{border-color:var(--c3);color:var(--c3);}
 #ecobtn.on{border-color:var(--c3);color:var(--c3);background:var(--g3);box-shadow:0 0 10px rgba(255,204,0,0.12);}
-#usage{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.04em;cursor:pointer;white-space:nowrap;margin-left:auto;}
+#usage{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.04em;cursor:pointer;white-space:nowrap;margin-left:auto;background:none;border:none;padding:0;font:inherit;}
 #usage:hover{color:var(--c1);}
-#usage-month{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.04em;cursor:pointer;white-space:nowrap;padding:4px 8px;border-radius:4px;border:1px solid var(--b2);transition:all .15s;}
+#usage:focus-visible{outline:2px solid var(--c1);outline-offset:2px;border-radius:2px;}
+#usage-month{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.04em;cursor:pointer;white-space:nowrap;padding:4px 8px;border-radius:4px;border:1px solid var(--b2);background:none;transition:all .15s;}
 #usage-month:hover{border-color:var(--c1);color:var(--c1);}
+#usage-month:focus-visible{outline:2px solid var(--c1);outline-offset:2px;}
 #usage-month.warn{color:var(--c3);border-color:rgba(255,204,0,0.35);}
 #usage-month.over{color:var(--c2);border-color:rgba(255,51,102,0.35);}
 .um-body{padding:14px 18px 18px;display:flex;flex-direction:column;gap:12px;}
@@ -105,6 +107,38 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #tbpub:hover{border-color:var(--c5);background:rgba(0,170,255,0.08);}
 #tbdl{border-color:rgba(255,204,0,0.22);color:var(--c3);}
 #tbdl:hover{border-color:var(--c3);background:var(--g3);}
+#tbupd{border-color:rgba(102,68,255,0.35);color:#9988ff;}
+#tbupd:hover{border-color:var(--c4);background:rgba(102,68,255,0.1);}
+#ubtn{min-width:72px;border:1.5px solid rgba(102,68,255,0.35);background:rgba(102,68,255,0.06);color:#9988ff;}
+#ubtn:hover:not(:disabled){border-color:var(--c4);background:rgba(102,68,255,0.12);box-shadow:0 0 16px rgba(102,68,255,0.15);transform:translateY(-1px);}
+.upd-body{padding:0 17px 16px;display:flex;flex-direction:column;gap:10px;}
+.upd-body label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+#upd-notes{width:100%;min-height:88px;padding:10px 12px;background:var(--bg3);border:1px solid var(--b2);border-radius:6px;color:var(--text);font-family:var(--ui);font-size:12px;line-height:1.6;resize:vertical;outline:none;}
+#upd-notes:focus{border-color:var(--c4);box-shadow:0 0 12px rgba(102,68,255,0.12);}
+.upd-mode{display:flex;gap:8px;}
+.upd-opt{flex:1;padding:10px 8px;border-radius:6px;border:1px solid var(--b1);background:var(--bg3);color:var(--muted);font-family:var(--mono);font-size:9px;cursor:pointer;transition:all .15s;text-align:center;line-height:1.5;}
+.upd-opt:hover{border-color:var(--c4);color:var(--text);}
+.upd-opt.sel{border-color:rgba(102,68,255,0.45);color:#9988ff;background:rgba(102,68,255,0.08);}
+.upd-opt:disabled{opacity:.35;cursor:not-allowed;}
+.upd-hint{font-family:var(--mono);font-size:9px;color:var(--dim);line-height:1.6;}
+#upd-rec-panel{border:1px solid var(--b1);border-radius:8px;background:var(--bg3);overflow:hidden;}
+.upd-rec-head{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--b1);}
+.upd-rec-head span{flex:1;font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+#upd-rec-body{max-height:200px;overflow-y:auto;padding:10px 12px;font-family:var(--ui);font-size:11px;line-height:1.65;color:var(--text);}
+#upd-rec-body.loading{color:var(--muted);font-family:var(--mono);font-size:10px;}
+.upd-rec-static{margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--b1);}
+.upd-rec-static strong{display:block;font-family:var(--mono);font-size:8px;color:var(--c3);letter-spacing:.08em;margin-bottom:6px;}
+.upd-rec-static ul{margin:0;padding-left:16px;color:var(--muted);}
+.upd-rec-static li{margin:3px 0;}
+.upd-rec-static.ok{color:#00ff88;}
+.upd-rec-ai strong{display:block;font-family:var(--mono);font-size:8px;color:var(--c4);letter-spacing:.08em;margin-bottom:6px;}
+.upd-rec-ai p{margin:0 0 8px;}
+.upd-rec-ai ol,.upd-rec-ai ul{margin:0 0 8px;padding-left:18px;}
+.upd-rec-ai li{margin:4px 0;}
+.upd-rec-actions{display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;border-top:1px solid var(--b1);}
+.upd-foot{padding:0 17px 15px;display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap;}
+#updmodal .mbox{max-width:560px;max-height:90vh;}
+#updmodal .upd-body{max-height:calc(90vh - 120px);overflow-y:auto;}
 
 /* ── VIEWPORT ── */
 #vp{flex:1;position:relative;overflow:hidden;background:#000;min-height:0;}
@@ -131,6 +165,33 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 #pw{width:250px;height:2px;background:var(--bg4);border-radius:99px;overflow:hidden;display:none;}
 #pb{height:100%;width:0%;background:linear-gradient(90deg,var(--c1),var(--c4),var(--c2));transition:width .5s;}
 #pst{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.07em;min-height:14px;}
+
+/* ── CONSOLE ── */
+#console-panel{display:none;flex-direction:column;height:160px;border-top:1px solid rgba(0,170,255,0.2);background:var(--bg);flex-shrink:0;overflow:hidden;}
+#console-panel.open{display:flex;}
+#console-head{height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;background:var(--bg2);border-bottom:1px solid var(--b1);flex-shrink:0;}
+#console-title{font-family:var(--mono);font-size:9px;color:var(--c5);letter-spacing:.12em;font-weight:600;}
+#console-count{font-family:var(--mono);font-size:8px;color:var(--muted);background:var(--bg3);padding:1px 5px;border-radius:8px;min-width:16px;text-align:center;}
+#console-head .cbtn{font-size:8px;padding:2px 5px;}
+#console-head .cbtn.active{border-color:var(--c5);color:var(--c5);background:rgba(0,170,255,0.08);}
+#console-body{flex:1;overflow-y:auto;padding:6px 10px;font-family:var(--mono);font-size:10px;line-height:1.7;scroll-behavior:smooth;}
+#console-body::-webkit-scrollbar{width:4px;}
+#console-body::-webkit-scrollbar-track{background:transparent;}
+#console-body::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
+.cline{display:flex;gap:8px;padding:1px 0;border-bottom:1px solid rgba(255,255,255,0.02);align-items:flex-start;}
+.cline:hover{background:rgba(255,255,255,0.015);}
+.cline .cts{color:var(--dim);font-size:8px;flex-shrink:0;min-width:55px;}
+.cline .ctag{font-size:8px;padding:0 4px;border-radius:3px;flex-shrink:0;min-width:40px;text-align:center;font-weight:500;}
+.cline .ctag.info{color:#00ccff;background:rgba(0,204,255,0.08);border:1px solid rgba(0,204,255,0.15);}
+.cline .ctag.warn{color:#ffaa00;background:rgba(255,170,0,0.08);border:1px solid rgba(255,170,0,0.15);}
+.cline .ctag.error{color:#ff4466;background:rgba(255,68,102,0.08);border:1px solid rgba(255,68,102,0.15);}
+.cline .ctag.engine{color:var(--c1);background:rgba(0,255,204,0.06);border:1px solid rgba(0,255,204,0.15);}
+.cline .ctag.system{color:var(--c4);background:rgba(102,68,255,0.06);border:1px solid rgba(102,68,255,0.15);}
+.cline .cmsg{color:var(--text);word-break:break-word;flex:1;}
+.cline.warn .cmsg{color:#ffcc66;}
+.cline.error .cmsg{color:#ff8899;}
+.cline.engine .cmsg{color:var(--c1);}
+.cline.hidden{display:none;}
 
 /* ── PROMPT ── */
 #pzone{border-top:1px solid var(--b2);background:var(--bg2);padding:10px 12px;flex-shrink:0;position:relative;}
@@ -298,7 +359,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <div id="bar">
   <div id="brand">
     <div id="bb">B</div>
-    <div><div class="t1">BRADLEY'S GAME STUDIO</div><div class="t2">3D · AI-POWERED · PUBLISH · EXPORT</div></div>
+    <div><div class="t1">BRADLEY'S GAME STUDIO</div><div class="t2">BGS-SPATIAL-01 · EVA-01 · 4D WORLD MODEL · 5M+ ANIMS</div></div>
   </div>
   <div id="tabs">
     <button class="tab on">Studio</button>
@@ -310,7 +371,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <input type="password" id="ak" placeholder="sk-ant-api03-..." autocomplete="off" oninput="checkKey()" title="Get your key at console.anthropic.com">
     <span id="ks"></span>
     <button type="button" id="ecobtn" onclick="toggleEco()" title="Eco ON = lower API cost (shorter prompts). Both modes build complete playable games.">⚡ ECO</button>
-    <span id="usage-month" onclick="showUsage()" title="Monthly API spend — click for live Anthropic billing"></span>
+    <button type="button" id="usage-month" onclick="showUsage()" title="Monthly API spend — live Anthropic billing">$0 month</button>
   </div>
 </div>
 
@@ -341,6 +402,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <button class="sla" onclick="openLib()">📚 Library</button>
       <button class="sla gold" onclick="exportAll()">↓ Export ZIP</button>
     </div>
+    <div class="sla-row">
+      <button class="sla" style="border-color:rgba(102,68,255,.35);color:#9988ff" onclick="loadStudioGame('tank-battle')">🎖️ Tank (M1 Abrams)</button>
+    </div>
     <div class="hl" id="hist"><div class="he">no games yet</div></div>
   </div>
 
@@ -351,10 +415,16 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <span id="gname">no game loaded</span>
       <div class="f1"></div>
       <button class="tbtn" id="tbplay" onclick="reloadGame()" style="display:none;">▶ PLAY</button>
+      <button class="tbtn" id="tbupd" onclick="openUpdate()" style="display:none;">↻ UPDATE</button>
       <button class="tbtn" id="tbpub" onclick="openPublish()" style="display:none;">↑ PUBLISH</button>
       <button class="tbtn" id="tbexp" onclick="openExport()" style="display:none;">⬇ EXPORT</button>
       <button class="tbtn" id="tbcode" onclick="toggleCode()">{} CODE</button>
       <button class="tbtn" id="tbdl" onclick="dlGame()" style="display:none;">↓ ZIP</button>
+      <button class="tbtn" id="collab-btn" title="Start real-time collaboration room" style="border-color:rgba(0,255,204,0.25);color:var(--c1);">🔗 COLLAB</button>
+      <button class="tbtn" id="collab-join-btn" title="Join collaboration room" style="border-color:rgba(0,255,204,0.15);color:var(--muted);">⊕ JOIN</button>
+      <button class="tbtn" id="world-validate-btn" title="4D World Model — validate spatial consistency" style="border-color:rgba(102,68,255,0.25);color:#9988ff;">🌐 4D VALIDATE</button>
+      <button class="tbtn" id="anim-search-btn" title="Search 5M+ animation library" style="border-color:rgba(255,204,0,0.25);color:var(--c3);">🎬 ANIM LIB</button>
+      <button class="tbtn" id="console-btn" onclick="toggleConsole()" title="Toggle studio console" style="border-color:rgba(0,170,255,0.25);color:var(--c5);">⌘ CONSOLE</button>
     </div>
     <div id="vp">
       <div id="splash">
@@ -364,37 +434,56 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           <div class="st">READY TO BUILD</div>
           <div class="ss">Paste your API key · pick a genre · describe your world · generate</div>
           <div class="fcaps">
-            <div class="fcap lit">Three.js WebGL</div>
-            <div class="fcap lit">Cannon.js physics</div>
-            <div class="fcap lit">Real-time lighting</div>
-            <div class="fcap lit">Particle systems</div>
+            <div class="fcap lit">BGS-Spatial-01</div>
+            <div class="fcap lit">BGS-Eva-01 3D Forge</div>
+            <div class="fcap lit">4D World Model</div>
+            <div class="fcap lit">5M+ Animations</div>
+            <div class="fcap lit">Real-time Collab</div>
+            <div class="fcap lit">Auto-Rig + PBR</div>
             <div class="fcap blue">Publish to Vercel</div>
             <div class="fcap blue">Neon leaderboards</div>
             <div class="fcap blue">Mobile / iOS</div>
-            <div class="fcap gold">Unity C# export</div>
-            <div class="fcap gold">Godot GDScript</div>
-            <div class="fcap">Unlimited library</div>
+            <div class="fcap gold">Unity + Unreal + Godot</div>
+            <div class="fcap gold">Procedural Meshes</div>
+            <div class="fcap">Exceeds Seele AI</div>
           </div>
           <div id="pw"><div id="pb"></div></div>
           <div id="pst"></div>
         </div>
       </div>
       <iframe id="gframe" tabindex="0" sandbox="allow-scripts allow-same-origin allow-pointer-lock"></iframe>
-      <div id="bgs-play-overlay">
+      <div id="bgs-play-overlay" aria-hidden="true">
         <button type="button" id="bgs-play-btn" onclick="parentStartGame()">▶ START GAME</button>
-        <p id="bgs-play-hint">Game loaded — click to begin rendering.<br>If the in-game START button isn't visible, use this.</p>
+        <p id="bgs-play-hint" hidden>Game loaded — click to begin rendering.<br>If the in-game START button isn't visible, use this.</p>
       </div>
       <div id="bgs-iframe-error"></div>
     </div>
+    <!-- CONSOLE PANEL -->
+    <div id="console-panel">
+      <div id="console-head">
+        <span id="console-title">CONSOLE</span>
+        <span id="console-count">0</span>
+        <div class="f1"></div>
+        <button class="cbtn" id="console-filter-all" onclick="filterConsole('all')" title="All">ALL</button>
+        <button class="cbtn" id="console-filter-info" onclick="filterConsole('info')" title="Info">INFO</button>
+        <button class="cbtn" id="console-filter-warn" onclick="filterConsole('warn')" title="Warnings">WARN</button>
+        <button class="cbtn" id="console-filter-err" onclick="filterConsole('error')" title="Errors">ERR</button>
+        <button class="cbtn" id="console-filter-engine" onclick="filterConsole('engine')" title="Engine">ENGINE</button>
+        <button class="cbtn" onclick="clearConsole()" title="Clear console">CLEAR</button>
+      </div>
+      <div id="console-body"></div>
+    </div>
+
     <div id="pzone">
       <div id="chips"></div>
       <div id="irow">
         <textarea id="ptxt" placeholder="Describe your game… even 3 words works — hit ✦ ENHANCE to expand it automatically"></textarea>
         <button class="pbtn" id="ebtn" onclick="enhancePrompt()" title="AI expands your idea"><span class="pi">✦</span>ENHANCE</button>
+        <button class="pbtn" id="ubtn" onclick="openUpdate()" title="Modify the loaded game with AI" disabled><span class="pi">↻</span>UPDATE</button>
         <button class="pbtn" id="mbtn" onclick="toggleMobile()" title="Toggle mobile touch controls"><span class="pi">📱</span>MOBILE</button>
         <button class="pbtn" id="gbtn" onclick="generate()"><span class="pi">◈</span>GENERATE</button>
       </div>
-      <div id="sbar"><div id="sdot"></div><span id="smsg">Paste your API key above, describe a game, and hit Generate</span><span id="usage" onclick="showUsage()" title="API usage this session"></span></div>
+      <div id="sbar"><div id="sdot"></div><span id="smsg">Paste your API key above, describe a game, and hit Generate</span><button type="button" id="usage" onclick="showUsage()" title="API usage this session"></button></div>
     </div>
   </div>
 
@@ -411,9 +500,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
 <!-- PUBLISH MODAL -->
-<div class="modal-bg" id="pubmodal">
+<div class="modal-bg" id="pubmodal" role="dialog" aria-modal="true" aria-labelledby="pubmodal-title" aria-hidden="true" inert>
   <div class="mbox" id="pubbox">
-    <div class="mh"><h2>↑ PUBLISH TO VERCEL</h2><button class="mclose" onclick="closePub()">✕</button></div>
+    <div class="mh"><h2 id="pubmodal-title">↑ PUBLISH TO VERCEL</h2><button class="mclose" type="button" onclick="closePub()" aria-label="Close publish dialog">✕</button></div>
     <div style="height:12px"></div>
     <div class="field">
       <label>Game Name</label>
@@ -438,9 +527,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
 <!-- EXPORT MODAL -->
-<div class="modal-bg" id="expmodal">
+<div class="modal-bg" id="expmodal" role="dialog" aria-modal="true" aria-labelledby="expmodal-title" aria-hidden="true" inert>
   <div class="mbox" id="expbox">
-    <div class="mh"><h2>⬇ EXPORT GAME</h2><button class="mclose" onclick="closeExp()">✕</button></div>
+    <div class="mh"><h2 id="expmodal-title">⬇ EXPORT GAME</h2><button class="mclose" type="button" onclick="closeExp()" aria-label="Close export dialog">✕</button></div>
     <div class="exp-opts">
       <div class="exp-card sel" id="exp-unity" onclick="selExp('unity')">
         <div class="exp-ico">🎮</div>
@@ -474,11 +563,46 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </div>
 </div>
 
+<!-- UPDATE GAME MODAL -->
+<div class="modal-bg" id="updmodal" role="dialog" aria-modal="true" aria-labelledby="updmodal-title" aria-hidden="true" inert>
+  <div class="mbox" style="width:100%;max-width:560px">
+    <div class="mh">
+      <h2 id="updmodal-title">↻ UPDATE GAME</h2>
+      <button class="mclose" type="button" onclick="closeUpdate()" aria-label="Close update dialog">✕</button>
+    </div>
+    <div class="upd-body">
+      <p class="upd-hint" id="upd-target">Apply AI changes to the game currently loaded in the viewport.</p>
+      <div id="upd-rec-panel">
+        <div class="upd-rec-head">
+          <span>Improvement recommendations</span>
+          <button class="lbtn gold" type="button" id="upd-analyze" onclick="runGameAnalysis()">✦ Analyze</button>
+        </div>
+        <div id="upd-rec-body">Open a game, then click Analyze for instant checks + AI suggestions.</div>
+        <div class="upd-rec-actions" id="upd-rec-actions" style="display:none">
+          <button class="lbtn blue" type="button" onclick="useAllRecommendations()">→ Use all in update</button>
+          <button class="lbtn" type="button" onclick="runGameAnalysis()">↺ Re-analyze</button>
+        </div>
+      </div>
+      <label for="upd-notes">What should change?</label>
+      <textarea id="upd-notes" placeholder="e.g. Double enemy speed after wave 3, add a red boss tank on wave 5, make the sky sunset orange…"></textarea>
+      <label>After updating</label>
+      <div class="upd-mode">
+        <button type="button" class="upd-opt sel" id="upd-replace" onclick="setUpdMode('replace')">↻ Replace current<br><span style="opacity:.7;font-size:8px">overwrite library entry</span></button>
+        <button type="button" class="upd-opt" id="upd-fork" onclick="setUpdMode('fork')">＋ Save as new<br><span style="opacity:.7;font-size:8px">keep original + new copy</span></button>
+      </div>
+    </div>
+    <div class="upd-foot">
+      <button class="lbtn" type="button" onclick="closeUpdate()">Cancel</button>
+      <button class="lbtn blue" type="button" id="upd-go" onclick="runUpdate()">↻ Apply update</button>
+    </div>
+  </div>
+</div>
+
 <!-- ENHANCER MODAL -->
-<div class="modal-bg" id="emodal">
+<div class="modal-bg" id="emodal" role="dialog" aria-modal="true" aria-labelledby="emodal-title" aria-hidden="true" inert>
   <div class="mbox" id="ebox">
     <div class="mh">
-      <h2>✦ PROMPT ENHANCER</h2>
+      <h2 id="emodal-title">✦ PROMPT ENHANCER</h2>
       <span style="font-family:var(--mono);font-size:9px;color:var(--muted);">AI expands your idea into a rich description</span>
       <button class="ebtn regen" id="regen-btn" onclick="runEnhance()" style="display:none;">↺ Re-enhance</button>
       <button class="mclose" onclick="closeEnhancer()">✕</button>
@@ -498,10 +622,10 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
 <!-- LIBRARY MODAL -->
-<div class="modal-bg" id="libmodal">
+<div class="modal-bg" id="libmodal" role="dialog" aria-modal="true" aria-labelledby="libmodal-title" aria-hidden="true" inert>
   <div class="mbox" id="libbox">
     <div class="mh">
-      <h2>🗂 GAME LIBRARY</h2>
+      <h2 id="libmodal-title">🗂 GAME LIBRARY</h2>
       <span id="lib-count">0 games</span>
       <input id="lib-search" placeholder="Search…" oninput="filterLib(this.value)">
       <button class="lbtn gold" onclick="exportAll()">↓ Export ZIP</button>
@@ -524,9 +648,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
 <!-- USAGE / BUDGET MODAL -->
-<div class="modal-bg" id="umodal" onclick="if(event.target===this)closeUsage()">
+<div class="modal-bg" id="umodal" role="dialog" aria-modal="true" aria-labelledby="umodal-title" aria-hidden="true" inert>
   <div class="mbox" style="width:100%;max-width:440px">
-    <div class="mh"><h2>MONTHLY API SPEND</h2><button class="mclose" onclick="closeUsage()">✕</button></div>
+    <div class="mh"><h2 id="umodal-title">MONTHLY API SPEND</h2><button class="mclose" type="button" onclick="closeUsage()" aria-label="Close billing dialog">✕</button></div>
     <div class="um-body">
       <div class="um-hero">
         <div class="um-card"><span id="um-month-label">This month</span><strong id="um-spent">$0.00</strong><small id="um-spent-src" style="display:block;font-family:var(--mono);font-size:8px;color:var(--dim);margin-top:4px;font-weight:400"></small></div>
@@ -551,9 +675,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 </div>
 
 <!-- HELP MODAL -->
-<div class="modal-bg" id="hmodal">
+<div class="modal-bg" id="hmodal" role="dialog" aria-modal="true" aria-labelledby="hmodal-title" aria-hidden="true" inert>
   <div class="mbox" id="hbox">
-    <div class="mh"><h2>HOW TO USE</h2><button class="mclose" onclick="closeHelp()">✕</button></div>
+    <div class="mh"><h2 id="hmodal-title">HOW TO USE</h2><button class="mclose" type="button" onclick="closeHelp()" aria-label="Close guide">✕</button></div>
     <div style="height:12px"></div>
     <div class="hrow"><span class="hnum">1</span><span>Get API key at <strong style="color:var(--c3)">console.anthropic.com</strong> → API Keys → Create Key</span></div>
     <div class="hrow"><span class="hnum">2</span><span>Paste it top-right — saves automatically</span></div>
@@ -563,6 +687,9 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     <div class="hrow"><span class="hnum">6</span><span>Hit ↑ PUBLISH to deploy your game live on Vercel with a shareable URL + Neon leaderboard</span></div>
     <div class="hrow"><span class="hnum">7</span><span>Every generated game auto-downloads as a ZIP (index.html, source, README, metadata). Use ⬇ EXPORT for Unity, Godot, or Mobile packages.</span></div>
     <div class="hrow"><span class="hnum">8</span><span>📚 Library saves every game — click any card to preview live</span></div>
+    <div class="hrow"><span class="hnum">10</span><span>Load a game, then <strong style="color:#9988ff">↻ UPDATE</strong> — click <strong>✦ Analyze</strong> for improvement tips, paste into changes, then <strong>Apply update</strong></span></div>
+    <div class="hrow"><span class="hnum">11</span><span>Sidebar <strong style="color:#9988ff">🎖️ Tank (real GLBs)</strong> loads a complete studio-built tank battle using bundled Kenney + Khronos models</span></div>
+    <div class="hrow"><span class="hnum">9</span><span><strong style="color:var(--c1)">Where assets come from:</strong> Real CC0 packs (Kenney, Khronos) live in <code>/assets/</code> on the studio. Games load them with GLTFLoader from <code>/assets/packs/…</code> — not Sketchfab, Unity Asset Store, or random URLs at runtime. Run <code>npm run assets</code> to refresh packs.</span></div>
     <div class="hnote">⚡ ECO OFF = fullest games. Click <strong style="color:var(--c1)">monthly spend</strong> top-right → add your <strong>Admin API key</strong> (console.anthropic.com/settings/admin-keys) for <strong>live Anthropic billing</strong> — real month spend + prepaid credits left. Game key (sk-ant-api…) stays separate. Optional budget cap if prepaid balance is unavailable.</div>
   </div>
 </div>
@@ -621,37 +748,507 @@ function mergeContinuation(base,add){
 }
 const GEN_MAX_TOKENS={full:16384,eco:8192};
 const GEN_MAX_CONTINUATIONS=2;
-const GEN_CONTINUE_USER=`Your game HTML was cut off mid-generation. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with ${BGS_SCRIPT_END}</body></html>. You MUST finish buildGameAssets() (world, player, enemies, collectibles, VFX, sounds, HUD), startGame(), animate(), game-over and victory screens.`;
+const UPDATE_MAX_SOURCE_CHARS=88000;
+const ANALYZE_MAX_SOURCE_CHARS=52000;
+const ANALYZE_MAX_TOKENS={eco:1400,full:2200};
+const GEN_CONTINUE_USER=`Your game HTML was cut off mid-generation. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with ${BGS_SCRIPT_END}</body></html>. You MUST finish buildGameAssets() (load all GLBs from /assets/packs/… matching the game THEME, world, enemies, collectibles, VFX, sounds, HUD), startGame(), animate(), game-over and victory screens, bgsBoot(), and appendChild(renderer.domElement). Match the genre asset benchmark table AND themed asset plan — no missing rows, no wrong-theme models.`;
+const UPDATE_CONTINUE_USER=`Your UPDATED game HTML was cut off. Continue EXACTLY where you stopped — do not repeat <!DOCTYPE or rewrite from scratch. Output ONLY the remaining HTML/JavaScript. Finish every open function and brace. End with ${BGS_SCRIPT_END}</body></html>. Preserve all changes requested so far.`;
+let BGS_ASSET_MANIFEST=null;
+async function loadAssetManifest(){
+  if(BGS_ASSET_MANIFEST)return BGS_ASSET_MANIFEST;
+  try{
+    const r=await fetch('/assets/manifest.json',{cache:'no-store'});
+    if(r.ok)BGS_ASSET_MANIFEST=await r.json();
+  }catch(e){console.warn('Asset manifest unavailable',e);}
+  if(!BGS_ASSET_MANIFEST)BGS_ASSET_MANIFEST={models:[],audio:[]};
+  return BGS_ASSET_MANIFEST;
+}
+function extractThemeTokens(genre,prompt){
+  const text=((genre||'')+' '+(prompt||'')).toLowerCase();
+  const tokens=new Set();
+  const map={
+    tank:['tank','warfare','siege','abrams','armor','armored','artillery','shell','btr','panzer','mech tank'],
+    military:['military','soldier','marine','army','war','combat','base','bunker','opfor','squad'],
+    desert:['desert','sand','dune','arid','sahara','oasis','tan camo','carc'],
+    medieval:['knight','castle','sword','dungeon','orc','samurai','fortress','medieval','gladiator','arena fighter'],
+    fantasy:['magic','wizard','elf','dragon','fantasy','enchanted','haunted','spell','mage'],
+    horror:['zombie','horror','undead','crypt','dark','creature','survival horror','hospital','mansion'],
+    scifi:['sci-fi','sci fi','cyber','neon','robot','alien','lunar','futuristic','mech','hover','space station'],
+    platformer:['platform','jump','mario','runner','rooftop','parkour'],
+    racing:['race','rally','circuit','street race','f1','hover car','kart'],
+    jungle:['jungle','tropic','vine','swamp'],
+    city:['city','urban','rooftop','street','cyberpunk','factory','destroyed city'],
+    space:['space','asteroid','starfighter','mothership','star','lunar base','galaxy'],
+    naval:['ship','naval','pirate','island'],
+    rpg:['rpg','loot','xp','dungeon crawler','hero vs','treasure']
+  };
+  Object.entries(map).forEach(([theme,kws])=>{if(kws.some(k=>text.includes(k)))tokens.add(theme);});
+  const gl=(genre||'').toLowerCase();
+  if(gl.includes('tank')){tokens.add('tank','military');if(/desert|sand|siege/i.test(text))tokens.add('desert');}
+  if(gl.includes('platformer'))tokens.add('platformer','fantasy');
+  if(gl.includes('first-person')||gl.includes('fps'))tokens.add('military','fps');
+  if(gl.includes('racing'))tokens.add('racing','vehicle');
+  if(gl.includes('space'))tokens.add('space','scifi');
+  if(gl.includes('horror'))tokens.add('horror');
+  if(gl.includes('rpg')||gl.includes('dungeon'))tokens.add('rpg','medieval','fantasy');
+  if(gl.includes('stealth'))tokens.add('military','city');
+  if(gl.includes('tower defense'))tokens.add('military','fantasy');
+  if(!tokens.size)tokens.add('action');
+  return[...tokens];
+}
+function scoreAssetEntry(entry,genre,themeTokens){
+  let score=0;
+  const gl=(genre||'').toLowerCase();
+  const gTags=(entry.genres||[]).map(t=>String(t).toLowerCase());
+  const tTags=(entry.themes||[]).map(t=>String(t).toLowerCase());
+  const path=(entry.path||'').toLowerCase();
+  const pack=(entry.pack||'').toLowerCase();
+  if(gl&&gTags.some(t=>gl.includes(t)||t.includes(gl.split(/\s+/).slice(-1)[0])))score+=8;
+  themeTokens.forEach(th=>{
+    if(tTags.includes(th))score+=6;
+    if(gTags.includes(th))score+=3;
+    if(path.includes(th))score+=2;
+  });
+  if(themeTokens.includes('tank')&&pack==='tanks')score+=12;
+  if(themeTokens.includes('military')&&(pack==='tanks'||pack==='sketchfab'))score+=8;
+  if(themeTokens.includes('desert')&&pack==='sketchfab')score+=6;
+  if(themeTokens.includes('platformer')&&pack.includes('platformer'))score+=10;
+  if(themeTokens.includes('medieval')&&pack.includes('basic-scene'))score+=6;
+  if(themeTokens.includes('horror')&&/brain|dark/i.test(path))score+=5;
+  if(themeTokens.includes('racing')&&/truck|vehicle|scout/i.test(path))score+=5;
+  if(themeTokens.includes('space')&&/morph|box|brain/i.test(path))score+=3;
+  return score;
+}
+function pickAssetsByRole(models,genre,themeTokens,role,n,fallbackRoles=[]){
+  const scored=models.map(m=>({m,score:scoreAssetEntry(m,genre,themeTokens)+(m.role===role?14:0)}));
+  scored.sort((a,b)=>b.score-a.score);
+  const out=[],seen=new Set();
+  const tryRole=(r)=>{
+    scored.forEach(({m,score})=>{
+      if(out.length>=n)return;
+      if(m.role!==r||seen.has(m.path))return;
+      if(score<1&&r!=='prop')return;
+      seen.add(m.path);out.push(m);
+    });
+  };
+  tryRole(role);
+  fallbackRoles.forEach(tryRole);
+  if(out.length<n){
+    scored.forEach(({m,score})=>{
+      if(out.length>=n||seen.has(m.path))return;
+      if(score<2)return;
+      seen.add(m.path);out.push(m);
+    });
+  }
+  return out.slice(0,n);
+}
+function assetCatalogForGame(genre,prompt){
+  const m=BGS_ASSET_MANIFEST?.models||[],a=BGS_ASSET_MANIFEST?.audio||[];
+  const themeTokens=extractThemeTokens(genre,prompt);
+  const player=pickAssetsByRole(m,genre,themeTokens,'player',1,['vehicle','character']);
+  const enemies=pickAssetsByRole(m,genre,themeTokens,'enemy',3,['vehicle']);
+  const boss=pickAssetsByRole(m,genre,themeTokens,'boss',1,['enemy','vehicle']);
+  const vehicles=pickAssetsByRole(m,genre,themeTokens,'vehicle',2,['enemy']);
+  const collectibles=pickAssetsByRole(m,genre,themeTokens,'collectible',3,['powerup']);
+  const powerups=pickAssetsByRole(m,genre,themeTokens,'powerup',2,['collectible']);
+  const props=pickAssetsByRole(m,genre,themeTokens,'prop',10,[]);
+  const scoredAudio=a.map(x=>({x,score:themeTokens.reduce((s,t)=>s+((x.themes||[]).includes(t)?4:0),0)})).sort((p,q)=>q.score-p.score);
+  const audio=(scoredAudio.length?scoredAudio.map(s=>s.x):a).slice(0,8);
+  const uniq=(list)=>{const s=new Set();return list.filter(x=>{if(s.has(x.path))return false;s.add(x.path);return true;});};
+  const catalog={
+    themeTokens,
+    player:uniq(player),
+    enemies:uniq(enemies),
+    boss:uniq(boss),
+    vehicles:uniq(vehicles),
+    collectibles:uniq(collectibles),
+    powerups:uniq(powerups),
+    props:uniq(props),
+    audio
+  };
+  const allModels=uniq([...player,...enemies,...boss,...vehicles,...collectibles,...powerups,...props]);
+  const lines=allModels.slice(0,16).map(x=>'  • '+x.path+' — '+x.role+(x.themes?.length?' ['+x.themes.slice(0,4).join(', ')+']':'')+(x.pack?' ('+x.pack+')':''));
+  const sfx=audio.map(x=>'  • '+x.path+' — '+x.role);
+  return {...catalog,lines,sfx};
+}
+function themeVisualBrief(genre,prompt,themeTokens){
+  const text=((genre||'')+' '+(prompt||'')).toLowerCase();
+  if(themeTokens.includes('desert')||/desert|sand|siege/i.test(text))
+    return 'Ground: sandy tan CanvasTexture (#c4a574, noise). Sky/fog: warm haze #d4b896 / #8b7355. Props: sandbags, crates, ruined buildings, military cover.';
+  if(themeTokens.includes('scifi')||/neon|cyber|lunar|hover/i.test(text))
+    return 'Ground: dark grid or lunar gray CanvasTexture (#1a1a2e, neon lines). Sky: deep blue/black + emissive accents. Props: glowing crates, industrial blocks, morph cubes.';
+  if(themeTokens.includes('horror')||/zombie|dark|haunted/i.test(text))
+    return 'Ground: muddy dark texture (#2a2520). Sky/fog: heavy dark fog #0a0808. Props: damaged columns, walls, low visibility. Audio stingers on enemy proximity.';
+  if(themeTokens.includes('medieval')||/knight|castle|dungeon/i.test(text))
+    return 'Ground: stone/brick CanvasTexture (#6a6a72). Sky: overcast #8899aa. Props: walls, columns, gates, banners, weapon racks, statues.';
+  if(themeTokens.includes('platformer')||/jump|coin|mario/i.test(text))
+    return 'Ground: grass/stone platforms from kenney-platformer-3d pack. Sky: bright blue #87ceeb. Props: platforms, flags, clouds, grass, coins.';
+  if(themeTokens.includes('space')||/asteroid|starfighter/i.test(text))
+    return 'Ground: asteroid platforms or starfield backdrop. Sky: black + star particles. Props: morph cubes, box textured crates as debris.';
+  if(themeTokens.includes('jungle')||/jungle|mech/i.test(text))
+    return 'Ground: green/brown earth (#3d5c3a). Sky: humid teal fog. Props: trees, grass, ruins, military crates for cover.';
+  if(themeTokens.includes('city')||/city|urban|destroyed/i.test(text))
+    return 'Ground: asphalt/concrete CanvasTexture (#3a3a40). Sky: smog gray #6a7080. Props: walls, bricks, damaged columns, building ruins.';
+  if(themeTokens.includes('tank')||/tank|warfare/i.test(text))
+    return 'Ground: battlefield earth (#8b7d6b) with tire tracks in CanvasTexture. Sky: dusty horizon. Props: sandbags, military crates, desert buildings, walls for cover.';
+  return 'Ground: themed CanvasTexture matching "'+(prompt||genre)+'" — never flat gray. Sky/fog colors reinforce the setting. Props from catalog below, not random unrelated meshes.';
+}
+function themeAssetPlan(genre,prompt){
+  const c=assetCatalogForGame(genre,prompt);
+  const pick=(list,fallback)=>list[0]?.path||fallback;
+  const join=(list,n)=>list.slice(0,n).map(x=>x.path).join(', ')||'(pick from catalog)';
+  let s='\n═══ THEMED ASSET PLAN (mandatory — match "'+(prompt||genre)+'") ═══\n';
+  s+='Detected themes: '+c.themeTokens.join(', ')+'\n';
+  s+=themeVisualBrief(genre,prompt,c.themeTokens)+'\n\n';
+  s+='Assign these bundled paths in buildGameAssets() — do NOT use unrelated models (no Duck/Fox in tank games, no tanks in platformers unless prompt says so):\n';
+  s+='• PLAYER HERO: '+pick(c.player,pick(c.vehicles,'/assets/packs/…'))+'\n';
+  s+='• ENEMIES (each a different path): '+join(c.enemies,3)+'\n';
+  s+='• BOSS (final wave): '+pick(c.boss,pick(c.enemies,'/assets/packs/…'))+'\n';
+  if(c.vehicles.length)s+='• VEHICLES (if genre uses them): '+join(c.vehicles,2)+'\n';
+  s+='• COLLECTIBLES: '+join(c.collectibles,2)+'\n';
+  s+='• POWER-UPS: '+join(c.powerups,2)+'\n';
+  s+='• WORLD PROPS (scatter '+ (ecoMode?'8+':'14+')+' clones): '+join(c.props,6)+'\n';
+  s+='• AUDIO: '+join(c.audio,4)+'\n';
+  s+='\nEvery GLB choice must fit the story/theme. Retexture via material.color/emissive if needed, but keep the mesh silhouette appropriate (tanks for tank battles, characters for platformers, ruins for military/desert).';
+  return s;
+}
+function assetCatalogForGenre(g,prompt){
+  return assetCatalogForGame(g,prompt||'');
+}
+function assetCatalogPromptBlock(g,prompt){
+  const c=assetCatalogForGame(g,prompt||'');
+  if(!c.lines.length)return '\n(No bundled manifest loaded — use paths under /assets/packs/ from studio host.)';
+  let s=themeAssetPlan(g,prompt||'');
+  s+='\n═══ FULL BUNDLED CATALOG (same-origin ONLY) ═══\n3D models (GLTFLoader):\n'+c.lines.join('\n');
+  if(c.sfx.length)s+='\nAudio (HTMLAudioElement, same-origin):\n'+c.sfx.join('\n');
+  s+='\nFORBIDDEN at runtime: sketchfab.com, assetstore.unity.com, raw.githubusercontent.com model URLs, random https:// image/texture URLs, Unity Asset Store, external .glb/.mp3 hosts.';
+  s+='\nTHEME RULE: Pick assets whose role AND theme tags match "'+(prompt||g)+'". Wrong-theme assets (e.g. cartoon duck in military tank game) fail validation.';
+  return s;
+}
+function realAssetLoaderRules(){
+  return `
+GLTF LOADER (mandatory — real downloaded packs):
+- CDN: https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js (after three.min.js)
+- const loader=new THREE.GLTFLoader();
+- async function loadGLB(url){ return new Promise((res,rej)=>loader.load(url,g=>res(g.scene||g),undefined,rej)); }
+- Player, each enemy archetype, and boss MUST use cloned scenes from DIFFERENT /assets/packs/…/*.glb paths listed in the catalog (scale/rotate to fit).
+- Props/collectibles: at least 2 distinct GLBs from catalog; duplicate with varied scale is OK.
+- Ground/sky: CanvasTexture or THREE.MeshStandardMaterial colors — never fetch texture images from URLs.
+- On GLB load failure only: fallback to THREE.Group primitives for that entity (log console.warn).
+- Audio: prefer /assets/audio/*.ogg|.wav from catalog via new Audio('/assets/audio/…') in sounds{}; Web Audio oscillators only if no bundled sfx match.`;
+}
+const ASSET_SOURCE_RULES=`
+═══ WHERE ASSETS COME FROM (Bradley's Game Studio — applies to EVERY game) ═══
+Real CC0 asset packs are downloaded into public/assets/ on the studio server (Kenney, Khronos glTF samples).
+Generated games MUST load 3D models from same-origin paths only: /assets/packs/…/*.glb via THREE.GLTFLoader.
+
+• 3D characters, vehicles, enemies, boss — GLB files from the bundled catalog (NOT Sketchfab, NOT Unity Asset Store, NOT procedural-only cubes).
+• World ground/sky — CanvasTexture or solid materials (no runtime image URL fetches).
+• Audio — /assets/audio/… when listed in catalog; otherwise Web Audio synth as fallback.
+• UI — HTML/CSS overlays (#hud, #start-screen, minimap canvas, wave banners).
+• Code libraries from CDN: Three.js r134 + GLTFLoader + Cannon.js (physics).
+
+Design references (World of Tanks, Mario, DOOM, etc.) guide LAYOUT, JUICE, and FEATURES — use real meshes for heroes and enemies, tuned with scale/rotation/material tweaks.`;
+function topGameDesignReference(g){
+  const gl=(g||'').toLowerCase();
+  const map=[
+    ['tank','Reference shipped quality from: World of Tanks (armor zones, minimap, shell types, readable HP), Hills of Steel (hills/physics, upgrades, arcade juice), Tank Stars (impactful VFX, abilities), Steel Hunter (in-battle tier upgrades, wave tension), Pocket Tanks (destructible cover, aim telegraphs). Match their clarity and feedback density — not a cube demo.'],
+    ['first-person shooter','Reference: DOOM Eternal (arena flow), Halo/CoD (hitmarkers, reload cadence, weapon readability), Apex (movement clarity).'],
+    ['top-down','Reference: Hotline Miami / Enter the Gungeon / Hades (readable telegraphs, dodge windows, screen shake).'],
+    ['racing','Reference: Mario Kart 8 (drift/boost juice), Forza Horizon arcade handling, track landmark props.'],
+    ['tower defense','Reference: Bloons TD 6 / Kingdom Rush (distinct towers, path clarity, wave callouts).'],
+    ['space shooter','Reference: Galaga / Star Fox / Ikaruga (formations, power-ups, big explosions).'],
+    ['platformer','Reference: Super Mario 3D World / Crash Bandicoot (tight jump feel, collectibles, checkpoints).'],
+    ['rpg','Reference: Zelda: BOTW dungeons / Hades (enemy tells, loot sparkle, boss phases).'],
+    ['survival horror','Reference: Resident Evil 2 (resource tension, audio stingers, limited visibility).'],
+    ['stealth','Reference: Metal Gear / Splinter Cell (vision cones, patrol routes, alert states).'],
+    ['endless runner','Reference: Temple Run / Subway Surfers (lane clarity, speed ramp, obstacle variety).'],
+    ['arena fighter','Reference: Super Smash Bros / MultiVersus (knockback, move variety, arena boundaries).'],
+    ['puzzle','Reference: Portal / The Witness (readable interactables, clear win state, tutorial hints).'],
+    ['open world','Reference: Breath of the Wild (landmarks, biome variety, discovery feedback).'],
+    ['mobile','Reference: top App Store arcade — large touch targets, virtual joystick, 60fps juice.']
+  ];
+  for(const [key,ref] of map){if(gl.includes(key))return ref;}
+  return 'Reference top commercial games in this genre for pacing, UI clarity, enemy variety, and moment-to-moment feedback — ship a complete product players recognize as a real game.';
+}
+function universalBootBlock(){
+  return `
+BOOT (mandatory for every genre — reliable studio iframe preview):
+async function bgsBoot(){
+  if(typeof THREE==='undefined'||typeof THREE.GLTFLoader==='undefined')return setTimeout(bgsBoot,40);
+  initThree();
+  if(typeof initPhysics==='function')initPhysics();
+  await buildGameAssets();
+  document.body.appendChild(renderer.domElement);
+  window.renderer=renderer; window.scene=scene; window.camera=camera;
+  window.startGame=startGame; window.restartGame=restartGame;
+}
+bgsBoot();`;
+}
+function genreBenchmarkExtras(g,eco,prompt){
+  const gl=(g||'').toLowerCase(),n=eco?12:22,full=!eco;
+  if(gl.includes('tank'))return `
+| Tank extras | WoT / Hills of Steel | Minimap, AP+HE shells, armor facings, destructible cover, artillery telegraph, engine loop |`;
+  if(gl.includes('first-person'))return `
+| FPS extras | Halo / DOOM | Crosshair, hitmarker, reload bar, weapon sway, muzzle flash, enemy flanking, ammo pickups |`;
+  if(gl.includes('platformer'))return `
+| Platformer extras | Mario / Crash | Coyote-time jump, moving platforms, checkpoint flags, coin lines, stomp VFX, lives counter |`;
+  if(gl.includes('racing'))return `
+| Racing extras | Mario Kart | Drift sparks, boost pads, lap timer, track barriers, rival AI, position UI (1st/2nd) |`;
+  if(gl.includes('tower defense'))return `
+| TD extras | Bloons / Kingdom Rush | Enemy path spline, 3+ tower types, build spots, sell/upgrade UI, wave preview |`;
+  if(gl.includes('space'))return `
+| Space extras | Galaga / Star Fox | Formation waves, player ship banking, laser + bomb weapons, screen-clear bomb |`;
+  if(gl.includes('rpg')||gl.includes('dungeon'))return `
+| RPG extras | Zelda / Hades | Lock-on or melee arc, loot drops, XP bar, dungeon rooms, key/door interact |`;
+  if(gl.includes('horror'))return `
+| Horror extras | Resident Evil | Limited visibility/fog, scarce ammo UI, jump-scare audio stinger, slow enemy lurk |`;
+  if(gl.includes('stealth'))return `
+| Stealth extras | MGS | Vision cones, alert state HUD, patrol waypoints, hide spots, detection meter |`;
+  if(gl.includes('runner'))return `
+| Runner extras | Temple Run | 3-lane or forward auto-run, swipe obstacles, speed ramp, near-miss score |`;
+  if(gl.includes('arena'))return `
+| Arena extras | Smash-like | Knockback %, blast zones, 2+ fighters, stock/lives UI, move cooldowns |`;
+  if(gl.includes('puzzle'))return `
+| Puzzle extras | Portal | Interact prompts, reset puzzle button, goal portal, hint line on start screen |`;
+  if(gl.includes('open world'))return `
+| Open world extras | BOTW-lite | Landmark props, mini-map pings, 3 biome props, discovery chime, quest objective |`;
+  if(gl.includes('top-down'))return `
+| Top-down extras | Gungeon | Bullet patterns, dodge roll, room clear banner, bullet color coding |`;
+  if(gl.includes('mobile'))return `
+| Mobile extras | App Store hits | Virtual joystick DOM, 2 action buttons, touch meta tags, large HUD buttons |`;
+  return `
+| Genre polish | Top ${g} games | ${full?'3 enemy types + boss':'2 enemy types'}, clear telegraphs, phase banner between waves/levels |`;
+}
+function assetBenchmarkRules(g,eco,prompt){
+  const n=eco?12:22;
+  return `
+${ASSET_SOURCE_RULES}
+${assetCatalogPromptBlock(g,prompt)}
+${realAssetLoaderRules()}
+${topGameDesignReference(g)}
+═══ UNIVERSAL ASSET BENCHMARK (EVERY genre — "${g}") ═══
+Theme: "${prompt||'adventure world'}"
+Before finishing, verify buildGameAssets() satisfies EVERY row — same bar as commercial hits in this genre.
+
+| Category | What top games ship | YOU MUST SHIP |
+| World | Themed playable space | Textured ground (CanvasTexture), sky/fog, ${n}+ props (GLB clones + simple geometry), boundaries |
+| Player | Readable hero mesh | loadGLB('/assets/packs/…') — NOT a lone BoxGeometry |
+| Enemies | Distinct archetypes | ${eco?'2':'3'} different GLB paths + behaviors; boss GLB on final wave (full mode) |
+| Attacks | Visible threats | Projectiles OR melee hitboxes OR telegraph circles before big attacks |
+| Combat juice | Game feel | Screen shake OR flash; floating damage OR hitmarker; kill/combo or pickup popups |
+| Collectibles | Field rewards | ${eco?'6+':'10+'} pickups + ${eco?'1':'2'} power-up types (distinct meshes) |
+| VFX | Atmosphere | 2+ particle systems; impact bursts; optional trails |
+| Audio | Event coverage | sounds{} with ${eco?'6+':'8+'} events (move, attack, hit, hurt, collect, wave, death, victory) |
+| UI shell | Full product | #start-screen, #game-over-screen, #victory-screen, styled #hud (health, score, objective) |
+| Pacing | Phase clarity | Wave/level counter + #wave-banner or stage transition between phases |
+| Progression | Replay hook | Power-ups or upgrades across waves; localStorage high score |
+| Tech boot | Studio embed | bgsBoot(); appendChild(renderer.domElement); window.renderer assigned |
+${genreBenchmarkExtras(g,eco,prompt)}
+
+If any universal row is missing, add it in buildGameAssets() before returning.`;
+}
+function genrePlaybook(g,eco,prompt){
+  const gl=(g||'').toLowerCase(),full=!eco;
+  let pack='';
+  if(gl.includes('tank')){
+    pack=`
+═══ TANK BATTLE PACK ═══
+Third-person chase cam. WASD hull | mouse/A-D turret separate from hull | Space fire | Q AP/HE | Armor facings damage | Minimap | Artillery telegraph | Destructible props | Wave upgrades.`;
+  }else if(gl.includes('first-person')){
+    pack=`
+═══ FPS PACK ═══
+First-person camera. Crosshair + hitmarker. Reload bar + ammo. 3 weapon feel variants via projectile speed/damage. Muzzle flash. 5 waves + boss. Health kits on ground.`;
+  }else if(gl.includes('platformer')){
+    pack=`
+═══ PLATFORMER PACK ═══
+Third-person follow cam. Space jump with coyote time. Moving platforms. Collectibles + lives. Pit death = respawn at checkpoint. Flag/checkpoint props.`;
+  }else if(gl.includes('racing')){
+    pack=`
+═══ RACING PACK ═══
+Chase cam behind vehicle. WASD or arrows steer. Drift particle sparks. Boost pads. Lap or distance win. Rival cars as enemies.`;
+  }else if(gl.includes('tower defense')){
+    pack=`
+═══ TOWER DEFENSE PACK ═══
+Fixed tactical camera. Click/tap build towers on pads. Enemy path with spline. 3 tower types. Wave preview banner. Sell/upgrade UI.`;
+  }else if(gl.includes('space')){
+    pack=`
+═══ SPACE SHOOTER PACK ═══
+Behind-ship or top-down starfield. Formation enemy waves. Player bolts + bomb clearing screen. Power-up wings. Parallax star layers.`;
+  }else if(gl.includes('rpg')||gl.includes('dungeon')){
+    pack=`
+═══ RPG / DUNGEON PACK ═══
+Third-person action cam. Melee arc or lock-on. Loot drops with sparkle. Room gates unlock on clear. XP or gold HUD. Boss chamber.`;
+  }else if(gl.includes('horror')){
+    pack=`
+═══ SURVIVAL HORROR PACK ═══
+Tight FOV, fog. Limited ammo counter. Slow enemies with audio stingers. Resource pickups scarce. Escape objective.`;
+  }else if(gl.includes('stealth')){
+    pack=`
+═══ STEALTH PACK ═══
+Top-down or over-shoulder. Patrol paths with vision cones. Alert meter. Hide in crates/shadows. Non-lethal optional.`;
+  }else if(gl.includes('runner')){
+    pack=`
+═══ ENDLESS RUNNER PACK ═══
+Auto-forward motion. Lane switch or jump/slide. Obstacle variety increasing speed. Near-miss score bonus.`;
+  }else if(gl.includes('arena')){
+    pack=`
+═══ ARENA FIGHTER PACK ═══
+Fixed arena bounds. 2 fighters with distinct move sets. Knockback on hit. Stocks/lives UI.`;
+  }else if(gl.includes('puzzle')){
+    pack=`
+═══ PUZZLE PACK ═══
+Clear camera on puzzle space. Interactable blocks/switches. Win portal when solved. Reset button. Tutorial text on start.`;
+  }else if(gl.includes('open world')){
+    pack=`
+═══ OPEN WORLD PACK ═══
+Wide third-person cam. Landmark props for navigation. 3 biome texture zones. Discovery ping on secrets. Quest objective HUD.`;
+  }else if(gl.includes('top-down')){
+    pack=`
+═══ TOP-DOWN ACTION PACK ═══
+Top-down camera. Dodge roll (Space). Bullet patterns with color coding. Room/wave clear banner.`;
+  }else if(gl.includes('mobile')){
+    pack=`
+═══ MOBILE PACK ═══
+Virtual joystick + 2 buttons. Large HUD touch targets. viewport meta. Same asset bar as genre above.`;
+  }else{
+    pack=`
+═══ ACTION GAME PACK ═══
+Genre-appropriate camera. WASD move + Space action. ${full?'3 enemy types + boss':'2 enemy types'}. Waves with banner. Collectibles + power-ups.`;
+  }
+  return `
+═══ GENRE DESIGN PACK (mandatory) ═══
+${topGameDesignReference(g)}
+${pack}
+UI IDs: #start-screen #start-btn #hud #game-over-screen #victory-screen #wave-banner (or #level-banner).
+${universalBootBlock()}`;
+}
+function validateUniversalBenchmark(code,js,eco){
+  const j=(js||'').toLowerCase(),h=code.toLowerCase(),missing=[];
+  const checks=[
+    [/bgsboot/i,'bgsBoot()'],
+    [/appendchild\s*\(\s*renderer/i,'renderer in DOM'],
+    [/screenshake|camera.*shake|hitmarker|hit.?marker|floating.*damage|damagenum|flash.*hit/i,'combat feedback juice'],
+    [/wave.*banner|level.*banner|stage.*banner|#wave-banner|#level-banner|announce.*wave/i,'phase/wave banner'],
+    [/localstorage.*high|highscore|high.?score|best.*score/i,'high score save'],
+    [/upgrade|power.?up|powerup/i,'progression pickup'],
+    [/particle|points\s*\(|explosion|muzzle|burst/i,'VFX particles/impacts'],
+    [/telegraph|wind.?up|warning.*circle|attack.*warn/i,'attack telegraph (fairness)']
+  ];
+  const list=eco?checks.filter((_,i)=>![4,7].includes(i)):checks;
+  list.forEach(([re,label])=>{if(!re.test(h+j))missing.push(label);});
+  return missing;
+}
+function validateFPSAssets(code,js){
+  const j=(js||'').toLowerCase(),h=code.toLowerCase(),m=[];
+  if(!/crosshair|reticle|aim/i.test(h+j))m.push('crosshair');
+  if(!/hitmarker|hit.?marker|hit.*flash/i.test(h+j))m.push('hitmarker');
+  if(!/reload|ammo/i.test(h+j))m.push('reload/ammo');
+  if(!/muzzle|gunfire|shoot/i.test(h+j))m.push('shooting');
+  return m;
+}
+function validatePlatformerAssets(code,js){
+  const j=(js||'').toLowerCase(),h=code.toLowerCase(),m=[];
+  if(!/jump|coyote|velocity\.y|gravity/i.test(j))m.push('jump physics');
+  if(!/platform|moving.*platform/i.test(h+j))m.push('platforms');
+  if(!/checkpoint|respawn|lives/i.test(h+j))m.push('checkpoint/lives');
+  return m;
+}
+function validateRacingAssets(code,js){
+  const j=(js||'').toLowerCase(),m=[];
+  if(!/lap|checkpoint|finish|race/i.test(j))m.push('race objective');
+  if(!/drift|boost|speed/i.test(j))m.push('speed/boost feel');
+  return m;
+}
+function validateTDAssets(code,js){
+  const j=(js||'').toLowerCase(),m=[];
+  if(!/tower|turret|place/i.test(j))m.push('placeable towers');
+  if(!/path|waypoint|spline/i.test(j))m.push('enemy path');
+  return m;
+}
+function validateGenreBenchmark(code,js,g,eco){
+  const gl=(g||'').toLowerCase();
+  let missing=validateUniversalBenchmark(code,js,eco);
+  if(gl.includes('tank'))missing=missing.concat(validateTankBattleAssets(code,js,eco));
+  else if(gl.includes('first-person'))missing=missing.concat(validateFPSAssets(code,js));
+  else if(gl.includes('platformer'))missing=missing.concat(validatePlatformerAssets(code,js));
+  else if(gl.includes('racing'))missing=missing.concat(validateRacingAssets(code,js));
+  else if(gl.includes('tower defense'))missing=missing.concat(validateTDAssets(code,js));
+  return [...new Set(missing)];
+}
+function validateTankBattleAssets(code,js,eco){
+  const j=(js||'').toLowerCase(),h=code.toLowerCase(),missing=[];
+  const need=[
+    [/minimap|radar|tacticalmap/i,'minimap/radar (#minimap)'],
+    [/turret|barrel|gunrotate|aimturret|turretgroup/i,'independent turret'],
+    [/reload|cooldown|reloadbar|reload-bar/i,'reload HUD'],
+    [/projectile|shells?\[|bullets?\[|fireshell/i,'shell projectiles'],
+    [/explosion|splash|radius|aoe|blast/i,'explosion/splash'],
+    [/(armor|facing|frontal|rear.*damage|damage.*facing)/i,'armor facings'],
+    [/destruct|breakable|prop.*hp|rubble/i,'destructible props'],
+    [/damage.*number|floating.*damage|damagenum|showdamage/i,'floating damage numbers'],
+    [/combo|killstreak|killcount|kill.*count/i,'kill/combo counter'],
+    [/telegraph|warning.*circle|artillery.*warn|strike.*zone/i,'artillery telegraph'],
+    [/height|uneven|slope|displace|terrain.*noise/i,'uneven terrain'],
+    [/\bap\b|\bhe\b|shelltype|shell.*type|keyq/i,'AP/HE shell types'],
+    [/upgrade.*pick|choose.*upgrade|wave.*upgrade|pickupgrade/i,'wave upgrade pick'],
+    [/wave.*banner|wavenumber|announce.*wave|#wave-banner/i,'wave banner'],
+    [/muzzle|tracer/i,'muzzle/tracer VFX'],
+    [/screenshake|camera.*shake/i,'screen shake'],
+    [/track|tread/i,'track animation'],
+    [/engine.*loop|enginerumble|engine.*oscillator/i,'engine audio loop'],
+    [/bgsboot/i,'bgsBoot()'],
+    [/appendchild\s*\(\s*renderer/i,'renderer attached to DOM']
+  ];
+  const list=eco?need.filter((_,i)=>![8,9,12,13,16].includes(i)):need;
+  list.forEach(([re,label])=>{if(!re.test(h+j))missing.push(label);});
+  return missing;
+}
+function formatBenchmarkReport(code){
+  const g=(typeof genre==='string'?genre:'')||'game';
+  const js=extractMainJs(code);
+  const missing=validateGenreBenchmark(code,js,g,ecoMode);
+  const base=ecoMode?10:14;
+  const extra=g.toLowerCase().includes('tank')?(ecoMode?15:20):g.toLowerCase().includes('first-person')?6:g.toLowerCase().includes('platformer')?5:4;
+  const total=base+extra;
+  const passed=Math.max(0,total-missing.length);
+  if(missing.length===0)return ' · Reference-game bar: full ✓';
+  if(missing.length<=2)return ' · Reference bar: '+passed+'/'+total+' (minor gaps)';
+  return ' · Reference bar: '+passed+'/'+total+' — gaps: '+missing.slice(0,3).join(', ');
+}
 function gameAssetRules(eco,prompt,g){
   const n=eco?12:22;
   return `
+${topGameDesignReference(g)}
+${assetBenchmarkRules(g,eco,prompt)}
 ═══ BUILD ALL GAME ASSETS AT LOAD (MANDATORY — FULL VIDEO GAME) ═══
 Theme: "${prompt||'adventure world'}" | Genre: ${g}
-The user must click START and play a COMPLETE game immediately. Every asset is created in JavaScript during page load — no placeholders, no "TODO", no empty scene, no loading external models at runtime.
+The user must click START and play a COMPLETE game immediately. Load bundled GLBs from /assets/packs/ during buildGameAssets() — no placeholders, no "TODO", no empty scene, no Sketchfab/Asset Store/random https model URLs.
 
-REQUIRED: function buildGameAssets(){ ... } called once before the start screen. It must create and attach ALL of the following to scene/world/DOM:
+REQUIRED: async function buildGameAssets(){ ... } (await all GLB loads) called from bgsBoot before the start screen. Attach ALL of the following to scene/world/DOM:
+${realAssetLoaderRules()}
 
 1. WORLD ASSETS
    - Ground: large mesh + CanvasTexture or procedural Texture (NOT flat gray #888)
    - Sky: scene.background + fog OR gradient sky sphere
-   - ${n}+ themed environment props as THREE.Group (trees, rocks, walls, lamps, crates, arches — match theme)
+   - ${n}+ themed props: mix of GLB clones from catalog + simple geometry (match theme)
    - Boundary or level geometry so the play space feels like a real level
 
-2. CHARACTER ASSETS
-   - Player: THREE.Group with ${eco?'3–6':'4–8'} body parts (torso, head, limbs, weapon) — NOT one BoxGeometry
-   - ${eco?'2':'3'} enemy archetypes (chaser, patroller, shooter): each unique multi-part Group + spawn data
-   ${eco?'':'- Boss mesh on final wave (larger Group, more HP)'}
+2. CHARACTER ASSETS (REAL GLB MODELS)
+   - Player: await loadGLB('/assets/packs/…') from catalog — scale to gameplay size
+   - ${eco?'2':'3'} enemy archetypes: each a DIFFERENT /assets/packs/…/*.glb + spawn data
+   ${eco?'':'- Boss: larger GLB (e.g. BrainStem or second vehicle) on final wave'}
    - Cannon.js bodies for player, ground, enemies; sync meshes every frame
 
 3. ITEM & VFX ASSETS
-   - Collectibles: pool of ${eco?'6+':'10+'} coins/orbs/flags with bob animation
-   - ${eco?'1':'2'} power-up type(s) (health, speed/shield) with distinct colored meshes
+   - Collectibles: ${eco?'6+':'10+'} instances using themed GLBs from the THEMED ASSET PLAN (not random mismatched meshes)
+   - ${eco?'1':'2'} power-up type(s) with distinct GLB or emissive mesh
    - Particle system(s): atmosphere + hit/collect burst
    - Optional: muzzle flash, damage numbers, trail on player
 
-4. AUDIO ASSETS (Web Audio API — no external MP3 URLs)
-   - Create 6+ sounds in a sounds{} map using oscillators: jump, shoot, hit, hurt, collect, waveStart, victory
-   - Call play functions from gameplay events
+4. AUDIO ASSETS
+   - Prefer /assets/audio/*.ogg|.wav from catalog in sounds{}; 6+ events (move, attack, hit, hurt, collect, wave, death, victory)
+   - Web Audio oscillators only as fallback when no bundled clip fits
 
 5. UI / SCREEN ASSETS (HTML in <body>)
    - #start-screen: title, lore, controls, objective, #start-btn
@@ -666,7 +1263,30 @@ REQUIRED: function buildGameAssets(){ ... } called once before the start screen.
    - Player controls via window.keys in animate()
 
 Order: init Three.js → buildGameAssets() → show #start-screen → startGame() hides menu and runs animate().
-Never leave scene empty. Never use a single box as the whole player or all enemies.`;
+Never leave scene empty. Never use a single box as the whole player or all enemies.
+${genrePlaybook(g,eco,prompt)}`;
+}
+function validateThemeAssets(code,js,g,prompt){
+  const j=(js||'').toLowerCase(),h=code.toLowerCase();
+  const tokens=extractThemeTokens(g,prompt);
+  const issues=[];
+  const used=[...new Set([...(j+h).matchAll(/\/assets\/packs\/[^'"\s]+\.glb/gi)].map(m=>m[0].toLowerCase()))];
+  if(!used.length)return issues;
+  const isTank=tokens.includes('tank')||tokens.includes('military')||(g||'').toLowerCase().includes('tank');
+  const isPlatformer=tokens.includes('platformer')||(g||'').toLowerCase().includes('platformer');
+  const cartoon=/\/(duck|fox|avocado)\.glb/i.test(j);
+  const hasTanks=used.some(p=>p.includes('/tanks/'));
+  const hasMilitaryProps=used.some(p=>/sandbag|military-crate|desert-building|btr80|weapon-rack|character-soldier/i.test(p));
+  if(isTank&&!isPlatformer){
+    if(cartoon&&!/coin|collectible/i.test(j))issues.push('use tanks/military GLBs instead of Duck/Fox/Avocado for heroes/enemies');
+    if(!hasTanks&&!hasMilitaryProps&&used.length>=2)issues.push('tank/military theme needs /assets/packs/tanks/ or sketchfab military props');
+  }
+  if(isPlatformer&&!isTank&&hasTanks)issues.push('platformer theme should use kenney-platformer-3d characters/platforms, not tank meshes');
+  if(tokens.includes('medieval')&&hasTanks&&!/tank|warfare|siege/i.test((prompt||'').toLowerCase()))
+    issues.push('medieval/fantasy theme should use kenney-basic-scene walls/columns/weapons, not modern tanks');
+  if(tokens.includes('space')&&hasTanks&&!/tank|lunar|mech/i.test((prompt||'').toLowerCase()))
+    issues.push('space theme should use morph/box props or sci-fi meshes, not ground tanks');
+  return issues;
 }
 function validateGameAssets(code,js){
   const j=(js||'').toLowerCase(),h=code.toLowerCase(),missing=[];
@@ -680,25 +1300,180 @@ function validateGameAssets(code,js){
   if(!/(collect|coin|orb|pickup|gem|powerup|power-up)/i.test(j))missing.push('collectibles');
   if(!/(cannon\.world|new\s+cannon\.world|cannon\.physics)/i.test(j))missing.push('physics');
   if(!/(audiocontext|oscillator|createsound|playsound|sounds\s*[=:{]|sfx|playtone)/i.test(j))missing.push('sound effects');
-  if(!/(canvastexture|textureloader|repeatwrapping|drawimage|createpattern)/i.test(j))missing.push('textures');
-  if(!/(three\.group|new\s+three\.group\(\)|new\s+group\s*\()/i.test(j))missing.push('multi-part models');
+  if(!/(canvastexture|drawimage|createpattern|meshstandardmaterial)/i.test(j))missing.push('ground/materials');
+  if(!/(gltfloader|GLTFLoader)/i.test(j))missing.push('GLTFLoader');
+  if(!/\/assets\/packs\//i.test(h+j))missing.push('bundled /assets/packs/ GLBs');
+  if(!/loadglb|loader\.load\s*\(\s*['"]\/assets\//i.test(j))missing.push('loadGLB from catalog');
+  if(/sketchfab|assetstore\.unity|poly\.pizza|raw\.githubusercontent\.com.*\.glb/i.test(h+j))missing.push('FORBIDDEN external asset URL — use /assets/packs/ only');
   if(!/buildgameassets|creategameassets|initassets|setupworld|initworld|createlevel/i.test(j))missing.push('asset setup');
+  const g=(typeof genre==='string'?genre:'').toLowerCase();
+  const prompt=(typeof document!=='undefined'&&document.getElementById('ptxt'))?document.getElementById('ptxt').value.trim():'';
+  const themeIssues=validateThemeAssets(code,js,g,prompt);
+  if(themeIssues.length>=2)throw new Error('Assets don\'t match game theme — '+themeIssues.slice(0,3).join('; ')+'. Use THEMED ASSET PLAN paths.');
+  const genreMissing=validateGenreBenchmark(code,js,g,ecoMode);
+  const genreLimit=ecoMode?6:3;
+  if(genreMissing.length>=genreLimit){
+    throw new Error('Below reference-game design bar for '+genre+' — add: '+genreMissing.slice(0,6).join(', ')+'. '+topGameDesignReference(genre).slice(0,120)+'…');
+  }
   if(missing.length>=3)throw new Error('Missing game assets: '+missing.slice(0,5).join(', ')+' — building more…');
 }
-async function generateGameCode({apiKey,system,user,ecoMode}){
+function truncateForUpdate(code,maxChars){
+  maxChars=maxChars||UPDATE_MAX_SOURCE_CHARS;
+  if(!code||code.length<=maxChars)return code||'';
+  const head=Math.floor(maxChars*0.46),tail=Math.floor(maxChars*0.46),omitted=code.length-head-tail;
+  return code.slice(0,head)+'\n<!-- … '+omitted+' characters omitted for API limit — keep unchanged logic from omitted middle when not editing those parts … -->\n'+code.slice(-tail);
+}
+function buildUpdateSystem(genre,isMobile,prompt){
+  return `You are Bradley's Game Studio — GAME MODIFICATION mode. You receive an EXISTING complete HTML5 Three.js + Cannon.js game and a change request.
+
+MODIFICATION RULES (critical):
+- Apply ONLY the requested changes. Do not rebuild from scratch unless required to fulfill the request.
+- Output the ENTIRE updated HTML file (full <!DOCTYPE html> … </html>), not a diff or snippet.
+- Preserve same-origin /assets/packs/ GLB paths, controls, HUD, win/lose flow unless the change explicitly removes them.
+- Keep buildGameAssets(), startGame(), animate(), #start-screen, game-over and victory screens unless asked to remove them.
+- Small tweaks (speed, colors, wave count) = edit only the relevant variables/functions.
+
+`+buildGameSystem(genre,isMobile,prompt);
+}
+function collectStaticAudit(code,g,eco){
+  const js=extractMainJs(code)||'';
+  const missing=validateGenreBenchmark(code,js,g,eco);
+  const issues=[];
+  const gl=(g||'').toLowerCase();
+  const base=eco?10:14;
+  const extra=gl.includes('tank')?(eco?15:20):gl.includes('first-person')?6:gl.includes('platformer')?5:4;
+  const total=base+extra;
+  const passed=Math.max(0,total-missing.length);
+  if(missing.length)issues.push('Reference-game gaps ('+passed+'/'+total+'): '+missing.slice(0,8).join(', ')+(missing.length>8?'…':''));
+  else issues.push('Reference-game benchmark: all checked features present ('+passed+'/'+total+').');
+  try{validateGameHtml(code);issues.push('HTML structure: valid (start screen, loops, assets).');}
+  catch(e){issues.push('HTML structure issue: '+e.message);}
+  if(!/\/assets\/packs\//i.test(code+js))issues.push('No /assets/packs/ GLB paths detected — models may be placeholders.');
+  if(!/(gltfloader|loadglb)/i.test(js))issues.push('GLTFLoader / loadGLB pattern not found.');
+  const prompt=meta.prompt||document.getElementById('ptxt')?.value?.trim()||'';
+  const themeIssues=validateThemeAssets(code,js,g,prompt);
+  if(themeIssues.length)issues.push('Theme/asset mismatch: '+themeIssues.join('; '));
+  else issues.push('Theme assets: paths match "'+prompt+'".');
+  if(code.length<12000)issues.push('Small codebase (~'+Math.round(code.length/1024)+'kb) — room to add waves, VFX, and polish.');
+  else if(code.length>120000)issues.push('Large codebase (~'+Math.round(code.length/1024)+'kb) — consider focused updates.');
+  return{missing,passed,total,issues,js};
+}
+function renderStaticAuditHtml(audit){
+  const cls=audit.missing.length===0?'upd-rec-static ok':'upd-rec-static';
+  return '<div class="'+cls+'"><strong>Instant check</strong><ul>'+audit.issues.map(i=>'<li>'+escHtml(i)+'</li>').join('')+'</ul></div>';
+}
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function formatPlainRecsHtml(text){
+  const safe=escHtml(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  const items=extractRecBullets(text);
+  if(items.length)return '<ol>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ol>';
+  return '<p>'+safe.replace(/\n\n+/g,'</p><p>').replace(/\n/g,'<br>')+'</p>';
+}
+function formatAiRecsAsHtml(text){
+  if(!text)return '';
+  if(!/^##\s/m.test(text))return '<div class="upd-rec-ai"><strong>AI review</strong>'+formatPlainRecsHtml(text)+'</div>';
+  const safe=escHtml(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+  const blocks=safe.split(/\n(?=##\s)/);
+  return blocks.map(block=>{
+    const lines=block.trim().split('\n');
+    if(!lines.length)return '';
+    let head=lines[0].replace(/^##\s*/,'').trim();
+    let body=lines.slice(1).join('\n').trim();
+    if(!head.startsWith('<')&&head.length<80&&!body&&lines.length===1){
+      return '<p>'+head+'</p>';
+    }
+    let html='';
+    if(head)html+='<strong>'+head+'</strong>';
+    const items=[],paras=[];
+    body.split('\n').forEach(line=>{
+      const t=line.trim();
+      const m=t.match(/^(?:\d+[\.\)]|[-*•])\s+(.+)$/);
+      if(m)items.push(m[1]);
+      else if(t)paras.push(t);
+    });
+    if(items.length)html+='<ol>'+items.map(i=>'<li>'+i+'</li>').join('')+'</ol>';
+    paras.forEach(p=>{html+='<p>'+p+'</p>';});
+    return '<div class="upd-rec-ai">'+html+'</div>';
+  }).join('');
+}
+function extractRecBullets(text){
+  const items=[];
+  (text||'').split('\n').forEach(line=>{
+    const t=line.trim();
+    const m=t.match(/^(?:\d+[\.\)]|[-*•])\s+(.+)$/);
+    if(m)items.push(m[1].replace(/\*\*/g,'').trim());
+  });
+  return items;
+}
+function buildAnalyzeSystem(g){
+  const ref=topGameDesignReference(g).slice(0,200);
+  return `You are a senior game designer and Three.js technical reviewer for Bradley's Game Studio.
+
+Review the player's existing ${g} game source and static audit. Give actionable improvement recommendations — NOT full code.
+
+Compare to commercial reference quality: ${ref}…
+
+Cover: gameplay feel, difficulty curve, juice (VFX/audio/screen shake), UI/HUD clarity, asset use (/assets/packs/ GLBs), performance, mobile/touch if relevant, and missing genre features.
+
+OUTPUT FORMAT (use exactly these headings):
+## Quick wins
+(numbered list — 2-4 small changes with high impact)
+
+## Gameplay & balance
+(numbered list)
+
+## Polish & juice
+(numbered list)
+
+## Technical
+(numbered list — only if needed)
+
+Be specific (e.g. "Add wave 5 boss using a second GLB from /assets/packs/…" not "add a boss"). Each item should be one sentence an UPDATE prompt can apply. No HTML output.`;
+}
+function buildAnalyzeUser({code,prompt,genre,audit}){
+  const src=truncateForUpdate(code,ANALYZE_MAX_SOURCE_CHARS);
+  const truncated=code.length>src.length;
+  return `Game genre: ${genre}
+Original design: ${prompt||'Untitled'}
+
+STATIC AUDIT:
+${audit.issues.map((x,i)=>(i+1)+'. '+x).join('\n')}
+
+${truncated?'(Source truncated for API limits — infer patterns from visible sections.)\n':''}
+GAME SOURCE:
+${src}`;
+}
+function buildUpdateUser({existingCode,changes,originalPrompt,genre}){
+  const src=truncateForUpdate(existingCode);
+  const truncated=existingCode.length>src.length;
+  return `Modify this existing ${genre} game. Apply ONLY these changes:
+
+REQUESTED CHANGES:
+${changes}
+
+ORIGINAL DESIGN (context): ${originalPrompt||'Untitled game'}
+${truncated?'\nNOTE: Source below was truncated for API limits — preserve behavior from omitted sections unless the change targets them.\n':''}
+EXISTING GAME SOURCE (return the full updated file):
+${src}
+
+Output ONLY the complete updated raw HTML. Start <!DOCTYPE html>, end </html>. No markdown fences. Must stay fully playable after START.`;
+}
+async function generateGameCode({apiKey,system,user,ecoMode,continueUser,labelPrefix}){
   const max_tokens=ecoMode?GEN_MAX_TOKENS.eco:GEN_MAX_TOKENS.full;
+  const contMsg=continueUser||GEN_CONTINUE_USER;
+  const baseLabel=labelPrefix||'Generate game';
   const messages=[{role:'user',content:user}];
   let code='',continuations=0;
   for(let pass=0;pass<1+GEN_MAX_CONTINUATIONS;pass++){
-    const label=pass===0?'Generate game':`Generate game (continue ${pass})`;
-    if(pass>0)setStatus(`Finishing game (${pass}/${GEN_MAX_CONTINUATIONS})…`,'s');
+    const label=pass===0?baseLabel:`${baseLabel} (continue ${pass})`;
+    if(pass>0)setStatus(`Finishing (${pass}/${GEN_MAX_CONTINUATIONS})…`,'s');
     const data=await callAnthropic({apiKey,model:MODELS.SONNET,max_tokens,system,messages,label});
     const chunk=cleanGeneratedHtml((data.content||[]).map(b=>b.text||'').join(''));
     if(!chunk)throw new Error('Empty response — try again');
     code=pass===0?chunk:mergeContinuation(code,chunk);
     if(data.stop_reason==='max_tokens'&&continuations<GEN_MAX_CONTINUATIONS){
       messages.push({role:'assistant',content:chunk});
-      messages.push({role:'user',content:GEN_CONTINUE_USER});
+      messages.push({role:'user',content:contMsg});
       continuations++;
       continue;
     }
@@ -706,18 +1481,28 @@ async function generateGameCode({apiKey,system,user,ecoMode}){
     if(!code.toLowerCase().includes('three'))throw new Error('3D engine missing — try a different description');
     try{validateGameHtml(code);return code;}
     catch(e){
+      const prepared=prepareGameCode(code);
+      if(prepared.fixes.length){
+        try{
+          validateGameHtml(prepared.code);
+          if(prepared.fixes.length)console.log('[BGS autofix]',prepared.fixes.join(', '));
+          return prepared.code;
+        }catch(_){}
+      }
       if(continuations<GEN_MAX_CONTINUATIONS){
         messages.push({role:'assistant',content:code});
-        messages.push({role:'user',content:GEN_CONTINUE_USER+'\n\nValidation: '+e.message});
+        messages.push({role:'user',content:contMsg+'\n\nValidation: '+e.message});
         continuations++;
         continue;
       }
-      code=sanitizeGameHtml(code);
+      const finalPrep=prepareGameCode(code,{aggressive:true});
+      code=finalPrep.code;
+      if(finalPrep.fixes.length)console.log('[BGS autofix]',finalPrep.fixes.join(', '));
       validateGameHtml(code);
       return code;
     }
   }
-  throw new Error('Game still incomplete — try a shorter prompt or turn ECO off');
+  throw new Error('Game still incomplete — try a shorter change list or turn ECO off');
 }
 function extractMainJs(code){
   const tagOpen='<'+'script';
@@ -749,7 +1534,7 @@ function validateGameHtml(code){
 }
 function sanitizeGameHtml(code){
   let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
-  const bootstrapStyle='<style id="bgs-bootstrap">html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}canvas{display:block!important;position:relative!important;z-index:0!important;width:100%!important;height:100%!important;touch-action:none}#start-screen,#game-over-screen{position:fixed!important;inset:0!important;z-index:99999!important;pointer-events:auto!important}#start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.92),rgba(12,16,32,0.96))!important;color:#fff!important;font-family:system-ui,sans-serif;text-align:center;padding:24px}#start-btn,#start-screen button{margin-top:16px;padding:12px 28px;font-size:16px;font-weight:700;cursor:pointer;border:2px solid #00ffcc;background:rgba(0,255,204,0.12);color:#00ffcc;border-radius:6px}#start-btn:hover,#start-screen button:hover{background:rgba(0,255,204,0.25)}</style>';
+  const bootstrapStyle='<style id="bgs-bootstrap">html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}#game-canvas,canvas{display:block!important;position:fixed!important;top:0!important;left:0!important;z-index:0!important;width:100%!important;height:100%!important;touch-action:none}#start-screen,#game-over-screen{position:fixed!important;inset:0!important;z-index:50!important;pointer-events:auto!important}#start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.92),rgba(12,16,32,0.96))!important;color:#fff!important;font-family:system-ui,sans-serif;text-align:center;padding:24px}#start-btn,#start-screen button{margin-top:16px;padding:12px 28px;font-size:16px;font-weight:700;cursor:pointer;border:2px solid #00ffcc;background:rgba(0,255,204,0.12);color:#00ffcc;border-radius:6px}#start-btn:hover,#start-screen button:hover{background:rgba(0,255,204,0.25)}</style>';
   if(!html.includes('bgs-bootstrap')){
     if(/<head[^>]*>/i.test(html))html=html.replace(/<head[^>]*>/i,m=>m+bootstrapStyle);
     else html=bootstrapStyle+html;
@@ -781,6 +1566,167 @@ function sanitizeGameHtml(code){
   else if(!/<\/html>/i.test(html))html+=(/<\/body>/i.test(html)?'':'</body>')+'</html>';
   return html;
 }
+const BGS_CDN_STACK=
+  '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"><\/script>\n'+
+  '<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"><\/script>\n'+
+  '<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"><\/script>\n';
+function injectIntoMainScript(html,snippet){
+  const closeIdx=html.lastIndexOf(BGS_SCRIPT_END);
+  if(closeIdx===-1)return html+'<'+'script>'+snippet+BGS_SCRIPT_END;
+  return html.slice(0,closeIdx)+snippet+html.slice(closeIdx);
+}
+function injectMissingGameShell(html){
+  let out=html;
+  const add=(block)=>{
+    if(/<\/body>/i.test(out))out=out.replace(/<\/body>/i,block+'</body>');
+    else if(/<\/html>/i.test(out))out=out.replace(/<\/html>/i,block+'</html>');
+    else out+=block;
+  };
+  if(!/id=["']game-over-screen["']/i.test(out)&&!/gameover-screen/i.test(out)){
+    add('<div id="game-over-screen" style="display:none;position:fixed;inset:0;z-index:55;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);color:#fff;font-family:system-ui"><h2>Game Over</h2><button data-bgs-click="restartGame">Play Again</button></div>');
+  }
+  if(!/victory-screen|win-screen|level complete|gamestate\s*=\s*['"]win/i.test(out)){
+    add('<div id="victory-screen" style="display:none;position:fixed;inset:0;z-index:55;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.88);color:#fff;font-family:system-ui"><h2>Victory!</h2><button data-bgs-click="restartGame">Play Again</button></div>');
+  }
+  if(!/(health|hp-bar|healthbar|playerhp|id=["']hud["'])/i.test(out)){
+    add('<div id="hud" style="position:fixed;top:12px;left:12px;z-index:40;color:#fff;font-family:system-ui"><div id="health">HP <span id="hp-bar"></span></div><div>Score: <span id="score">0</span></div><div>Wave: <span id="wave">1</span></div></div>');
+  }
+  return out;
+}
+function bgsRuntimeStub(){
+  return `
+let gameStarted=false;
+function startGame(){
+  gameStarted=true;
+  const s=document.getElementById('start-screen');if(s)s.style.display='none';
+  if(typeof animate==='function'&&!window.__loopRunning&&!window.__gameLoopRunning){
+    window.__loopRunning=true;window.__gameLoopRunning=true;animate();
+  }
+  window.dispatchEvent(new Event('resize'));
+}
+function restartGame(){location.reload();}
+window.startGame=startGame;window.restartGame=restartGame;
+document.getElementById('start-btn')?.addEventListener('click',startGame);
+`;
+}
+function bgsAnimateStub(){
+  return `
+function animate(){
+  if(!gameStarted)return;
+  requestAnimationFrame(animate);
+  try{
+    if(typeof clock!=='undefined'&&clock&&clock.getDelta)clock.getDelta();
+    if(renderer&&scene&&camera)renderer.render(scene,camera);
+  }catch(e){}
+}
+`;
+}
+function validateGameHtmlStructural(code){
+  if(!/<\/html>\s*$/i.test(code.trim()))throw new Error('Game incomplete — missing closing html tag.');
+  const {opens,closes}=countScriptTags(code);
+  if(opens>closes)throw new Error('Game code was cut off — unclosed script tags.');
+  const js=extractMainJs(code);
+  if(js){
+    const {depth,inStr}=jsBraceDepth(js);
+    if(depth>0||inStr)throw new Error('Game script incomplete — unclosed braces.');
+    if(!/function\s+startGame\s*\(/i.test(js)&&!/window\.startGame\s*=/i.test(js))
+      throw new Error('Game missing startGame().');
+    if(!/function\s+animate\s*\(/i.test(js)&&!/requestAnimationFrame\s*\(\s*animate/i.test(js))
+      throw new Error('Game missing render loop.');
+    if(!/WebGLRenderer/i.test(js))throw new Error('Game missing 3D renderer.');
+  }
+}
+function autoFixGameCode(code,opts={}){
+  const fixes=[];
+  if(opts.skipAutofix){
+    const light=sanitizeGameHtml(cleanGeneratedHtml(code||''));
+    return{code:light,fixes:['skipAutofix — light sanitize only']};
+  }
+  let html=cleanGeneratedHtml(code||'');
+  if(!html)return{code:'',fixes};
+  if(/importmap/i.test(html)&&/type\s*=\s*["']module["']/i.test(html)&&/three/i.test(html)){
+    return{code:sanitizeGameHtml(html),fixes:['ES module game — light sanitize only']};
+  }
+  html=html.replace(/\sasync(?=\s|>)/gi,' ').replace(/\sdefer(?=\s|>)/gi,' ');
+  html=html.replace(/(<script\b[^>]*\bsrc=["'][^"']*(?:three|cannon|gltf)[^"']*["'][^>]*)\s+type=["']module["']/gi,'$1');
+  if(/type\s*=\s*["']module["']/i.test(html)&&!/three\.min\.js/i.test(html)){
+    html=html.replace(/<script[^>]*type\s*=\s*["']module["'][^>]*>[\s\S]*?<\/script>/gi,'');
+    fixes.push('removed ES module scripts');
+  }
+  if(!/three\.min\.js|three@0\.134/i.test(html)){
+    if(/<head[^>]*>/i.test(html))html=html.replace(/<head[^>]*>/i,m=>m+BGS_CDN_STACK);
+    else html=BGS_CDN_STACK+html;
+    fixes.push('injected Three.js CDN stack');
+  }
+  html=html.replace(/https?:\/\/(?:sketchfab\.com|assetstore\.unity\.com|raw\.githubusercontent\.com)[^\s"'`]*/gi,'/assets/packs/');
+  html=sanitizeGameHtml(html);
+  if(opts.aggressive)html=injectMissingGameShell(html);
+  let js=extractMainJs(html);
+  if(js){
+    if(!/window\.keys\s*=/.test(js)){
+      html=injectIntoMainScript(html,'window.keys={};\ndocument.addEventListener("keydown",e=>{window.keys[e.code]=true;});\ndocument.addEventListener("keyup",e=>{window.keys[e.code]=false;});\n');
+      fixes.push('window.keys input bridge');
+      js=extractMainJs(html);
+    }
+    if(!/GLTFLoaderClass|THREE\.GLTFLoader/i.test(js)&&/GLTFLoader|loadGLB|gltf/i.test(js)){
+      html=injectIntoMainScript(html,'if(typeof THREE!=="undefined"&&THREE.GLTFLoader){window.GLTFLoaderClass=THREE.GLTFLoader;}\n');
+      fixes.push('GLTFLoader global');
+    }
+    if(!/function\s+bgsBoot\s*\(/i.test(js)&&/function\s+buildGameAssets\s*\(/i.test(js)){
+      html=injectIntoMainScript(html,universalBootBlock());
+      fixes.push('bgsBoot() loader');
+    }
+    if(!/function\s+startGame\s*\(/i.test(js)&&!/window\.startGame\s*=/i.test(js)){
+      html=injectIntoMainScript(html,bgsRuntimeStub());
+      fixes.push('startGame() stub');
+    }
+    if(!/function\s+animate\s*\(/i.test(js)&&!/requestAnimationFrame\s*\(\s*animate/i.test(js)){
+      html=injectIntoMainScript(html,bgsAnimateStub());
+      fixes.push('animate() stub');
+    }
+    if(opts.aggressive&&!/function\s+buildGameAssets\s*\(/i.test(js)){
+      html=injectIntoMainScript(html,`
+async function buildGameAssets(){
+  if(typeof initThree==='function'&&!window.scene)initThree();
+  if(typeof initPhysics==='function'&&!window.world)initPhysics();
+  if(!window.scene&&typeof THREE!=='undefined'){
+    window.scene=window.scene||new THREE.Scene();
+    window.camera=window.camera||new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,500);
+    window.camera.position.set(0,8,16);
+    window.renderer=window.renderer||new THREE.WebGLRenderer({antialias:true});
+    window.renderer.setSize(innerWidth,innerHeight);
+    document.body.appendChild(window.renderer.domElement);
+    const g=new THREE.Mesh(new THREE.BoxGeometry(80,.4,80),new THREE.MeshStandardMaterial({color:0x8b7355}));
+    window.scene.add(g);
+    window.scene.add(new THREE.AmbientLight(0xffffff,.6));
+  }
+}
+`);
+      fixes.push('buildGameAssets() fallback');
+    }
+  }
+  return{code:html,fixes};
+}
+function prepareGameCode(code,opts={}){
+  let result=autoFixGameCode(code,opts);
+  let fixed=result.code;
+  let fixes=result.fixes.slice();
+  try{
+    validateGameHtml(fixed);
+    return{code:fixed,fixes,relaxed:false};
+  }catch(e1){
+    const aggressive=autoFixGameCode(fixed,{...opts,aggressive:true});
+    fixed=aggressive.code;
+    fixes=fixes.concat(aggressive.fixes);
+    try{
+      validateGameHtml(fixed);
+      return{code:fixed,fixes,relaxed:false};
+    }catch(e2){
+      validateGameHtmlStructural(fixed);
+      return{code:fixed,fixes,relaxed:true,warning:e2.message};
+    }
+  }
+}
 const CHIPS={
   '3D platformer':['knight in haunted castle with torches','robot jumping neon factory','alien planet glowing platforms','ninja city rooftops at night'],
   '3D first-person shooter':['marines vs alien horde in bunker','zombie apocalypse FPS survival','cyberpunk corridor shooter','dungeon FPS with magic spells'],
@@ -801,7 +1747,7 @@ const CHIPS={
 const PMSG=['Initializing Three.js engine…','Building world & level assets…','Creating player & enemy models…','Adding collectibles & power-ups…','Wiring physics & wave systems…','Generating sound effects…','Building HUD & game screens…','Finalizing playable game…'];
 
 /* ═══ STATE ═══ */
-let genre='3D platformer',busy=false,currentCode=null,currentGameId=null,enhancedResult='',pvId=null,mobileMode=false,selectedExp='unity';
+let genre='3D platformer',busy=false,currentCode=null,currentGameId=null,enhancedResult='',pvId=null,mobileMode=false,selectedExp='unity',updMode='replace',lastAnalyzeRecs='';
 /* ═══ API USAGE & ECO ═══ */
 const MODELS={SONNET:'claude-sonnet-4-5-20250929',HAIKU:'claude-haiku-4-5-20251001'};
 const PRICING={'claude-sonnet-4-5-20250929':{in:3,out:15},'claude-haiku-4-5-20251001':{in:0.8,out:4}};
@@ -930,7 +1876,7 @@ function updateUsageUI(){
     barEl.textContent=parts.join(' · ')||(billing.error?'billing error':'');
     barEl.title=monthEl?.title||'API usage';
   }
-  if(document.getElementById('umodal')?.style.display==='flex')renderUsageModal();
+  if(isModalVisible('umodal'))renderUsageModal();
 }
 function renderUsageModal(){
   const spent=monthSpent(),left=monthRemaining(),pct=monthPct(),live=isLiveBilling();
@@ -963,11 +1909,11 @@ function renderUsageModal(){
   ].filter(Boolean).join('<br>');
 }
 function showUsage(){
-  document.getElementById('umodal').style.display='flex';
+  setModalOpen('umodal',true);
   renderUsageModal();
   fetchAnthropicBilling(false);
 }
-function closeUsage(){document.getElementById('umodal').style.display='none';}
+function closeUsage(){setModalOpen('umodal',false);}
 function saveMonthlyBudget(){
   const raw=document.getElementById('um-budget').value.trim();
   if(!raw){usage.monthlyBudget=null;persistUsage();updateUsageUI();setStatus('Monthly budget cleared','ok');return;}
@@ -1033,21 +1979,23 @@ async function callAnthropic(opts){
 function buildGameSystem(g,isMobile,prompt){
   const assets=gameAssetRules(false,prompt,g);
   if(!ecoMode)return `You are an elite Three.js game studio lead. Deliver a COMPLETE, POLISHED, PLAYABLE 3D browser game — a full video game the user can play immediately, not a tech demo of plain cubes.
+${topGameDesignReference(g)}
 ${assets}
 
 OUTPUT RULES:
 - Output ONLY raw HTML: <!DOCTYPE html> … </html>. No markdown, no backticks, no commentary.
 - Single self-contained file. Libraries from CDN only (Three.js r134 + Cannon.js).
 - Must fully close every script/body/html tag. Never truncate mid-function.
-- ALL visual, audio, UI, and gameplay assets must be built inside buildGameAssets() before the player clicks START.
+- ALL GLB models, audio, UI, and gameplay must be loaded in async buildGameAssets() from /assets/… before START.
 
 CDN:
 - https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
+- https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js
 - https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js
 
-═══ VISUAL QUALITY (CRITICAL — NO LAZY BLOCKS) ═══
-- DO NOT make the player or enemies a single BoxGeometry. Build every character as THREE.Group with 4–8 parts (torso, head, limbs, weapon/wings) using SphereGeometry, CylinderGeometry, ConeGeometry, TorusGeometry combined.
-- Environment: minimum 22 themed props (not random cubes) — arches, pillars, trees, crystals, fences, lamps, crates, ramps, bridges. Match the user's theme: "${prompt||'fantasy world'}".
+═══ VISUAL QUALITY (REAL GLB MODELS — NO LAZY BLOCKS) ═══
+- Player, enemies, and boss MUST be loaded from /assets/packs/…/*.glb via GLTFLoader (see catalog). Scale/rotate clones; never use Sketchfab or external URLs.
+- Environment: minimum 22 themed props — GLB clones from catalog plus simple geometry. Match theme: "${prompt||'fantasy world'}".
 - Ground: use CanvasTexture or procedural pattern (stone grid, grass noise, neon grid) — NOT flat gray.
 - Materials: MeshStandardMaterial with unique metalness/roughness/emissive per object. 3+ colored PointLights/SpotLights. scene.fog. HemisphereLight for sky tint.
 - Sky: colored scene.background + fog, or large inverted sphere gradient.
@@ -1071,7 +2019,7 @@ document.addEventListener('keyup',e=>{window.keys[e.code]=false;});
 In animate(), read window.keys['KeyW'], KeyA, KeyS, KeyD, Space, Arrow keys. Do NOT use pointer lock or document.activeElement checks.
 - Health + score + wave HUD (styled HTML overlay, not plain text). localStorage high score.
 - Cannon.js physics: player body, ground, enemy bodies. Sync meshes each frame.
-- Web Audio API: jump, shoot, hit, collect, wave-start tones (oscillator, no external files).
+- Audio: /assets/audio/ clips when available; else Web Audio oscillators for missing events.
 - Difficulty curve: enemies faster/stronger each wave.
 
 ═══ UI / SCREENS ═══
@@ -1091,20 +2039,32 @@ function restartGame(){location.reload();}
 window.startGame=startGame; window.restartGame=restartGame;
 document.getElementById('start-btn').addEventListener('click',startGame);
 window.renderer=renderer; window.scene=scene; window.camera=camera;
+- CRITICAL BOOT: CDN script tags must NOT use async/defer. After Cannon/Three CDN tags, call init via bgsBoot() that waits until typeof THREE!=='undefined', then initThree(); initPhysics(); buildGameAssets(); assign window.renderer/scene/camera/startGame. document.body.appendChild(renderer.domElement) before showing #start-screen.
 - Third-person or genre-appropriate camera with smooth lerp follow.
 - animate() uses requestAnimationFrame loop, Clock.getDelta(), renderer.render every frame when gameStarted.
 - Do NOT start animate() until startGame(). html,body{margin:0;height:100%;overflow:hidden}
 ${isMobile?`MOBILE: virtual joystick (left), 2 action buttons (right), viewport meta, touch-friendly HUD.` : ''}
 
-This must feel like a real indie game someone would publish, built entirely from Three.js primitives — ambitious, themed, and fun.`;
+${genrePlaybook(g,false,prompt)}
+
+═══ BGS ENGINE SYSTEMS (mandatory — include in every generated game) ═══
+BGS-Spatial-01: Use proper scene graph hierarchy. Group related objects. Place objects with physics awareness.
+BGS-Eva-01: Use bgsForgeTexture, bgsForgeNormalMap, bgsForgeRoughnessMap for procedural PBR materials.
+BGS-AnimLib: Use bgsProceduralWalk/Run for character locomotion. Use bgsAnimStateMachine for state transitions.
+BGS-World-4D: Track all entities with bgsWorldAdd(). Call bgsWorldUpdate(dt) in animate(). bgsValidateWorld() after scene build.
+Include these functions and call them. They define the studio's foundation model capabilities.
+
+This must feel like a real indie game someone would publish — real GLB assets from /assets/packs/, ambitious, themed, and fun.`;
   const assetsEco=gameAssetRules(true,prompt,g);
   return `You are a Three.js game developer. Deliver a COMPLETE, FULLY PLAYABLE 3D browser game — a full video game ready the moment the user clicks START. Not a demo, not a sandbox, not plain cubes.
+${topGameDesignReference(g)}
 ${assetsEco}
 
-OUTPUT: ONLY raw HTML (<!DOCTYPE html>…</html>). No markdown. Single file. Three.js r134 + Cannon.js from CDN. Close every tag — never truncate mid-function. Call buildGameAssets() at load with ALL assets before START.
+OUTPUT: ONLY raw HTML (<!DOCTYPE html>…</html>). No markdown. Single file. Three.js r134 + GLTFLoader + Cannon.js from CDN. Close every tag — never truncate mid-function. await buildGameAssets() at load with ALL GLBs before START.
 
 CDN:
 - https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js
+- https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js
 - https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js
 
 PLAYABLE GAME (REQUIRED — Eco still means COMPLETE):
@@ -1115,13 +2075,13 @@ Genre: ${g} | Theme: "${prompt||'adventure world'}"
 - Health + score + wave HUD. localStorage high score. R to restart.
 - 2 enemy types with different behavior (chase + patrol OR ranged). 4+ waves, difficulty increases.
 - Collectibles + 1 power-up. Player WASD/arrows, Space jump/shoot, Cannon physics synced each frame.
-- Web Audio tones for jump, hit, collect (oscillator only).
+- Audio: /assets/audio/ when available; else Web Audio tones for jump, hit, collect.
 
 INPUT (mandatory): window.keys={}; document.addEventListener('keydown',e=>{window.keys[e.code]=true}); document.addEventListener('keyup',e=>{window.keys[e.code]=false}); read keys in animate(). No pointer lock.
 
-VISUALS (no lazy blocks):
-- Player AND enemies as THREE.Group with 3–6 parts (Sphere/Cylinder/Cone) — NOT single BoxGeometry.
-- 12+ themed props matching setting. CanvasTexture or patterned ground (not flat gray).
+VISUALS (real GLBs):
+- Player AND each enemy type: different /assets/packs/…/*.glb via GLTFLoader — NOT single BoxGeometry.
+- 12+ themed props (GLB clones). CanvasTexture or patterned ground (not flat gray).
 - Fog, shadows, 2+ colored lights, particles. MeshStandardMaterial with varied colors.
 
 START (global scope — mandatory):
@@ -1134,6 +2094,7 @@ window.renderer=renderer;window.scene=scene;window.camera=camera;
 animate uses RAF+Clock; render when gameStarted. Do NOT animate before startGame().
 html,body{margin:0;height:100%;overflow:hidden}
 ${isMobile?'MOBILE: virtual joystick + 2 action buttons, touch HUD.' : ''}
+${genrePlaybook(g,true,prompt)}
 Must be immediately fun and fully playable end-to-end. Write compact code (minimal comments) but never skip waves, enemies, win/lose screens, or HUD.`;
 }
 async function exportStaticEngine(isUnity){
@@ -1179,6 +2140,55 @@ function renderChips(){
 }
 function useChip(b){document.getElementById('ptxt').value=b.textContent;document.getElementById('ptxt').focus();}
 
+/* ═══ STUDIO BUILT-IN GAMES (real /assets/packs/ GLBs) ═══ */
+const STUDIO_GAMES={
+  'tank-battle':{
+    path:'/games/tank-battle-real-assets.html',
+    prompt:'Desert Tank Siege — US Army M1A2 Abrams vs OPFOR. 5-mission campaign, CARC tan/green camo, briefings, save/resume, pause, smoke, pickups, gamepad + mobile.',
+    genre:'3D tank battle'
+  }
+};
+async function loadStudioGame(id){
+  if(busy)return;
+  const spec=STUDIO_GAMES[id];
+  if(!spec){setStatus('Unknown studio game','er');return;}
+  busy=true;
+  setStatus('Loading studio game…','s');
+  try{
+    const r=await fetch(spec.path,{cache:'no-store'});
+    if(!r.ok)throw new Error('Could not load '+spec.path);
+    const code=await r.text();
+    if(!code.includes('<!DOCTYPE')&&!code.includes('<html'))throw new Error('Invalid game file');
+    document.querySelectorAll('.gb').forEach(b=>{
+      b.classList.toggle('on',b.dataset.g===spec.genre);
+    });
+    genre=spec.genre;
+    document.getElementById('gpill').textContent=genre;
+    document.getElementById('ptxt').value=spec.prompt;
+    document.getElementById('gname').textContent=spec.prompt;
+    const studioPrep=prepareGameCode(code,{skipAutofix:true});
+    code=studioPrep.code;
+    currentCode=code;
+    let libId=libIdx().find(g=>g.prompt===spec.prompt)?.id;
+    if(libId){
+      saveGame(libId,code);
+      currentGameId=libId;
+    }else{
+      libId=addToLib(spec.prompt,spec.genre,code);
+      currentGameId=libId;
+    }
+    if(libId)captureThumb(libId);
+    showGame(code);
+    renderChips();
+    setStatus('Tank battle loaded — BEGIN CAMPAIGN · Space fire · Esc pause · 5 missions','ok');
+  }catch(e){
+    setStatus('Load failed: '+e.message,'er');
+    console.error(e);
+  }
+  busy=false;
+  setUpdateUiEnabled(!!currentCode);
+}
+
 /* ═══ MOBILE TOGGLE ═══ */
 function toggleMobile(){
   mobileMode=!mobileMode;
@@ -1191,6 +2201,10 @@ function setStatus(msg,state){
   const d=document.getElementById('sdot');
   d.className=state||'';d.style.display=state?'block':'none';
   document.getElementById('smsg').textContent=msg;
+  if(typeof studioConsole!=='undefined'&&msg){
+    const type=state==='er'?'error':state==='s'?'system':'info';
+    studioConsole.log(type,msg,'status');
+  }
 }
 let ptimer=null,pmsg=0;
 function startProgress(){
@@ -1226,12 +2240,20 @@ function isTypingInForm(e){
   const tag=(t.tagName||'').toLowerCase();
   return tag==='input'||tag==='textarea'||tag==='select'||!!t.isContentEditable;
 }
-function isModalOpen(){
-  return['emodal','libmodal','hmodal','pubmodal','expmodal','umodal'].some(id=>{
-    const el=document.getElementById(id);
-    return el&&getComputedStyle(el).display!=='none';
-  });
+const MODAL_IDS=['emodal','libmodal','hmodal','pubmodal','expmodal','umodal','updmodal'];
+function setModalOpen(id,open){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.style.display=open?'flex':'none';
+  el.setAttribute('aria-hidden',open?'false':'true');
+  if(open)el.removeAttribute('inert');
+  else el.setAttribute('inert','');
 }
+function isModalVisible(id){
+  const el=document.getElementById(id);
+  return !!el&&el.getAttribute('aria-hidden')==='false';
+}
+function isModalOpen(){return MODAL_IDS.some(isModalVisible);}
 function focusGameFrame(){
   const fr=document.getElementById('gframe');
   if(!fr||fr.style.display==='none')return;
@@ -1271,7 +2293,7 @@ function setupGameInputBridge(){
   if(window.__bgsInputBridge)return;
   window.__bgsInputBridge=true;
   document.addEventListener('keydown',e=>{
-    if(e.key==='Escape')['emodal','libmodal','hmodal','pubmodal','expmodal','umodal'].forEach(id=>document.getElementById(id).style.display='none');
+    if(e.key==='Escape')MODAL_IDS.forEach(id=>setModalOpen(id,false));
     forwardKeyToGame(e,'keydown');
   },true);
   document.addEventListener('keyup',e=>forwardKeyToGame(e,'keyup'),true);
@@ -1285,10 +2307,29 @@ function setupGameInputBridge(){
 }
 function showPlayOverlay(show){
   const el=document.getElementById('bgs-play-overlay');
-  if(el)el.classList.toggle('show',!!show);
+  const hint=document.getElementById('bgs-play-hint');
+  if(el){
+    el.classList.toggle('show',!!show);
+    el.setAttribute('aria-hidden',show?'false':'true');
+  }
+  if(hint)hint.hidden=!show;
 }
 function hidePlayOverlay(){showPlayOverlay(false);}
+let _bgsRepairAttempted=false;
 function reportGameError(msg){
+  if(!_bgsRepairAttempted&&currentCode){
+    _bgsRepairAttempted=true;
+    try{
+      const prepared=prepareGameCode(currentCode,{aggressive:true});
+      if(prepared.fixes.length){
+        currentCode=prepared.code;
+        if(currentGameId)saveGame(currentGameId,currentCode);
+        showGame(currentCode);
+        setStatus('Auto-repaired: '+prepared.fixes.join(', ')+' — click START to play.','ok');
+        return;
+      }
+    }catch(e){console.warn('autofix failed',e);}
+  }
   const el=document.getElementById('bgs-iframe-error');
   if(el){el.textContent='Game error: '+msg+' — try Regenerate or open ↓ ZIP index.html offline.';el.classList.add('show');}
   setStatus('Game script error — try Regenerate','er');
@@ -1316,9 +2357,9 @@ function injectGameRuntime(doc){
     'if(window.camera&&window.camera.aspect){window.camera.aspect=w/h;window.camera.updateProjectionMatrix&&window.camera.updateProjectionMatrix();}'+
     'if(window.gameStarted&&window.renderer&&window.scene&&window.camera){try{window.renderer.render(window.scene,window.camera);}catch(e){}}'+
     '}'+
-    'window.__bgsEnsureLoop=function(){window.gameStarted=true;'+
+    'window.__bgsEnsureLoop=function(){'+
     'fit();'+
-    'if(typeof window.animate==="function"){window.__loopRunning=true;try{window.animate();}catch(e){requestAnimationFrame(window.animate);}}'+
+    'if(typeof window.animate==="function"){if(!window.__gameLoopRunning&&!window.__loopRunning){window.__gameLoopRunning=true;try{window.animate();}catch(e){requestAnimationFrame(window.animate);}}}'+
     'else if(window.renderer&&window.scene&&window.camera){try{window.renderer.render(window.scene,window.camera);}catch(e){}}'+
     '};'+
     'window.addEventListener("resize",fit);window.addEventListener("bgs-start",fit);'+
@@ -1334,16 +2375,19 @@ function injectGameRuntime(doc){
     'window.addEventListener("keyup",function(e){__bgsSetKey(e,false);});'+
     'if(typeof window.keys!=="object"||!window.keys)window.keys=__k;'+
     'document.addEventListener("click",function(){try{window.focus();var c=document.querySelector("canvas");if(c)c.focus();}catch(x){}},true);'+
+    'setTimeout(function(){if(!document.querySelector("canvas")){if(typeof bgsBoot==="function")try{bgsBoot();}catch(e){}else if(typeof initThree==="function")try{initThree();if(typeof initPhysics==="function")initPhysics();if(typeof buildGameAssets==="function")buildGameAssets();}catch(e){}}},80);'+
     '})();';
   (doc.body||doc.head||doc.documentElement).appendChild(s);
 }
 function ensureRenderLoop(win){
   try{
-    win.gameStarted=true;
+    if(!win.gameStarted)return;
     if(typeof win.__bgsEnsureLoop==='function')win.__bgsEnsureLoop();
     else if(typeof win.animate==='function'){
-      win.__loopRunning=true;
-      try{win.animate();}catch(e){requestAnimationFrame(()=>win.animate());}
+      if(!win.__gameLoopRunning&&!win.__loopRunning){
+        win.__gameLoopRunning=true;
+        try{win.animate();}catch(e){requestAnimationFrame(()=>win.animate());}
+      }
     }else if(win.renderer&&win.scene&&win.camera){
       win.renderer.render(win.scene,win.camera);
     }
@@ -1358,8 +2402,16 @@ function fixIframeLayout(fr,win,doc){
     if(!el)return;
     el.style.margin='0';el.style.padding='0';el.style.width='100%';el.style.height='100%';el.style.overflow='hidden';
   });
-  const canvas=doc.querySelector('canvas');
-  if(canvas){canvas.style.display='block';canvas.style.width='100%';canvas.style.height='100%';}
+  const canvas=doc.querySelector('#game-canvas')||doc.querySelector('canvas');
+  if(canvas){
+    canvas.style.display='block';
+    canvas.style.position='fixed';
+    canvas.style.top='0';
+    canvas.style.left='0';
+    canvas.style.width='100%';
+    canvas.style.height='100%';
+    canvas.style.zIndex='0';
+  }
   try{
     if(win.renderer?.setSize)win.renderer.setSize(fw,fh,false);
     if(win.camera?.aspect!==undefined){win.camera.aspect=fw/fh;win.camera.updateProjectionMatrix?.();}
@@ -1368,23 +2420,30 @@ function fixIframeLayout(fr,win,doc){
   return true;
 }
 function kickstartGame(fr,win,doc){
-  ['gameStarted','gameRunning','started','playing','isPlaying','running','isRunning'].forEach(k=>{try{win[k]=true;}catch(e){}});
+  const alreadyPlaying=!!win.gameStarted;
+  const hasStartFn=typeof win.startGame==='function'&&!win.startGame.__bgsStub;
+  if(!alreadyPlaying&&!hasStartFn){
+    ['gameStarted','gameRunning','started','playing','isPlaying','running','isRunning'].forEach(k=>{try{win[k]=true;}catch(e){}});
+  }
   fixIframeLayout(fr,win,doc);
   win.dispatchEvent(new Event('resize'));
   win.dispatchEvent(new Event('bgs-start'));
-  ['init','initGame','beginGame','setupGame','startGameLoop'].forEach(fn=>{
+  const bootFns=['bgsBoot','init','initGame','beginGame','setupGame','startGameLoop'];
+  if(!win.renderer||!win.scene){bootFns.splice(1,0,'initPhysics');bootFns.splice(1,0,'initThree');}
+  if(typeof win.startGame!=='function'&&typeof win.buildGameAssets==='function')bootFns.splice(bootFns.indexOf('init')>=0?bootFns.indexOf('init'):bootFns.length,0,'buildGameAssets');
+  bootFns.forEach(fn=>{
     if(typeof win[fn]==='function')try{win[fn]();}catch(e){}
   });
-  ensureRenderLoop(win);
+  if(alreadyPlaying)ensureRenderLoop(win);
 }
-function invokeStartGame(fr,win,doc){
+async function invokeStartGame(fr,win,doc){
   if(win.__bgsInvokingStart)return;
   win.__bgsInvokingStart=true;
   try{
     const s=doc.getElementById('start-screen');
     const sg=win.startGame;
     if(typeof sg==='function'&&!sg.__bgsStub){
-      try{sg.call(win);}catch(e){console.warn('startGame',e);}
+      try{const r=sg.call(win);if(r&&typeof r.then==='function')await r;}catch(e){console.warn('startGame',e);}
     }else if(s){
       s.style.display='none';
     }
@@ -1469,23 +2528,32 @@ function loadGameInFrame(fr,code){
       if(++n>=15)clearInterval(t);
     },200);
   };
-  fr.srcdoc=sanitizeGameHtml(code);
+  const prepared=prepareGameCode(code);
+  if(prepared.fixes.length)console.log('[BGS autofix]',prepared.fixes.join(', '));
+  fr.srcdoc=prepared.code;
   requestAnimationFrame(()=>{try{if(fr.contentDocument?.readyState==='complete')wireGameFrame(fr);}catch(e){}});
+  return prepared.code;
 }
 function showGame(code){
+  _bgsRepairAttempted=false;
   doneProgress();
   document.getElementById('bgs-iframe-error')?.classList.remove('show');
   const fr=document.getElementById('gframe');
   observeGameFrame(fr);
-  loadGameInFrame(fr,code);
+  code=loadGameInFrame(fr,code);
   fr.style.display='block';
   fr.focus();
   setupGameInputBridge();
   showPlayOverlay(true);
   requestAnimationFrame(()=>{try{wireGameFrame(fr);}catch(e){}});
   document.getElementById('splash').style.display='none';
-  ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
+  ['tbplay','tbupd','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
+  const ubtn=document.getElementById('ubtn');if(ubtn){ubtn.disabled=false;}
   document.getElementById('cbody').textContent=code;
+}
+function setUpdateUiEnabled(on){
+  const ubtn=document.getElementById('ubtn');
+  if(ubtn)ubtn.disabled=!on;
 }
 function reloadGame(){if(currentCode)showGame(currentCode);}
 function toggleCode(){document.getElementById('rp').classList.toggle('open');document.getElementById('tbcode').classList.toggle('on');}
@@ -1545,8 +2613,11 @@ HOW TO PLAY
 
 OFFLINE / HOSTING
 -----------------
+Games load 3D models from /assets/packs/ on the studio host. For standalone hosting:
+  • Play on https://bradleys-game-studio.vercel.app (recommended), or
+  • Copy the public/assets/ folder next to index.html on your static host.
 Upload index.html to any static host (Vercel, Netlify, GitHub Pages).
-No build step required — all libraries load from CDN.
+No build step required — Three.js, GLTFLoader, and Cannon.js load from CDN.
 
 Generated by Bradley's Game Studio
 https://bradleys-game-studio.vercel.app
@@ -1623,6 +2694,26 @@ function addToLib(prompt,g,code,pubUrl){
   idx.unshift({id,prompt,genre:g,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),size:Math.round(code.length/1024),pubUrl:pubUrl||null});
   saveIdx(idx);refreshSidebar();return id;
 }
+function replaceInLib(id,prompt,g,code){
+  if(!saveGame(id,code))return false;
+  const idx=libIdx(),entry=idx.find(x=>x.id===id);
+  if(entry){
+    entry.prompt=prompt;
+    entry.genre=g;
+    entry.size=Math.round(code.length/1024);
+    entry.date=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    saveIdx(idx);
+    refreshSidebar();
+    if(pvId===id)renderLibGrid();
+  }
+  return true;
+}
+function libPromptLabel(base,changes){
+  const b=(base||'').trim(),c=(changes||'').trim();
+  if(!c)return b||'Updated game';
+  const note=c.length>72?c.slice(0,69)+'…':c;
+  return b?b+' · '+note:note;
+}
 function setPubUrl(id,url){
   const idx=libIdx(),g=idx.find(x=>x.id===id);
   if(g){g.pubUrl=url;saveIdx(idx);}
@@ -1674,8 +2765,8 @@ function captureThumb(gameId){
 
 /* library modal */
 let libFilter='';
-function openLib(){renderLibGrid();document.getElementById('libmodal').style.display='flex';}
-function closeLib(){document.getElementById('libmodal').style.display='none';closePV();}
+function openLib(){renderLibGrid();setModalOpen('libmodal',true);}
+function closeLib(){setModalOpen('libmodal',false);closePV();}
 function filterLib(v){libFilter=v.toLowerCase();renderLibGrid();}
 function renderLibGrid(){
   const idx=libIdx();
@@ -1788,9 +2879,9 @@ function openPublish(){
   const prompt=document.getElementById('ptxt').value.trim();
   if(prompt)document.getElementById('pub-name').value=prompt.slice(0,40);
   document.getElementById('pub-status').style.display='none';
-  document.getElementById('pubmodal').style.display='flex';
+  setModalOpen('pubmodal',true);
 }
-function closePub(){document.getElementById('pubmodal').style.display='none';}
+function closePub(){setModalOpen('pubmodal',false);}
 
 async function publishGame(){
   const token=document.getElementById('pub-token').value.trim();
@@ -1838,9 +2929,9 @@ function showPubStatus(html,type){
 /* ═══ EXPORT ═══ */
 function openExport(){
   if(!currentCode){setStatus('Generate a game first','er');return;}
-  document.getElementById('expmodal').style.display='flex';
+  setModalOpen('expmodal',true);
 }
-function closeExp(){document.getElementById('expmodal').style.display='none';}
+function closeExp(){setModalOpen('expmodal',false);}
 function selExp(type){
   selectedExp=type;
   document.querySelectorAll('.exp-card').forEach(c=>c.classList.remove('sel'));
@@ -2043,40 +3134,43 @@ async function generate(){
   if(!prompt){setStatus('Describe your game first','er');return;}
 
   busy=true;
-  ['gbtn','ebtn','mbtn'].forEach(id=>document.getElementById(id).disabled=true);
-  ['tbplay','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='none');
-  setStatus(ecoMode?'Generating complete game (Eco) — may take up to 60s if finishing in parts…':'Generating full-detail game — up to 90s for waves, boss, and full world…','s');
-  setSplash('⚡','BUILDING FULL GAME',ecoMode?'Loading all assets: world, characters, items, sounds, HUD, waves…':'Building complete video game: models, level, enemies, boss, audio, UI…',true);
+  ['gbtn','ebtn','ubtn','mbtn'].forEach(id=>document.getElementById(id).disabled=true);
+  ['tbplay','tbupd','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='none');
+  setStatus(ecoMode?'Generating complete game (Eco) — BGS-Spatial-01 + Eva-01 active…':'Generating full-detail game — BGS-Spatial-01 + Eva-01 + 4D World Model + AnimLib active…','s');
+  setSplash('⚡','BGS ENGINE BUILDING',ecoMode?'BGS-Spatial-01 scene layout + Eva-01 model forge + AnimLib…':'BGS-Spatial-01 + Eva-01 PBR forge + 5M AnimLib + 4D World Model — full pipeline…',true);
+  await loadAssetManifest();
   document.getElementById('gname').textContent=prompt;
 
   const isMobile=mobileMode||genre.includes('mobile');
   const system=buildGameSystem(genre,isMobile,prompt);
+  const catalogBlock=assetCatalogPromptBlock(genre,prompt);
+  const designBrief=`\nDESIGN RULE: Match top commercial games in this genre (${topGameDesignReference(genre).slice(0,100)}…). Ship EVERY row in the universal asset benchmark + genre extras. Assets MUST match the game theme "${prompt}" — use the THEMED ASSET PLAN paths for player, enemies, boss, props, and audio. Load REAL models from /assets/packs/ via GLTFLoader in async buildGameAssets() — no Sketchfab, Unity Asset Store, or random URLs. Use bgsBoot() with await buildGameAssets().${catalogBlock}`;
 
   const user=ecoMode
     ? `Create a COMPLETE, FULLY PLAYABLE ${genre} video game: "${prompt}"
 
-Include ALL game assets in buildGameAssets() at page load (before START):
-- World: textured ground, sky/fog, 12+ themed prop Groups, level boundaries
-- Characters: multi-part THREE.Group player + 2 enemy types + collectibles + 1 power-up
-- Audio: 6+ Web Audio synth sounds (jump, hit, collect, shoot, hurt, victory)
+Include ALL game assets in async buildGameAssets() at page load (before START):
+- World: textured ground, sky/fog, 12+ themed props (GLB clones), level boundaries
+- Characters: loadGLB player + 2 different enemy GLBs + collectible GLBs + 1 power-up
+- Audio: /assets/audio/ clips when available, else Web Audio synth (6+ events)
 - UI: #start-screen, #game-over-screen, #victory-screen, HUD (health, score, waves)
 - Gameplay: 4+ waves, win/lose logic, Cannon physics, window.keys controls
 Must work immediately after clicking START — not a block demo or unfinished prototype.
 Must fully close all script, body, and html tags.
 ${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
-Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`
+Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.${designBrief}`
     : `Create a COMPLETE, POLISHED ${genre} video game: "${prompt}"
 
-Include ALL game assets in buildGameAssets() at page load (before START):
-- World: CanvasTexture ground, sky, fog, 22+ themed props, full level layout
-- Characters: multi-part player (4–8 parts), 3 enemy types, boss, collectibles, 2 power-ups
+Include ALL game assets in async buildGameAssets() at page load (before START):
+- World: CanvasTexture ground, sky, fog, 22+ themed props (GLB clones), full level layout
+- Characters: GLTFLoader player, 3 enemy GLB types, boss GLB, collectible GLBs, 2 power-ups
 - VFX: particles, hit/collect effects
 - Audio: 6+ Web Audio sounds wired to gameplay events
 - UI: start screen with lore, victory screen, game-over screen, styled HUD
 - Gameplay: 5+ waves, boss final wave, Cannon physics, difficulty curve, localStorage high score
 This must be a full video game — NOT a block demo. Must fully close all script, body, and html tags.
 ${isMobile?'Include mobile touch controls with virtual joystick and action buttons.':''}
-Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
+Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.${designBrief}`;
 
   try{
     const code=await generateGameCode({apiKey,system,user,ecoMode});
@@ -2087,7 +3181,7 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
     showGame(code);
     const meta={prompt,genre,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),id};
     await dlGamePackage(code,meta,{silent:false});
-    setStatus(`Game ready! ZIP downloaded.${isMobile?' Touch controls included.':' Click START, then WASD to play.'}`,'ok');
+    setStatus(`Game ready! ZIP downloaded.${formatBenchmarkReport(code)}${isMobile?' Touch controls included.':' Click START, then WASD to play.'}`,'ok');
   }catch(e){
     doneProgress();setStatus('Error: '+e.message,'er');
     const hint=/timed out|504/i.test(e.message)?' Try ⚡ ECO or a shorter prompt.':' — try a different prompt.';
@@ -2096,6 +3190,165 @@ Output ONLY the raw HTML. Start <!DOCTYPE html>, end </html>. Nothing else.`;
   }
   busy=false;
   ['gbtn','ebtn','mbtn'].forEach(id=>document.getElementById(id).disabled=false);
+  setUpdateUiEnabled(!!currentCode);
+}
+
+/* ═══ UPDATE GAME ═══ */
+function setUpdMode(mode){
+  updMode=mode==='fork'?'fork':'replace';
+  document.getElementById('upd-replace')?.classList.toggle('sel',updMode==='replace');
+  document.getElementById('upd-fork')?.classList.toggle('sel',updMode==='fork');
+}
+function showUpdRecPanel(html,showActions){
+  const body=document.getElementById('upd-rec-body');
+  if(body){body.className='';body.innerHTML=html;}
+  const acts=document.getElementById('upd-rec-actions');
+  if(acts)acts.style.display=showActions?'flex':'none';
+}
+function refreshStaticAudit(){
+  if(!currentCode){showUpdRecPanel('No game loaded.',false);return;}
+  const meta=gameMetaForCurrent();
+  const g=meta.genre||genre;
+  const audit=collectStaticAudit(currentCode,g,ecoMode);
+  showUpdRecPanel(renderStaticAuditHtml(audit)+'<p class="upd-hint" style="margin-top:8px">Click <strong style="color:var(--c3)">✦ Analyze</strong> for AI design recommendations.</p>',false);
+  return audit;
+}
+async function runGameAnalysis(){
+  if(busy)return;
+  const apiKey=getKey();
+  if(!apiKey){setStatus('Enter your Anthropic API key first','er');return;}
+  if(!apiKey.startsWith('sk-ant-')){setStatus('Invalid API key format','er');return;}
+  if(!currentCode){setStatus('No game loaded to analyze','er');return;}
+
+  const meta=gameMetaForCurrent();
+  const g=meta.genre||genre;
+  const prompt=meta.prompt||document.getElementById('ptxt').value.trim();
+  const audit=collectStaticAudit(currentCode,g,ecoMode);
+  const btn=document.getElementById('upd-analyze');
+  busy=true;
+  if(btn)btn.disabled=true;
+  document.getElementById('upd-go')?.setAttribute('disabled','');
+  showUpdRecPanel(renderStaticAuditHtml(audit)+'<div class="upd-rec-ai"><strong>AI review</strong><p class="loading">Analyzing gameplay, polish, and technical quality…</p></div>',false);
+
+  try{
+    const model=ecoMode?MODELS.HAIKU:MODELS.SONNET;
+    const max_tokens=ecoMode?ANALYZE_MAX_TOKENS.eco:ANALYZE_MAX_TOKENS.full;
+    const data=await callAnthropic({
+      apiKey,model,max_tokens,
+      system:buildAnalyzeSystem(g),
+      messages:[{role:'user',content:buildAnalyzeUser({code:currentCode,prompt,genre:g,audit})}],
+      label:'Analyze game'
+    });
+    lastAnalyzeRecs=(data.content||[]).map(b=>b.text||'').join('').trim();
+    if(!lastAnalyzeRecs)throw new Error('Empty analysis — try again');
+    showUpdRecPanel(renderStaticAuditHtml(audit)+formatAiRecsAsHtml(lastAnalyzeRecs),true);
+    setStatus('Analysis ready — use recommendations in your update notes','ok');
+  }catch(e){
+    showUpdRecPanel(renderStaticAuditHtml(audit)+'<div class="upd-rec-ai"><strong>AI review</strong><p style="color:var(--c2)">Analysis failed: '+escHtml(e.message)+'</p></div>',false);
+    setStatus('Analysis failed: '+e.message,'er');
+  }
+  busy=false;
+  if(btn)btn.disabled=false;
+  document.getElementById('upd-go')?.removeAttribute('disabled');
+}
+function useAllRecommendations(){
+  const bullets=extractRecBullets(lastAnalyzeRecs);
+  const text=bullets.length?bullets.map((b,i)=>(i+1)+'. '+b).join('\n'):lastAnalyzeRecs;
+  if(!text){setStatus('Run ✦ Analyze first','er');return;}
+  const ta=document.getElementById('upd-notes');
+  if(!ta)return;
+  const cur=ta.value.trim();
+  ta.value=cur?(cur+'\n\n'+text):text;
+  ta.focus();
+  setStatus('Recommendations added to update notes — edit, then Apply update','ok');
+}
+function openUpdate(){
+  if(busy)return;
+  if(!currentCode){setStatus('Load or generate a game first','er');return;}
+  const meta=gameMetaForCurrent();
+  const title=(meta.prompt||document.getElementById('gname').textContent||'Loaded game').trim();
+  const canReplace=!!currentGameId;
+  const repBtn=document.getElementById('upd-replace');
+  if(repBtn)repBtn.disabled=!canReplace;
+  if(!canReplace&&updMode==='replace')setUpdMode('fork');
+  document.getElementById('upd-target').textContent=(canReplace?'Updating: ':'Saving new copy of: ')+title.slice(0,120)+(title.length>120?'…':'');
+  const notes=document.getElementById('upd-notes');
+  if(notes&&!notes.value.trim()){
+    const draft=document.getElementById('ptxt').value.trim();
+    if(draft&&draft!==meta.prompt)notes.value=draft;
+  }
+  lastAnalyzeRecs='';
+  refreshStaticAudit();
+  setUpdMode(updMode);
+  setModalOpen('updmodal',true);
+  notes?.focus();
+}
+function closeUpdate(){setModalOpen('updmodal',false);}
+async function runUpdate(){
+  if(busy)return;
+  const apiKey=getKey();
+  if(!apiKey){setStatus('Enter your Anthropic API key first','er');return;}
+  if(!apiKey.startsWith('sk-ant-')){setStatus('Invalid API key format','er');return;}
+  if(!currentCode){setStatus('No game loaded to update','er');return;}
+  const changes=document.getElementById('upd-notes').value.trim();
+  if(!changes){setStatus('Describe what should change','er');return;}
+
+  const meta=gameMetaForCurrent();
+  const originalPrompt=meta.prompt||document.getElementById('ptxt').value.trim();
+  const g=meta.genre||genre;
+  const replace=updMode==='replace'&&!!currentGameId;
+
+  closeUpdate();
+  busy=true;
+  ['gbtn','ebtn','ubtn','mbtn','upd-go','upd-analyze'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=true;});
+  ['tbplay','tbupd','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='none');
+  setStatus(ecoMode?'Updating game (Eco)…':'Applying changes to loaded game…','s');
+  setSplash('↻','UPDATING GAME','Sending your change notes + current source to the model…',true);
+  await loadAssetManifest();
+
+  const isMobile=mobileMode||g.includes('mobile');
+  const system=buildUpdateSystem(g,isMobile,originalPrompt);
+  const catalogBlock=assetCatalogPromptBlock(g,originalPrompt);
+  const designBrief=`\nKeep bundled /assets/packs/ GLBs and full playable structure unless the change says otherwise. Preserve theme-appropriate assets for "${originalPrompt}".${catalogBlock}`;
+  const user=buildUpdateUser({existingCode:currentCode,changes,originalPrompt,genre:g})+designBrief;
+
+  try{
+    const code=await generateGameCode({
+      apiKey,system,user,ecoMode,
+      continueUser:UPDATE_CONTINUE_USER,
+      labelPrefix:'Update game'
+    });
+    currentCode=code;
+    const newPrompt=libPromptLabel(originalPrompt,changes);
+    document.getElementById('ptxt').value=newPrompt;
+    document.getElementById('gname').textContent=newPrompt;
+
+    let id=currentGameId;
+    if(replace){
+      if(!replaceInLib(currentGameId,newPrompt,g,code))throw new Error('Could not save — library storage full');
+      captureThumb(currentGameId);
+    }else{
+      id=addToLib(newPrompt,g,code);
+      if(!id)throw new Error('Could not save new version — library storage full');
+      currentGameId=id;
+      captureThumb(id);
+    }
+
+    showGame(code);
+    const metaOut={prompt:newPrompt,genre:g,date:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),id};
+    await dlGamePackage(code,metaOut,{silent:false});
+    const modeMsg=replace?'Replaced library entry.':'Saved as new library entry.';
+    setStatus(`Update ready! ${modeMsg}${formatBenchmarkReport(code)}`,'ok');
+    document.getElementById('upd-notes').value='';
+  }catch(e){
+    doneProgress();setStatus('Update failed: '+e.message,'er');
+    const hint=/timed out|504/i.test(e.message)?' Try ⚡ ECO or fewer changes at once.':' — try smaller, specific changes.';
+    setSplash('⚠','UPDATE FAILED',e.message+hint,false);
+    console.error(e);
+  }
+  busy=false;
+  ['gbtn','ebtn','mbtn','upd-go','upd-analyze'].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=false;});
+  setUpdateUiEnabled(!!currentCode);
 }
 
 /* ═══ ENHANCER ═══ */
@@ -2104,7 +3357,7 @@ async function enhancePrompt(){
   if(!apiKey){setStatus('Enter your API key first','er');return;}
   const raw=document.getElementById('ptxt').value.trim();
   if(!raw){setStatus('Type a game idea first','er');return;}
-  document.getElementById('emodal').style.display='flex';
+  setModalOpen('emodal',true);
   document.getElementById('orig-txt').textContent=raw;
   document.getElementById('enh-txt').className='loading';
   document.getElementById('enh-txt').textContent='Enhancing…';
@@ -2142,18 +3395,21 @@ function useEnhanced(){
   document.getElementById('ptxt').value=enhancedResult;
   closeEnhancer();generate();
 }
-function closeEnhancer(){document.getElementById('emodal').style.display='none';}
+function closeEnhancer(){setModalOpen('emodal',false);}
 
 /* ═══ HELP ═══ */
-function openHelp(){document.getElementById('hmodal').style.display='flex';}
-function closeHelp(){document.getElementById('hmodal').style.display='none';}
+function openHelp(){setModalOpen('hmodal',true);}
+function closeHelp(){setModalOpen('hmodal',false);}
 
 /* ═══ MODAL CLOSE ═══ */
-['emodal','libmodal','hmodal','pubmodal','expmodal','umodal'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)document.getElementById(id).style.display='none';});
+MODAL_IDS.forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)setModalOpen(id,false);});
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();generate();}});
-window.addEventListener('message',e=>{if(e.data?.type==='bgs-game-error')reportGameError(e.data.msg||'Unknown error');});
+window.addEventListener('message',e=>{
+  if(e.data?.type==='bgs-game-error')reportGameError(e.data.msg||'Unknown error');
+  if(e.data?.type==='bgs-game-started')hidePlayOverlay();
+});
 setupGameInputBridge();
 
 /* ═══ INIT ═══ */
@@ -2167,6 +3423,196 @@ updateUsageUI();
 fetchAnthropicBilling(false);
 renderChips();
 refreshSidebar();
+loadAssetManifest();
+
+/* ═══ STUDIO CONSOLE ═══ */
+const studioConsole = {
+  lines: [],
+  filter: 'all',
+  maxLines: 500,
+  open: false,
+
+  init() {
+    this._interceptConsole();
+    this.log('engine', 'Studio Console initialized');
+    document.getElementById('console-filter-all')?.classList.add('active');
+  },
+
+  toggle() {
+    this.open = !this.open;
+    const panel = document.getElementById('console-panel');
+    const btn = document.getElementById('console-btn');
+    if (panel) panel.classList.toggle('open', this.open);
+    if (btn) btn.classList.toggle('on', this.open);
+    if (this.open) this._scrollBottom();
+  },
+
+  log(type, msg, source) {
+    const now = new Date();
+    const ts = now.toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const entry = { type, msg: typeof msg === 'object' ? JSON.stringify(msg) : String(msg), ts, source: source || '' };
+    this.lines.push(entry);
+    if (this.lines.length > this.maxLines) this.lines.shift();
+    this._appendLine(entry);
+    this._updateCount();
+  },
+
+  clear() {
+    this.lines = [];
+    const body = document.getElementById('console-body');
+    if (body) body.innerHTML = '';
+    this._updateCount();
+  },
+
+  setFilter(f) {
+    this.filter = f;
+    document.querySelectorAll('#console-head .cbtn').forEach(b => b.classList.remove('active'));
+    const btn = document.getElementById('console-filter-' + f);
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('#console-body .cline').forEach(el => {
+      if (f === 'all') { el.classList.remove('hidden'); return; }
+      el.classList.toggle('hidden', !el.classList.contains(f));
+    });
+  },
+
+  _appendLine(entry) {
+    const body = document.getElementById('console-body');
+    if (!body) return;
+    const div = document.createElement('div');
+    div.className = 'cline ' + entry.type;
+    if (this.filter !== 'all' && !div.classList.contains(this.filter)) div.classList.add('hidden');
+    div.innerHTML = `<span class="cts">${entry.ts}</span><span class="ctag ${entry.type}">${entry.type.toUpperCase()}</span><span class="cmsg">${this._escape(entry.msg)}</span>`;
+    body.appendChild(div);
+    if (this.open) this._scrollBottom();
+  },
+
+  _scrollBottom() {
+    const body = document.getElementById('console-body');
+    if (body) requestAnimationFrame(() => { body.scrollTop = body.scrollHeight; });
+  },
+
+  _updateCount() {
+    const el = document.getElementById('console-count');
+    if (el) el.textContent = this.lines.length;
+  },
+
+  _escape(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  },
+
+  _interceptConsole() {
+    const self = this;
+    const origLog = console.log;
+    const origWarn = console.warn;
+    const origError = console.error;
+
+    console.log = function(...args) {
+      origLog.apply(console, args);
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      if (msg.startsWith('[BGS')) {
+        self.log('engine', msg);
+      } else {
+        self.log('info', msg);
+      }
+    };
+
+    console.warn = function(...args) {
+      origWarn.apply(console, args);
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      self.log('warn', msg);
+    };
+
+    console.error = function(...args) {
+      origError.apply(console, args);
+      const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      self.log('error', msg);
+    };
+
+    window.addEventListener('error', (e) => {
+      self.log('error', `${e.message} (${e.filename}:${e.lineno})`);
+    });
+
+    window.addEventListener('unhandledrejection', (e) => {
+      self.log('error', 'Unhandled Promise: ' + (e.reason?.message || e.reason || 'unknown'));
+    });
+  }
+};
+
+function toggleConsole() { studioConsole.toggle(); }
+function clearConsole() { studioConsole.clear(); }
+function filterConsole(f) { studioConsole.setFilter(f); }
+
+studioConsole.init();
+
+/* ═══ BGS ENGINE INTEGRATION ═══ */
+(function initBGSEngine(){
+  if(typeof BGSEngine==='undefined'){setTimeout(initBGSEngine,100);return;}
+  BGSEngine.init();
+  window._bgsEngine=BGSEngine;
+
+  const caps=BGSEngine.getSystemCapabilities();
+  console.log('[BGS Studio] Engine capabilities:',caps);
+
+  const collabBtn=document.getElementById('collab-btn');
+  if(collabBtn){
+    collabBtn.addEventListener('click',async()=>{
+      const state=BGSEngine.Collab.getState();
+      if(state.roomId){BGSEngine.Collab.leaveRoom();collabBtn.classList.remove('on');collabBtn.title='Start Collab';return;}
+      try{
+        const room=await BGSEngine.Collab.createRoom();
+        collabBtn.classList.add('on');
+        collabBtn.title='Room: '+room+' (click to leave)';
+        setStatus('Collab room created: '+room+' — share this code','ok');
+      }catch(e){setStatus('Collab error: '+e.message,'er');}
+    });
+  }
+  const collabJoin=document.getElementById('collab-join-btn');
+  if(collabJoin){
+    collabJoin.addEventListener('click',async()=>{
+      const code=prompt('Enter room code:');
+      if(!code)return;
+      try{
+        await BGSEngine.Collab.joinRoom(code.trim().toUpperCase());
+        document.getElementById('collab-btn')?.classList.add('on');
+        setStatus('Joined collab room: '+code.toUpperCase(),'ok');
+      }catch(e){setStatus('Join failed: '+e.message,'er');}
+    });
+  }
+
+  BGSEngine.Collab.on('user-joined',u=>{setStatus('Collaborator joined: '+(u?.name||'unknown'),'ok');});
+  BGSEngine.Collab.on('user-left',()=>{setStatus('A collaborator left the room','er');});
+
+  const worldBtn=document.getElementById('world-validate-btn');
+  if(worldBtn){
+    worldBtn.addEventListener('click',async()=>{
+      if(!currentCode){setStatus('Generate a game first','er');return;}
+      const apiKey=getKey();if(!apiKey){setStatus('Add API key first','er');return;}
+      setStatus('Validating spatial consistency…','s');
+      try{
+        const resp=await fetch(apiUrl('/api/spatial'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'validate',_apiKey:apiKey,params:{code:currentCode}})});
+        const data=await resp.json();
+        if(data.error){setStatus('Validation error: '+data.error,'er');return;}
+        const v=data.validation;
+        const issues=v?.violations?.length||0;
+        const score=v?.score||'?';
+        setStatus(`4D World Model: ${score}/100 consistency | ${issues} issue${issues!==1?'s':''} found`,'ok');
+      }catch(e){setStatus('Validation failed: '+e.message,'er');}
+    });
+  }
+
+  const animSearchBtn=document.getElementById('anim-search-btn');
+  if(animSearchBtn){
+    animSearchBtn.addEventListener('click',()=>{
+      const q=prompt('Search animations (e.g. "walk", "sword slash", "dance"):');
+      if(!q)return;
+      const results=BGSEngine.AnimLib.searchAnimations(q,20);
+      if(!results.length){setStatus('No animations found for "'+q+'"','er');return;}
+      const list=results.slice(0,8).map(r=>r.id).join(', ');
+      setStatus(`Found ${results.length} animations: ${list}…`,'ok');
+    });
+  }
+})();
 </script>
+<script src="bgs-engine.js"></script>
 </body>
 </html>

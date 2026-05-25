@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desert Tank Siege — Real Assets</title>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#1a1510;font-family:system-ui,sans-serif;color:#fff}
+canvas{display:block;width:100%;height:100%}
+#start-screen,#game-over-screen,#victory-screen{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(20,14,8,.94),rgba(40,28,16,.97));text-align:center;padding:24px}
+#game-over-screen,#victory-screen{display:none}
+#start-screen h1{color:#f4c430;text-shadow:0 0 24px rgba(244,196,48,.4);letter-spacing:.12em}
+#start-screen p{max-width:420px;color:#c9b89a;line-height:1.7;font-size:14px}
+#start-btn,#game-over-screen button,#victory-screen button{margin-top:18px;padding:14px 32px;font-size:15px;font-weight:700;cursor:pointer;border:2px solid #f4c430;background:rgba(244,196,48,.12);color:#f4c430;border-radius:8px}
+#hud{position:fixed;inset:0;pointer-events:none;z-index:100;display:none}
+#hud-top{display:flex;justify-content:space-between;padding:12px 16px;gap:12px}
+.hud-box{background:rgba(0,0,0,.55);border:1px solid rgba(244,196,48,.25);border-radius:8px;padding:8px 12px;font-size:13px}
+#health-bar{width:160px;height:10px;background:#333;border-radius:4px;overflow:hidden;margin-top:4px}
+#health-fill{height:100%;width:100%;background:linear-gradient(90deg,#c44,#4c4);transition:width .2s}
+#reload-bar{width:120px;height:6px;background:#333;border-radius:3px;margin-top:6px;overflow:hidden}
+#reload-fill{height:100%;width:100%;background:#f4c430;transition:width .05s}
+#minimap{position:fixed;right:16px;bottom:16px;width:140px;height:140px;border:2px solid rgba(244,196,48,.35);border-radius:8px;background:rgba(0,0,0,.6)}
+#wave-banner{position:fixed;top:22%;left:50%;transform:translateX(-50%);font-size:28px;font-weight:800;color:#f4c430;text-shadow:0 2px 12px #000;opacity:0;transition:opacity .4s;pointer-events:none}
+#wave-banner.show{opacity:1}
+#upgrade-pick{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;pointer-events:auto}
+#upgrade-pick.show{display:flex}
+.upg-btn{padding:12px 20px;border:1px solid #f4c430;background:rgba(244,196,48,.1);color:#fff;cursor:pointer;border-radius:6px;font-size:14px}
+.upg-btn:hover{background:rgba(244,196,48,.25)}
+#artillery-warn{position:fixed;inset:0;pointer-events:none;display:none}
+#artillery-warn.show{display:block}
+#artillery-warn .zone{position:absolute;border:3px dashed rgba(255,80,40,.8);border-radius:50%;box-shadow:0 0 30px rgba(255,60,20,.5);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.5}}
+.dmg-num{position:fixed;font-weight:800;font-size:14px;color:#ff6644;text-shadow:0 0 4px #000;pointer-events:none;animation:floatUp .8s forwards}
+@keyframes floatUp{to{transform:translateY(-40px);opacity:0}}
+#shell-hud{font-size:11px;color:#aaa;margin-top:4px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+</head>
+<body>
+<div id="start-screen">
+  <h1>DESERT TANK SIEGE</h1>
+  <p>Real CC0 models from <strong>/assets/packs/</strong> — Khronos vehicles, Kenney ruins &amp; walls.<br>
+  WASD drive hull · Mouse aim turret · <strong>Space</strong> fire · <strong>Q</strong> AP/HE · Survive 5 waves + boss.</p>
+  <button id="start-btn" type="button">START BATTLE</button>
+</div>
+<div id="game-over-screen"><h2>TANK DESTROYED</h2><p id="final-score"></p><button type="button" onclick="restartGame()">RETRY</button></div>
+<div id="victory-screen"><h2>VICTORY</h2><p id="win-score"></p><button type="button" onclick="restartGame()">PLAY AGAIN</button></div>
+<div id="hud">
+  <div id="hud-top">
+    <div class="hud-box">HP <div id="health-bar"><div id="health-fill"></div></div>
+      <div id="reload-bar"><div id="reload-fill"></div></div>
+      <div id="shell-hud">Shell: <span id="shell-type">AP</span> (Q toggle)</div>
+    </div>
+    <div class="hud-box">Score: <span id="score">0</span><br>Kills: <span id="kills">0</span> · Combo: <span id="combo">0</span></div>
+    <div class="hud-box">Wave <span id="wave-num">1</span>/5</div>
+  </div>
+</div>
+<canvas id="minimap" width="140" height="140"></canvas>
+<div id="wave-banner">WAVE 1</div>
+<div id="upgrade-pick"><h3 style="color:#f4c430">Pick upgrade</h3><button class="upg-btn" data-u="damage">+20% damage</button><button class="upg-btn" data-u="armor">+25% armor</button><button class="upg-btn" data-u="reload">-20% reload</button></div>
+<div id="artillery-warn"></div>
+<script>
+'use strict';
+const ASSETS={
+  player:'/assets/packs/khronos/CesiumMilkTruck.glb',
+  enemyLight:'/assets/packs/khronos/AnimatedMorphCube.glb',
+  enemyHeavy:'/assets/packs/khronos/BoxTextured.glb',
+  boss:'/assets/packs/khronos/BrainStem.glb',
+  turret:'/assets/packs/kenney-basic-scene/weapon-spear.glb',
+  repair:'/assets/packs/khronos/Avocado.glb',
+  cover:['/assets/packs/kenney-basic-scene/wall.glb','/assets/packs/kenney-basic-scene/bricks.glb','/assets/packs/kenney-basic-scene/column-damaged.glb'],
+  border:['/assets/packs/kenney-basic-scene/border-straight.glb','/assets/packs/kenney-basic-scene/wall-corner.glb','/assets/packs/kenney-basic-scene/wall-gate.glb'],
+  scenery:['/assets/packs/kenney-basic-scene/tree.glb','/assets/packs/kenney-basic-scene/statue.glb','/assets/packs/kenney-basic-scene/weapon-rack.glb'],
+  floor:'/assets/packs/kenney-basic-scene/floor.glb'
+};
+let scene,camera,renderer,world,clock,gameStarted=false,gameState='menu';
+let player,playerBody,playerHull,playerTurret,keys={},mouseX=0;
+let shells=[],enemies=[],props=[],particles=[];
+let hp=100,maxHp=100,score=0,kills=0,combo=0,comboTimer=0,wave=1;
+let reload=0,reloadTime=1.1,shellType='AP',damageMult=1,armorMult=1;
+let engineOsc=null,audioCtx=null;
+const loader=new THREE.GLTFLoader();
+async function loadGLB(url){
+  return new Promise((res,rej)=>loader.load(url,g=>res(g.scene||g),undefined,e=>{console.warn('GLB fail',url,e);rej(e);}));
+}
+function cloneModel(root,scale=1){
+  const g=root.clone(true);
+  g.traverse(c=>{if(c.isMesh){c.castShadow=c.receiveShadow=true;if(c.material)c.material=c.material.clone();}});
+  g.scale.setScalar(scale);
+  return g;
+}
+async function buildGameAssets(){
+  const [truck,cube,box,boss,spear,avocado,floor,...rest]=await Promise.all([
+    loadGLB(ASSETS.player),loadGLB(ASSETS.enemyLight),loadGLB(ASSETS.enemyHeavy),
+    loadGLB(ASSETS.boss),loadGLB(ASSETS.turret),loadGLB(ASSETS.repair),loadGLB(ASSETS.floor),
+    ...ASSETS.cover.map(loadGLB),...ASSETS.border.map(loadGLB),...ASSETS.scenery.map(loadGLB)
+  ]);
+  window.__tankModels={truck,cube,box,boss,spear,avocado,floor,cover:rest.slice(0,3),border:rest.slice(3,6),scenery:rest.slice(6,9)};
+  const groundGeo=new THREE.PlaneGeometry(120,120,32,32);
+  const pos=groundGeo.attributes.position;
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i),y=pos.getY(i);
+    pos.setZ(i,Math.sin(x*.15)*1.2+Math.cos(y*.12)*1.1);
+  }
+  groundGeo.computeVertexNormals();
+  const sand=new THREE.CanvasTexture((()=>{const c=document.createElement('canvas');c.width=256;c.height=256;const x=c.getContext('2d');
+    x.fillStyle='#c4a574';x.fillRect(0,0,256,256);for(let i=0;i<800;i++){x.fillStyle=`rgba(${100+Math.random()*80},${80+Math.random()*50},40,.15)`;x.fillRect(Math.random()*256,Math.random()*256,2,2);}return c;})());
+  sand.wrapS=sand.wrapT=THREE.RepeatWrapping;sand.repeat.set(12,12);
+  const ground=new THREE.Mesh(groundGeo,new THREE.MeshStandardMaterial({map:sand,roughness:.9}));
+  ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+  world.addBody(new CANNON.Body({mass:0,shape:new CANNON.Plane(),material:new CANNON.Material('ground')}));
+  world.bodies[world.bodies.length-1].quaternion.setFromEuler(-Math.PI/2,0,0);
+  for(let ix=-4;ix<=4;ix++)for(let iz=-4;iz<=4;iz++){
+    const tile=cloneModel(floor,.9);tile.position.set(ix*5.5,0.02,iz*5.5);scene.add(tile);
+  }
+  let ci=0;
+  ASSETS.cover.forEach((_,i)=>{for(let n=0;n<4;n++){
+    const m=cloneModel(window.__tankModels.cover[i],1.1+Math.random()*.3);
+    const ang=Math.random()*Math.PI*2,d=18+Math.random()*22;
+    m.position.set(Math.cos(ang)*d,.5,Math.sin(ang)*d);m.rotation.y=Math.random()*6.28;
+    m.userData={destruct:true,hp:40+Math.random()*30,id:ci++};scene.add(m);props.push(m);
+    const b=new CANNON.Body({mass:0,shape:new CANNON.Box(new CANNON.Vec3(1.5,1.5,1.5))});
+    b.position.set(m.position.x,m.position.y,m.position.z);world.addBody(b);m.userData.body=b;
+  }});
+  window.__tankModels.border.forEach((md,i)=>{for(let n=0;n<8;n++){
+    const m=cloneModel(md,1.2);const side=Math.floor(n/2),t=(n%2)?1:-1;
+    if(i===0)m.position.set(side?45*t:0,.5,-40+ n*10);else m.position.set(-40+n*10,.5,side?45*t:0);
+    m.rotation.y=side?Math.PI/2:0;scene.add(m);
+  }});
+  window.__tankModels.scenery.forEach((md,i)=>{const m=cloneModel(md,1.3+Math.random()*.4);
+    m.position.set((Math.random()-.5)*70,.5,(Math.random()-.5)*70);scene.add(m);});
+  buildPlayer(truck,spear);
+}
+function buildPlayer(truck,spear){
+  player=new THREE.Group();
+  playerHull=cloneModel(truck,1.4);playerHull.position.y=.6;player.add(playerHull);
+  playerTurret=new THREE.Group();playerTurret.position.y=1.35;
+  const barrel=cloneModel(spear,.35);barrel.rotation.z=Math.PI/2;barrel.position.set(0,0,1.2);
+  playerTurret.add(barrel);player.add(playerTurret);player.position.set(0,.5,15);
+  scene.add(player);
+  playerBody=new CANNON.Body({mass:80,shape:new CANNON.Box(new CANNON.Vec3(1.8,.8,2.8)),linearDamping:.4,angularDamping:.8});
+  playerBody.position.set(0,1,15);world.addBody(playerBody);
+}
+function spawnEnemy(type,x,z){
+  const models=window.__tankModels;if(!models)return;
+  const g=new THREE.Group();
+  let scale=1,hpE=35,speed=6;
+  if(type==='boss'){g.add(cloneModel(models.boss,2.2));scale=2.5;hpE=180;speed=4;}
+  else if(type==='heavy'){g.add(cloneModel(models.box,1.5));hpE=55;speed=5;}
+  else{g.add(cloneModel(models.cube,1.1));hpE=30;speed=7;}
+  g.position.set(x,.8,z);scene.add(g);
+  const body=new CANNON.Body({mass:40,shape:new CANNON.Box(new CANNON.Vec3(1.5,.8,1.5))});
+  body.position.set(x,1,z);world.addBody(body);
+  enemies.push({mesh:g,body,hp:hpE,maxHp:hpE,speed,kind:type,turret:Math.random()*6.28,cd:0});
+}
+function spawnWave(){
+  document.getElementById('wave-banner').textContent='WAVE '+wave;document.getElementById('wave-banner').classList.add('show');
+  setTimeout(()=>document.getElementById('wave-banner').classList.remove('show'),2200);
+  document.getElementById('wave-num').textContent=wave;
+  const n=3+wave*2;
+  for(let i=0;i<n;i++){
+    const ang=Math.random()*Math.PI*2,d=35+Math.random()*8;
+    spawnEnemy(wave>=4&&i===0?'heavy':'light',Math.cos(ang)*d,Math.sin(ang)*d);
+  }
+  if(wave===5)spawnEnemy('boss',0,38);
+  if(wave<5)scheduleArtillery();
+}
+function scheduleArtillery(){
+  setTimeout(()=>{
+    if(gameState!=='play')return;
+    const el=document.getElementById('artillery-warn');
+    const zone=document.createElement('div');zone.className='zone';
+    const px=player.position.x+(Math.random()-.5)*20,pz=player.position.z+(Math.random()-.5)*20;
+    const sx=window.innerWidth/2+(px-player.position.x)*4,sy=window.innerHeight/2+(pz-player.position.z)*4;
+    zone.style.left=(sx-50)+'px';zone.style.top=(sy-50)+'px';zone.style.width='100px';zone.style.height='100px';
+    el.appendChild(zone);el.classList.add('show');
+    setTimeout(()=>{
+      el.classList.remove('show');zone.remove();
+      if(gameState!=='play')return;
+      const dist=Math.hypot(player.position.x-px,player.position.z-pz);
+      if(dist<12){const facing=Math.atan2(player.position.x-px,player.position.z-pz);
+        const angleDiff=Math.abs(((player.rotation.y-facing+Math.PI*3)%(Math.PI*2))-Math.PI);
+        const dmg=angleDiff<.8?18:35;hp-=dmg;showDamage(player.position,dmg);screenShake();}
+      spawnExplosion(px,.5,pz);
+    },2200);
+  },4000+wave*800);
+}
+function fireShell(){
+  if(reload>0||gameState!=='play')return;
+  reload=reloadTime;
+  playSound('fire');
+  const dir=new THREE.Vector3(Math.sin(playerTurret.rotation.y),0,Math.cos(playerTurret.rotation.y));
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(.25,8,8),new THREE.MeshBasicMaterial({color:shellType==='AP'?'#ffcc44':'#ff4422'}));
+  mesh.position.copy(player.position).add(new THREE.Vector3(0,1.4,0)).add(dir.clone().multiplyScalar(2.5));
+  scene.add(mesh);
+  const vel=dir.clone().multiplyScalar(shellType==='AP'?55:42);
+  shells.push({mesh,vel,life:2.5,type:shellType,ap:shellType==='AP'});
+  const flash=new THREE.PointLight(0xffaa44,2,8);flash.position.copy(mesh.position);scene.add(flash);
+  setTimeout(()=>scene.remove(flash),80);
+}
+function spawnExplosion(x,y,z){
+  playSound('boom');screenShake();
+  for(let i=0;i<24;i++){
+    const p=new THREE.Mesh(new THREE.SphereGeometry(.15+Math.random()*.2,6,6),new THREE.MeshBasicMaterial({color:Math.random()>.5?0xff6622:0xffaa33}));
+    p.position.set(x,y,z);scene.add(p);
+    particles.push({mesh:p,vel:new THREE.Vector3((Math.random()-.5)*12,Math.random()*8,(Math.random()-.5)*12),life:.6+Math.random()*.4});
+  }
+}
+function showDamage(pos,dmg){
+  const el=document.createElement('div');el.className='dmg-num';el.textContent='-'+Math.round(dmg);
+  const v=pos.clone().project(camera);
+  el.style.left=((v.x+1)/2*window.innerWidth)+'px';el.style.top=((-v.y+1)/2*window.innerHeight)+'px';
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+function screenShake(){window.__shake=12;}
+function playSound(id){
+  if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.connect(g);g.connect(audioCtx.destination);
+  if(id==='fire'){o.frequency.value=120;g.gain.value=.08;o.type='square';}
+  else if(id==='boom'){o.frequency.value=55;g.gain.value=.15;o.type='sawtooth';}
+  else if(id==='hit'){o.frequency.value=200;g.gain.value=.06;}
+  else if(id==='collect'){o.frequency.value=440;g.gain.value=.05;}
+  o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.15);o.stop(audioCtx.currentTime+.15);
+}
+function startEngineLoop(){
+  if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(engineOsc)return;
+  engineOsc=audioCtx.createOscillator();const g=audioCtx.createGain();
+  engineOsc.type='sawtooth';engineOsc.frequency.value=42;g.gain.value=.03;
+  engineOsc.connect(g);g.connect(audioCtx.destination);engineOsc.start();
+}
+function showUpgradePick(){
+  gameState='upgrade';document.getElementById('upgrade-pick').classList.add('show');
+  document.querySelectorAll('.upg-btn').forEach(b=>{
+    b.onclick=()=>{
+      const u=b.dataset.u;if(u==='damage')damageMult*=1.2;if(u==='armor')armorMult*=1.25;if(u==='reload')reloadTime*=.8;
+      document.getElementById('upgrade-pick').classList.remove('show');
+      wave++;if(wave>5)winGame();else{gameState='play';spawnWave();}
+    };
+  });
+}
+function winGame(){
+  gameState='win';
+  const best=Math.max(score,+(localStorage.getItem('tank_high')||0));
+  localStorage.setItem('tank_high',best);
+  document.getElementById('win-score').textContent='Score '+score+' · High '+best;
+  document.getElementById('victory-screen').style.display='flex';
+  document.getElementById('hud').style.display='none';
+}
+function loseGame(){
+  gameState='lose';
+  document.getElementById('final-score').textContent='Score '+score+' · Kills '+kills;
+  document.getElementById('game-over-screen').style.display='flex';
+  document.getElementById('hud').style.display='none';
+}
+function startGame(){
+  gameStarted=true;gameState='play';
+  document.getElementById('start-screen').style.display='none';
+  document.getElementById('hud').style.display='block';
+  startEngineLoop();spawnWave();
+  if(!window.__loopRunning){window.__loopRunning=true;animate();}
+}
+function restartGame(){location.reload();}
+function updateMinimap(){
+  const c=document.getElementById('minimap'),x=c.getContext('2d');
+  x.fillStyle='#1a1208';x.fillRect(0,0,140,140);
+  x.strokeStyle='rgba(244,196,48,.3)';x.strokeRect(8,8,124,124);
+  const cx=70,cz=70,sc=1.1;
+  x.fillStyle='#4af';x.beginPath();x.arc(cx+player.position.x*sc,cz+player.position.z*sc,4,0,6.28);x.fill();
+  enemies.forEach(e=>{x.fillStyle=e.kind==='boss'?'#f44':'#f94';x.beginPath();x.arc(cx+e.mesh.position.x*sc,cz+e.mesh.position.z*sc,3,0,6.28);x.fill();});
+}
+function animate(){
+  requestAnimationFrame(animate);
+  const dt=Math.min(clock.getDelta(),.05);
+  if(gameState==='play'&&player){
+    reload=Math.max(0,reload-dt);
+    document.getElementById('reload-fill').style.width=(100*(1-reload/reloadTime))+'%';
+    document.getElementById('health-fill').style.width=(100*hp/maxHp)+'%';
+    const turn=keys['KeyA']?1:keys['KeyD']?-1:0,drive=keys['KeyW']?1:keys['KeyS']?-1:0;
+    player.rotation.y+=turn*1.8*dt;
+    const fwd=new THREE.Vector3(Math.sin(player.rotation.y),0,Math.cos(player.rotation.y));
+    player.position.add(fwd.multiplyScalar(drive*14*dt));
+    player.position.y=.5+Math.sin(player.position.x*.15)*.6+Math.cos(player.position.z*.12)*.5;
+    playerBody.position.set(player.position.x,1,player.position.z);
+    playerBody.quaternion.setFromEuler(0,player.rotation.y,0);
+    playerTurret.rotation.y=mouseX;
+    if(keys['Space'])fireShell();
+    enemies.forEach((e,i)=>{
+      const dx=player.position.x-e.mesh.position.x,dz=player.position.z-e.mesh.position.z;
+      const dist=Math.hypot(dx,dz)||1;
+      e.mesh.position.x-=dx/dist*e.speed*dt;e.mesh.position.z-=dz/dist*e.speed*dt;
+      e.mesh.lookAt(player.position.x,.8,player.position.z);
+      e.body.position.set(e.mesh.position.x,1,e.mesh.position.z);
+      e.cd-=dt;
+      if(dist<28&&e.cd<=0){e.cd=1.8+Math.random();if(dist<14){const fd=Math.atan2(dx,dz),diff=Math.abs(((player.rotation.y-fd+Math.PI*3)%(Math.PI*2))-Math.PI);
+        hp-=diff<.6?(12/armorMult):28/armorMult;showDamage(player.position,diff<.6?12:28);playSound('hit');}}
+    });
+    shells.forEach((s,si)=>{
+      s.mesh.position.add(s.vel.clone().multiplyScalar(dt));s.life-=dt;
+      enemies.forEach((e,ei)=>{
+        if(s.life<=0)return;
+        const d=s.mesh.position.distanceTo(e.mesh.position);
+        if(d<2.5){
+          const facing=Math.atan2(e.mesh.position.x-player.position.x,e.mesh.position.z-player.position.z);
+          const hitAngle=Math.atan2(s.mesh.position.x-e.mesh.position.x,s.mesh.position.z-e.mesh.position.z);
+          let angDiff=Math.abs(((facing-hitAngle+Math.PI*3)%(Math.PI*2))-Math.PI);
+          let dmg=(s.ap?22:32)*damageMult;if(angDiff<.5)dmg*=.55;else if(angDiff>2.4)dmg*=1.35;
+          e.hp-=dmg;showDamage(e.mesh.position,dmg);playSound('hit');s.life=0;
+          spawnExplosion(s.mesh.position.x,s.mesh.position.y,s.mesh.position.z);
+          if(e.hp<=0){scene.remove(e.mesh);world.removeBody(e.body);enemies.splice(ei,1);
+            score+=e.kind==='boss'?500:80;kills++;combo++;comboTimer=3;playSound('boom');}
+        }
+      });
+      props.forEach(p=>{
+        if(!p.userData.destruct||s.life<=0)return;
+        if(s.mesh.position.distanceTo(p.position)<2.5){p.userData.hp-=s.ap?25:40;showDamage(p.position,20);s.life=0;
+          if(p.userData.hp<=0){scene.remove(p);if(p.userData.body)world.removeBody(p.userData.body);p.userData.destruct=false;spawnExplosion(p.position.x,1,p.position.z);}}
+      });
+      if(s.life<=0){scene.remove(s.mesh);shells.splice(si,1);}
+    });
+    if(comboTimer>0){comboTimer-=dt;}else combo=0;
+    document.getElementById('score').textContent=score;document.getElementById('kills').textContent=kills;
+    document.getElementById('combo').textContent=combo;
+    if(hp<=0)loseGame();
+    if(enemies.length===0&&gameState==='play'){if(wave>=5)winGame();else showUpgradePick();}
+    if(window.__shake>0){window.__shake-=dt*30;camera.position.x=(Math.random()-.5)*window.__shake*.04;camera.position.z=(Math.random()-.5)*window.__shake*.04;}
+    else{camera.position.x=0;camera.position.z=0;}
+  }
+  if(player)camera.position.lerp(new THREE.Vector3(player.position.x,14,player.position.z+18),dt*3);
+  camera.lookAt(player?player.position:new THREE.Vector3(0,0,0));
+  particles.forEach((p,i)=>{p.mesh.position.add(p.vel.clone().multiplyScalar(dt));p.vel.y-=18*dt;p.life-=dt;
+    if(p.life<=0){scene.remove(p.mesh);particles.splice(i,1);}});
+  world.step(1/60,dt,3);
+  updateMinimap();
+  renderer.render(scene,camera);
+}
+async function bgsBoot(){
+  scene=new THREE.Scene();scene.background=new THREE.Color(0x87a8c8);scene.fog=new THREE.Fog(0x87a8c8,40,90);
+  camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,200);
+  renderer=new THREE.WebGLRenderer({antialias:true});renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;
+  document.body.appendChild(renderer.domElement);
+  clock=new THREE.Clock();
+  world=new CANNON.World();world.gravity.set(0,-9.82,0);
+  const sun=new THREE.DirectionalLight(0xfff4e0,1.1);sun.position.set(30,50,20);sun.castShadow=true;scene.add(sun);
+  scene.add(new THREE.AmbientLight(0xc9a86c,.45));
+  await buildGameAssets();
+  document.getElementById('start-btn').onclick=startGame;
+  window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+  window.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='KeyQ'){shellType=shellType==='AP'?'HE':'AP';document.getElementById('shell-type').textContent=shellType;}});
+  window.addEventListener('keyup',e=>keys[e.code]=false);
+  window.addEventListener('mousemove',e=>{mouseX=Math.atan2(e.clientX-innerWidth/2,(innerHeight/2-e.clientY)*.5);});
+  window.keys=keys;window.camera=camera;window.renderer=renderer;window.scene=scene;window.startGame=startGame;window.restartGame=restartGame;
+}
+bgsBoot();
+</script>
+</body>
+</html>
