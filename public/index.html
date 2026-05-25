@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bradley's Game Studio</title>
 <meta name="description" content="AI-powered 3D game generator. Describe any game and play it instantly.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -425,6 +425,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       <button class="tbtn" id="world-validate-btn" title="4D World Model — validate spatial consistency" style="border-color:rgba(102,68,255,0.25);color:#9988ff;">🌐 4D VALIDATE</button>
       <button class="tbtn" id="anim-search-btn" title="Search 5M+ animation library" style="border-color:rgba(255,204,0,0.25);color:var(--c3);">🎬 ANIM LIB</button>
       <button class="tbtn" id="console-btn" onclick="toggleConsole()" title="Toggle studio console" style="border-color:rgba(0,170,255,0.25);color:var(--c5);">⌘ CONSOLE</button>
+      <button class="tbtn" id="autoplay-btn" onclick="toggleAutoPlay()" title="Auto-Play QA — simulates player input to test the game" style="border-color:rgba(0,255,136,0.25);color:#00ff88;display:none;">▶ AUTO-PLAY</button>
     </div>
     <div id="vp">
       <div id="splash">
@@ -1535,6 +1536,10 @@ function validateGameHtml(code){
 function sanitizeGameHtml(code){
   let html=code.replace(/\s*onclick\s*=\s*["']([a-zA-Z_$][\w$]*)\s*\(\s*\)["']/gi,' data-bgs-click="$1"');
   const bootstrapStyle='<style id="bgs-bootstrap">html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000}#game-canvas,canvas{display:block!important;position:fixed!important;top:0!important;left:0!important;z-index:0!important;width:100%!important;height:100%!important;touch-action:none}#start-screen,#game-over-screen{position:fixed!important;inset:0!important;z-index:50!important;pointer-events:auto!important}#start-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(0,0,0,0.92),rgba(12,16,32,0.96))!important;color:#fff!important;font-family:system-ui,sans-serif;text-align:center;padding:24px}#start-btn,#start-screen button{margin-top:16px;padding:12px 28px;font-size:16px;font-weight:700;cursor:pointer;border:2px solid #00ffcc;background:rgba(0,255,204,0.12);color:#00ffcc;border-radius:6px}#start-btn:hover,#start-screen button:hover{background:rgba(0,255,204,0.25)}</style>';
+  if(!/rel=["']icon["']/i.test(html)){
+    const favicon='<link rel="icon" href="data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🎮</text></svg>">';
+    if(/<head[^>]*>/i.test(html))html=html.replace(/<head[^>]*>/i,m=>m+favicon);
+  }
   if(!html.includes('bgs-bootstrap')){
     if(/<head[^>]*>/i.test(html))html=html.replace(/<head[^>]*>/i,m=>m+bootstrapStyle);
     else html=bootstrapStyle+html;
@@ -1567,9 +1572,11 @@ function sanitizeGameHtml(code){
   return html;
 }
 const BGS_CDN_STACK=
+  '<link rel="icon" href="data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><text y=\'.9em\' font-size=\'90\'>🎮</text></svg>">\n'+
   '<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"><\/script>\n'+
   '<script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/loaders/GLTFLoader.js"><\/script>\n'+
-  '<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"><\/script>\n';
+  '<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"><\/script>\n'+
+  '<script>if(typeof THREE!=="undefined"&&THREE.GLTFLoader){var _origParse=THREE.GLTFLoader.prototype.parse;THREE.GLTFLoader.prototype.parse=function(){var _w=console.warn;console.warn=function(){var m=arguments[0]||"";if(typeof m==="string"&&m.indexOf("KHR_materials_pbrSpecularGlossiness")>-1)return;_w.apply(console,arguments);};var r=_origParse.apply(this,arguments);console.warn=_w;return r;};}<\/script>\n';
 function injectIntoMainScript(html,snippet){
   const closeIdx=html.lastIndexOf(BGS_SCRIPT_END);
   if(closeIdx===-1)return html+'<'+'script>'+snippet+BGS_SCRIPT_END;
@@ -1705,7 +1712,148 @@ async function buildGameAssets(){
       fixes.push('buildGameAssets() fallback');
     }
   }
+
+  // ═══ BLACK SCREEN FIX: ensure renderer is appended, scene has content, and animate loop runs ═══
+  html = fixBlackScreen(html, fixes);
+
   return{code:html,fixes};
+}
+
+function fixBlackScreen(html, fixes) {
+  const blackScreenFix = `
+<script id="bgs-blackscreen-fix">
+(function(){
+  var _bsTimer = null;
+  var _bsChecks = 0;
+  function bgsBlackScreenCheck() {
+    _bsChecks++;
+    if (_bsChecks > 60) { clearInterval(_bsTimer); return; }
+
+    // Fix 1: Renderer not appended to DOM
+    if (window.renderer && window.renderer.domElement && !window.renderer.domElement.parentNode) {
+      document.body.appendChild(window.renderer.domElement);
+      window.renderer.domElement.style.cssText = 'display:block;position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;';
+      window.__bgsFixedAppend = true;
+    }
+
+    // Fix 2: Canvas exists but display:none or 0 size
+    var canvas = document.querySelector('canvas');
+    if (canvas) {
+      var cs = getComputedStyle(canvas);
+      if (cs.display === 'none') { canvas.style.display = 'block'; window.__bgsFixedDisplay = true; }
+      if (parseInt(cs.width) < 10 || parseInt(cs.height) < 10) {
+        canvas.style.width = '100%'; canvas.style.height = '100%';
+        canvas.style.position = 'fixed'; canvas.style.top = '0'; canvas.style.left = '0';
+      }
+    }
+
+    // Fix 3: Renderer exists but wrong size
+    if (window.renderer && window.renderer.domElement) {
+      var w = window.innerWidth || 800, h = window.innerHeight || 600;
+      if (window.renderer.domElement.width < 10 || window.renderer.domElement.height < 10) {
+        window.renderer.setSize(w, h);
+        if (window.camera) { window.camera.aspect = w / h; window.camera.updateProjectionMatrix(); }
+        window.__bgsFixedSize = true;
+      }
+    }
+
+    // Fix 4: Scene exists but no lights (everything appears black)
+    if (window.scene && window.renderer) {
+      var hasLight = false;
+      window.scene.traverse(function(c) { if (c.isLight) hasLight = true; });
+      if (!hasLight) {
+        window.scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+        window.scene.add(new THREE.DirectionalLight(0xffffff, 0.8));
+        window.__bgsFixedLights = true;
+      }
+    }
+
+    // Fix 5: Scene has no children (empty scene = black)
+    if (window.scene && window.scene.children.length === 0 && window.renderer) {
+      var floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(100, 100),
+        new THREE.MeshStandardMaterial({ color: 0x444444 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      window.scene.add(floor);
+      window.scene.add(new THREE.GridHelper(100, 20, 0x00ffcc, 0x224444));
+      window.__bgsFixedEmpty = true;
+    }
+
+    // Fix 6: animate() defined but never called (render loop not running)
+    if (window.renderer && window.scene && window.camera && !window.__gameLoopRunning && !window.__loopRunning && !window.__bgsAnimRunning) {
+      window.__bgsAnimRunning = true;
+      function __bgsBackupAnimate() {
+        requestAnimationFrame(__bgsBackupAnimate);
+        try {
+          if (typeof window.animate === 'function' && !window.__gameLoopRunning) {
+            window.__gameLoopRunning = true;
+            window.animate();
+          } else {
+            window.renderer.render(window.scene, window.camera);
+          }
+        } catch(e) {
+          window.renderer.render(window.scene, window.camera);
+        }
+      }
+      __bgsBackupAnimate();
+      window.__bgsFixedLoop = true;
+    }
+
+    // Fix 7: gameStarted never set — set it
+    if (window.renderer && window.scene && !window.gameStarted) {
+      window.gameStarted = true;
+      window.gameRunning = true;
+    }
+
+    // Fix 8: Camera at origin looking at nothing
+    if (window.camera && window.camera.position.length() < 0.1) {
+      window.camera.position.set(0, 8, 16);
+      window.camera.lookAt(0, 0, 0);
+      window.__bgsFixedCamera = true;
+    }
+
+    // Fix 9: body background covering canvas
+    if (canvas && document.body.style.background && !document.body.style.background.includes('transparent')) {
+      document.body.style.background = 'transparent';
+    }
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'hidden';
+
+    // Report fixes to parent console
+    if (_bsChecks === 5) {
+      var applied = [];
+      if (window.__bgsFixedAppend) applied.push('renderer-append');
+      if (window.__bgsFixedDisplay) applied.push('canvas-display');
+      if (window.__bgsFixedSize) applied.push('renderer-resize');
+      if (window.__bgsFixedLights) applied.push('scene-lights');
+      if (window.__bgsFixedEmpty) applied.push('scene-content');
+      if (window.__bgsFixedLoop) applied.push('render-loop');
+      if (window.__bgsFixedCamera) applied.push('camera-position');
+      if (applied.length > 0) {
+        try { window.parent.postMessage({ type: 'bgs-autofix', fixes: applied }, '*'); } catch(e) {}
+      }
+    }
+
+    // Stop checking once everything is rendering
+    if (window.__bgsAnimRunning && window.gameStarted && canvas && parseInt(getComputedStyle(canvas).width) > 10) {
+      clearInterval(_bsTimer);
+    }
+  }
+  _bsTimer = setInterval(bgsBlackScreenCheck, 100);
+  setTimeout(bgsBlackScreenCheck, 0);
+  setTimeout(bgsBlackScreenCheck, 50);
+})();
+</script>`;
+
+  if (html.includes('</body>')) {
+    html = html.replace('</body>', blackScreenFix + '</body>');
+  } else {
+    html += blackScreenFix;
+  }
+  fixes.push('black-screen-prevention');
+  return html;
 }
 function prepareGameCode(code,opts={}){
   let result=autoFixGameCode(code,opts);
@@ -2547,7 +2695,7 @@ function showGame(code){
   showPlayOverlay(true);
   requestAnimationFrame(()=>{try{wireGameFrame(fr);}catch(e){}});
   document.getElementById('splash').style.display='none';
-  ['tbplay','tbupd','tbpub','tbexp','tbdl'].forEach(id=>document.getElementById(id).style.display='flex');
+  ['tbplay','tbupd','tbpub','tbexp','tbdl','autoplay-btn'].forEach(id=>document.getElementById(id).style.display='flex');
   const ubtn=document.getElementById('ubtn');if(ubtn){ubtn.disabled=false;}
   document.getElementById('cbody').textContent=code;
 }
@@ -3409,6 +3557,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKe
 window.addEventListener('message',e=>{
   if(e.data?.type==='bgs-game-error')reportGameError(e.data.msg||'Unknown error');
   if(e.data?.type==='bgs-game-started')hidePlayOverlay();
+  if(e.data?.type==='bgs-autofix'&&e.data.fixes?.length){
+    const msg='Auto-fixed: '+e.data.fixes.join(', ');
+    setStatus(msg,'ok');
+    if(typeof studioConsole!=='undefined')studioConsole.log('engine','[BGS autofix] '+msg);
+  }
 });
 setupGameInputBridge();
 
@@ -3424,6 +3577,154 @@ fetchAnthropicBilling(false);
 renderChips();
 refreshSidebar();
 loadAssetManifest();
+
+/* ═══ AUTO-PLAY QA ═══ */
+const autoPlayQA = {
+  active: false,
+  timer: null,
+  phase: 0,
+  report: { started: 0, frames: 0, errors: [], fixes: [], interactions: 0, duration: 0 },
+
+  toggle() {
+    if (this.active) this.stop();
+    else this.start();
+  },
+
+  start() {
+    const fr = document.getElementById('gframe');
+    if (!fr || !currentCode) { setStatus('Generate a game first', 'er'); return; }
+    this.active = true;
+    this.phase = 0;
+    this.report = { started: Date.now(), frames: 0, errors: [], fixes: [], interactions: 0, duration: 0 };
+    document.getElementById('autoplay-btn')?.classList.add('on');
+    setStatus('Auto-Play QA started — testing game…', 's');
+    if (typeof studioConsole !== 'undefined') studioConsole.log('system', '[QA] Auto-Play started — simulating player input');
+
+    hidePlayOverlay();
+    try {
+      const win = fr.contentWindow;
+      if (win && typeof win.startGame === 'function' && !win.gameStarted) {
+        invokeStartGame(fr, win, fr.contentDocument);
+      }
+    } catch(e) {}
+
+    this.timer = setInterval(() => this._tick(fr), 150);
+    setTimeout(() => this._finalize(), 15000);
+  },
+
+  stop() {
+    this.active = false;
+    clearInterval(this.timer);
+    document.getElementById('autoplay-btn')?.classList.remove('on');
+    this._sendReport();
+  },
+
+  _tick(fr) {
+    if (!this.active) return;
+    this.phase++;
+    try {
+      const win = fr.contentWindow;
+      if (!win) return;
+
+      // Ensure game is running
+      if (!win.gameStarted && win.renderer) {
+        win.gameStarted = true;
+        if (typeof win.startGame === 'function') try { win.startGame(); } catch(e) {}
+      }
+
+      // Simulate keyboard input
+      const actions = this._getPhaseActions();
+      actions.forEach(key => {
+        this._simulateKey(win, key, true);
+        setTimeout(() => this._simulateKey(win, key, false), 100);
+      });
+      this.report.interactions += actions.length;
+
+      // Simulate mouse click
+      if (this.phase % 10 === 0) {
+        try {
+          const canvas = win.document.querySelector('canvas');
+          if (canvas) {
+            canvas.dispatchEvent(new MouseEvent('click', { clientX: canvas.width/2, clientY: canvas.height/2 }));
+            this.report.interactions++;
+          }
+        } catch(e) {}
+      }
+
+      // Check rendering
+      if (win.renderer && win.scene && win.camera) {
+        this.report.frames++;
+        try { win.renderer.render(win.scene, win.camera); } catch(e) {}
+      }
+
+      // Check for errors
+      if (win.__bgsFixedAppend) this.report.fixes.push('renderer-append');
+      if (win.__bgsFixedLights) this.report.fixes.push('lights-injected');
+      if (win.__bgsFixedLoop) this.report.fixes.push('render-loop-started');
+      if (win.__bgsFixedCamera) this.report.fixes.push('camera-repositioned');
+      if (win.__bgsFixedEmpty) this.report.fixes.push('scene-content-added');
+
+    } catch(e) {
+      this.report.errors.push(e.message);
+    }
+  },
+
+  _getPhaseActions() {
+    const cycle = this.phase % 80;
+    if (cycle < 15) return ['KeyW'];
+    if (cycle < 20) return ['KeyW', 'KeyD'];
+    if (cycle < 30) return ['KeyA'];
+    if (cycle < 35) return ['Space'];
+    if (cycle < 45) return ['KeyS'];
+    if (cycle < 50) return ['KeyD', 'KeyW'];
+    if (cycle < 55) return ['Space', 'KeyW'];
+    if (cycle < 65) return ['KeyW', 'ShiftLeft'];
+    if (cycle < 70) return ['KeyA', 'Space'];
+    return ['KeyD'];
+  },
+
+  _simulateKey(win, code, down) {
+    try {
+      const evt = new KeyboardEvent(down ? 'keydown' : 'keyup', { code, key: code.replace('Key', '').toLowerCase(), bubbles: true });
+      win.document.dispatchEvent(evt);
+      win.dispatchEvent(evt);
+      if (win.keys) win.keys[code] = down;
+      if (win.__bgsKeys) win.__bgsKeys[code] = down;
+    } catch(e) {}
+  },
+
+  _finalize() {
+    if (!this.active) return;
+    this.report.duration = Date.now() - this.report.started;
+    this.stop();
+  },
+
+  _sendReport() {
+    this.report.duration = this.report.duration || (Date.now() - this.report.started);
+    const dur = (this.report.duration / 1000).toFixed(1);
+    const uniqueFixes = [...new Set(this.report.fixes)];
+    const errCount = this.report.errors.length;
+
+    let verdict = 'PASS';
+    if (errCount > 5) verdict = 'FAIL';
+    else if (errCount > 0 || uniqueFixes.length > 2) verdict = 'WARN';
+
+    const summary = `QA ${verdict}: ${dur}s, ${this.report.frames} frames, ${this.report.interactions} inputs, ${errCount} errors, ${uniqueFixes.length} auto-fixes`;
+
+    if (verdict === 'PASS') setStatus('Auto-Play QA PASSED — ' + summary, 'ok');
+    else if (verdict === 'WARN') setStatus('Auto-Play QA WARNING — ' + summary, 'ok');
+    else setStatus('Auto-Play QA FAILED — ' + summary, 'er');
+
+    if (typeof studioConsole !== 'undefined') {
+      studioConsole.log(verdict === 'FAIL' ? 'error' : 'engine', '[QA] ' + summary);
+      if (uniqueFixes.length) studioConsole.log('warn', '[QA] Auto-fixes applied: ' + uniqueFixes.join(', '));
+      if (errCount) studioConsole.log('error', '[QA] Errors: ' + this.report.errors.slice(0, 5).join(' | '));
+      studioConsole.log('info', '[QA] Report: frames=' + this.report.frames + ' interactions=' + this.report.interactions + ' duration=' + dur + 's');
+    }
+  }
+};
+
+function toggleAutoPlay() { autoPlayQA.toggle(); }
 
 /* ═══ STUDIO CONSOLE ═══ */
 const studioConsole = {

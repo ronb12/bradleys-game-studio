@@ -132,6 +132,44 @@ function clearPickups(){
   pickups.forEach(p=>{if(p.mesh)scene.remove(p.mesh);});
   pickups=[];
 }
+function buildPickupModel(type,col){
+  const g=new THREE.Group();
+  const glow=new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:.45,roughness:.3,metalness:.2});
+  const dark=new THREE.MeshStandardMaterial({color:0x2a2a2a,roughness:.6,metalness:.5});
+  if(type==='repair'){
+    const box=new THREE.Mesh(new THREE.BoxGeometry(.55,.35,.55),new THREE.MeshStandardMaterial({color:0xeeeeee,roughness:.4}));
+    const crossH=new THREE.Mesh(new THREE.BoxGeometry(.35,.06,.12),glow);
+    crossH.position.y=.18;
+    const crossV=new THREE.Mesh(new THREE.BoxGeometry(.12,.06,.35),glow);
+    crossV.position.y=.18;
+    const latch=new THREE.Mesh(new THREE.BoxGeometry(.14,.04,.06),dark);
+    latch.position.set(0,.18,.28);
+    const handle=new THREE.Mesh(new THREE.BoxGeometry(.22,.03,.04),dark);
+    handle.position.set(0,.2,-.28);
+    g.add(box,crossH,crossV,latch,handle);
+  }else if(type==='ammo'){
+    const crate=new THREE.Mesh(new THREE.BoxGeometry(.6,.4,.4),new THREE.MeshStandardMaterial({color:0x5a6830,roughness:.85}));
+    const lid=new THREE.Mesh(new THREE.BoxGeometry(.62,.04,.42),new THREE.MeshStandardMaterial({color:0x6a7838,roughness:.8}));
+    lid.position.y=.2;
+    const band1=new THREE.Mesh(new THREE.BoxGeometry(.04,.42,.42),dark);
+    band1.position.x=-.22;
+    const band2=band1.clone();band2.position.x=.22;
+    const shell=new THREE.Mesh(new THREE.CylinderGeometry(.04,.03,.28,8),glow);
+    shell.rotation.x=Math.PI/2;shell.position.set(0,.22,0);
+    g.add(crate,lid,band1,band2,shell);
+  }else{
+    const base=new THREE.Mesh(new THREE.CylinderGeometry(.22,.28,.45,8),glow);
+    const cap=new THREE.Mesh(new THREE.ConeGeometry(.22,.2,8),glow);
+    cap.position.y=.32;
+    const band=new THREE.Mesh(new THREE.TorusGeometry(.25,.03,8,16),dark);
+    band.rotation.x=Math.PI/2;band.position.y=.1;
+    const chevron=new THREE.Mesh(new THREE.ConeGeometry(.08,.12,4),new THREE.MeshStandardMaterial({color:0xffffff,emissive:0xffffff,emissiveIntensity:.3}));
+    chevron.position.set(0,.15,.24);chevron.rotation.x=Math.PI;
+    g.add(base,cap,band,chevron);
+  }
+  g.position.y=.35;
+  return g;
+}
 function spawnPickups(){
   clearPickups();
   const types=['repair','ammo','boost'];
@@ -140,17 +178,15 @@ function spawnPickups(){
     const x=(Math.random()-.5)*WORLD*.85,z=(Math.random()-.5)*WORLD*.85;
     if(Math.hypot(x,z)<16)continue;
     const col=t==='repair'?0x44ff88:t==='ammo'?0xffcc44:0x88aaff;
-    const m=new THREE.Mesh(
-      new THREE.BoxGeometry(.7,.5,.7),
-      new THREE.MeshStandardMaterial({color:col,emissive:col,emissiveIntensity:.35})
-    );
-    m.position.set(x,.35,z);
+    const m=buildPickupModel(t,col);
     const ring=new THREE.Mesh(
       new THREE.RingGeometry(.5,.65,16),
       new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.4,side:THREE.DoubleSide})
     );
     ring.rotation.x=-Math.PI/2;ring.position.y=.05;
-    const g=new THREE.Group();g.add(ring,m);g.position.set(x,0,z);
+    const beacon=new THREE.PointLight(col,.6,5);
+    beacon.position.y=.6;
+    const g=new THREE.Group();g.add(ring,m,beacon);g.position.set(x,0,z);
     scene.add(g);
     pickups.push({mesh:g,type:t,life:90});
   }
@@ -160,7 +196,7 @@ function updatePickups(dt){
   const pp=player.group.position;
   for(let i=pickups.length-1;i>=0;i--){
     const p=pickups[i];p.life-=dt;
-    if(p.mesh)p.mesh.rotation.y+=dt;
+    if(p.mesh){p.mesh.rotation.y+=dt*1.2;p.mesh.position.y=Math.sin(Date.now()*.003+i*2)*.12;}
     if(p.life<=0){scene.remove(p.mesh);pickups.splice(i,1);continue;}
     if(pp.distanceTo(p.mesh.position)<2.2){
       if(p.type==='repair'){playerHP=Math.min(playerMaxHP,playerHP+45);playTone(520,.1,'sine',.08);}

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>Desert Tank Siege — Real Assets</title>
 <style id="bgs-bootstrap">
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0a0c12;font-family:system-ui,sans-serif}
@@ -3757,6 +3758,15 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('keyup',e=>{
   keys[e.code]=false;
   if(e.code==='KeyQ')keys['KeyQ']=false;
+});
+window.addEventListener('mousedown',e=>{
+  if(e.button===0&&isGamePlaying()&&!prefersTouchControls()){
+    keys['Space']=true;
+    e.preventDefault();
+  }
+});
+window.addEventListener('mouseup',e=>{
+  if(e.button===0)keys['Space']=false;
 });
 window.addEventListener('mousemove',e=>{
   if(prefersTouchControls()&&isGamePlaying())return;
