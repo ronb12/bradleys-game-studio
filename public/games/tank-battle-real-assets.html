@@ -2999,7 +2999,7 @@ function getTankMuzzleWorld(tankRoot,turret,barrel,muzzleNode,aimAng,silhouette)
   return _muzzleWorld;
 }
 function fireShell(from,dir,isPlayer){
-  if(reload>0&&isPlayer)return;
+  if(reload>0.001&&isPlayer)return;
   const he=shellType==='HE';
   const g=new THREE.Mesh(
     new THREE.SphereGeometry(isPlayer?0.22:0.16),
@@ -3400,12 +3400,12 @@ function updatePlayer(dt){
     const aimDir=new THREE.Vector3(Math.sin(clampedAim),0,Math.cos(clampedAim));
     lastPenHint=penLabelForDot(facing.dot(aimDir));
   }else lastPenHint='';
-  if(keys['Space']&&!reload){
+  if(keys['Space']&&reload<=0){
     const dir=new THREE.Vector3(Math.sin(clampedAim),0,Math.cos(clampedAim));
     const muzzlePos=getTankMuzzleWorld(p.group,turret,barrel,p.muzzle||p.group.muzzle,clampedAim,p.silhouette||(TANK_CLASSES[p.classId]?.silhouette));
     fireShell(muzzlePos,dir,true);
   }
-  if(reload>0)reload-=dt;
+  if(reload>0)reload=Math.max(0,reload-dt);
   const lim=WORLD*.92;
   p.body.position.x=Math.max(-lim,Math.min(lim,p.body.position.x));
   p.body.position.z=Math.max(-lim,Math.min(lim,p.body.position.z));
