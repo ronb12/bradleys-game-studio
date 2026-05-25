@@ -1987,7 +1987,7 @@ async function assembleTankVisual(spec,opts){
   });
   return mountTankRig(g,tank,tank);
 }
-function configureMeshShadows(root,{cast=true,receive=false}={}){
+function configureMeshShadows(root,{cast=false,receive=false}={}){
   if(!root)return;
   root.traverse(c=>{
     if(!c.isMesh)return;
@@ -2000,7 +2000,7 @@ function applyMeshDefaults(root,opts){
   const force=!!opts?.forceSolid;
   root.traverse(c=>{
     if(!c.isMesh)return;
-    c.castShadow=true;
+    c.castShadow=false;
     c.receiveShadow=false;
     const mats=Array.isArray(c.material)?c.material:[c.material];
     const broken=mats.some(m=>{
@@ -2082,29 +2082,22 @@ function initThree(){
     renderer.toneMappingExposure=1.22;
   }
   resizeGameViewport();
-  renderer.shadowMap.enabled=true;
-  renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled=false;
   clock=new THREE.Clock();
-  const hemi=new THREE.HemisphereLight(0x9ed4ff,0xe8d4a8,.72);
+  const hemi=new THREE.HemisphereLight(0x9ed4ff,0xe8d4a8,.82);
   scene.add(hemi);
-  const amb=new THREE.AmbientLight(0xfff8f0,.55);
+  const amb=new THREE.AmbientLight(0xfff8f0,.62);
   scene.add(amb);
-  sunLight=new THREE.DirectionalLight(0xfff4e0,1.5);
+  sunLight=new THREE.DirectionalLight(0xfff4e0,1.65);
   sunLight.position.set(55,78,28);
   sunLight.target.position.set(0,0,0);
   scene.add(sunLight.target);
-  sunLight.castShadow=true;
-  sunLight.shadow.mapSize.set(2048,2048);
-  sunLight.shadow.camera.near=8;sunLight.shadow.camera.far=220;
-  sunLight.shadow.camera.left=-SUN_SHADOW_HALF;sunLight.shadow.camera.right=SUN_SHADOW_HALF;
-  sunLight.shadow.camera.top=SUN_SHADOW_HALF;sunLight.shadow.camera.bottom=-SUN_SHADOW_HALF;
-  sunLight.shadow.bias=-.00015;
-  sunLight.shadow.normalBias=0.012;
-  sunLight.shadow.camera.updateProjectionMatrix();
-  if(sunLight.shadow.intensity!==undefined)sunLight.shadow.intensity=.72;
-  const fill=new THREE.DirectionalLight(0xc8d8f0,.52);
+  sunLight.castShadow=false;
+  const fill=new THREE.DirectionalLight(0xc8d8f0,.58);
   fill.position.set(-35,48,-42);
-  scene.add(sunLight,fill);
+  const rim=new THREE.DirectionalLight(0xffe8c0,.35);
+  rim.position.set(-20,30,60);
+  scene.add(sunLight,fill,rim);
   window.__hemiLight=hemi;
   window.__ambLight=amb;
   window.__fillLight=fill;
@@ -2617,7 +2610,7 @@ function addRockCluster(mapGroup,m,x,z,scale){
     rock.position.set(x+(Math.random()-.5)*2.5,.25+Math.random()*.4,z+(Math.random()-.5)*2.5);
     rock.rotation.set(Math.random()*.4,Math.random()*6.28,Math.random()*.3);
     rock.scale.setScalar(scale*(.7+Math.random()*.6));
-    rock.castShadow=true;
+    rock.castShadow=false;
     rock.receiveShadow=false;
     mapGroup.add(rock);
   }
@@ -2634,9 +2627,9 @@ function addGrassTuft(mapGroup,x,z,col){
 }
 function addTree(mapGroup,x,z){
   const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.18,.28,1.4,6),new THREE.MeshStandardMaterial({color:0x4a3828,roughness:.95}));
-  trunk.position.set(x,.7,z);trunk.castShadow=true;
+  trunk.position.set(x,.7,z);
   const foliage=new THREE.Mesh(new THREE.ConeGeometry(1.4+Math.random()*.6,3.2+Math.random()*1.2,8),new THREE.MeshStandardMaterial({color:0x2a5528,roughness:.9}));
-  foliage.position.set(x,2.6,z);foliage.castShadow=true;
+  foliage.position.set(x,2.6,z);
   mapGroup.add(trunk,foliage);
 }
 function addHillRing(mapGroup,m){
@@ -2679,7 +2672,7 @@ function applyMap(mapId){
   groundMesh.geometry.computeVertexNormals();
   groundMesh.rotation.x=-Math.PI/2;
   groundMesh.castShadow=false;
-  groundMesh.receiveShadow=true;
+  groundMesh.receiveShadow=false;
   mapGroup.add(groundMesh);
   addHillRing(mapGroup,m);
   const moundN=mapId==='urban'?32:mapId==='snow'?38:mapId==='forest'?42:52;
@@ -2692,7 +2685,7 @@ function applyMap(mapId){
       const mound=new THREE.Mesh(new THREE.SphereGeometry(1.8+Math.random()*3.5,10,8),new THREE.MeshStandardMaterial({color:m.mound,roughness:1}));
       mound.scale.set(1.2+Math.random()*.5,.2+Math.random()*.15,1+Math.random()*.6);
       mound.position.set(x,h*.4,z);
-      mound.castShadow=true;
+      mound.castShadow=false;
       mound.receiveShadow=false;
       mapGroup.add(mound);
     }
@@ -2727,7 +2720,7 @@ function applyMap(mapId){
   }
   buildBattlefieldDecor(mapGroup,mapId);
   configureMeshShadows(mapGroup);
-  if(groundMesh){groundMesh.castShadow=false;groundMesh.receiveShadow=true;}
+  if(groundMesh){groundMesh.castShadow=false;groundMesh.receiveShadow=false;}
 }
 
 async function buildGameAssets(){
@@ -2825,7 +2818,7 @@ async function buildGameAssets(){
     enemies.push(e);return e;
   };
   configureMeshShadows(scene);
-  if(groundMesh){groundMesh.castShadow=false;groundMesh.receiveShadow=true;}
+  if(groundMesh){groundMesh.castShadow=false;groundMesh.receiveShadow=false;}
   }finally{window.__buildingAssets=false;}
 }
 

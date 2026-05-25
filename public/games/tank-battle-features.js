@@ -60,9 +60,8 @@ function saveMissionRecord(mission,extra){
 function applyPerf(){
   if(!renderer||!sunLight)return;
   const low=perf==='low',mid=perf==='medium';
-  renderer.shadowMap.enabled=!low;
-  sunLight.castShadow=!low;
-  if(sunLight.shadow)sunLight.shadow.mapSize.set(low?512:mid?1024:2048);
+  renderer.shadowMap.enabled=false;
+  sunLight.castShadow=false;
   window.__maxParticles=low?35:mid?60:100;
 }
 function scaledGain(g){return g*(audioVol.master||1)*(audioVol.sfx||1);}
